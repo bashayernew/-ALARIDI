@@ -1,0 +1,934 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================================================================
+// ENUMS
+// =====================================================================
+
+model Category {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  nameEn      String
+  nameAr      String   @default("")
+  sectionSlug String   @unique
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PREPARING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum FulfillmentType {
+  DELIVERY
+  PICKUP
+  SCHEDULED
+}
+
+enum PaymentMethod {
+  KNET
+  CARD
+  APPLE_PAY
+  GOOGLE_PAY
+  CASH_ON_DELIVERY
+}
+
+enum PromoDiscountType {
+  PERCENT
+  FIXED
+  FREE_SHIPPING
+  BUY_X_GET_Y
+}
+
+enum LoyaltyTier {
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+enum LoyaltyTxnType {
+  EARN_ORDER
+  EARN_BONUS_FIRST_ORDER
+  EARN_BONUS_BIRTHDAY
+  EARN_BONUS_REFERRAL
+  EARN_BONUS_CAMPAIGN
+  REDEEM_ORDER
+  ADJUST_ADMIN
+  EXPIRE
+}
+
+enum GiftCardTxnType {
+  ISSUE
+  ACTIVATE
+  REDEEM
+  REDEEM_TO_WALLET
+  ADJUST
+  EXPIRE
+  DISABLE
+}
+
+enum GiftCardStatus {
+  PENDING
+  ACTIVE
+  REDEEMED
+  PARTIALLY_USED
+  EXPIRED
+  DISABLED
+}
+
+enum WalletTxnType {
+  GIFT_CARD_REDEEM
+  CHECKOUT_APPLY
+  LOYALTY_CODE_OVERFLOW
+  ADMIN_CREDIT
+  ADMIN_DEBIT
+}
+
+enum GiftBasketVisibility {
+  PUBLISHED
+  DRAFT
+  HIDDEN
+}
+
+enum GiftBasketPricingMode {
+  MANUAL
+  AUTO
+}
+
+enum LoyaltyRedemptionCodeStatus {
+  ACTIVE
+  PARTIALLY_USED
+  FULLY_USED
+  EXPIRED
+}
+
+enum RewardType {
+  DISCOUNT_VOUCHER
+  FREE_PRODUCT
+  FREE_DELIVERY
+  EXCLUSIVE_BUNDLE
+}
+
+enum RewardTrigger {
+  POINTS_REDEMPTION
+  ORDER_MILESTONE
+  SEASONAL_CAMPAIGN
+}
+
+// =====================================================================
+// CATALOG
+// =====================================================================
+
+model Product {
+  id              String          @id @default(cuid())
+  slug            String          @unique @default(cuid())
+  name            String
+  nameAr          String          @default("")
+  description     String
+  descriptionAr   String          @default("")
+  ingredients     String          @default("")
+  ingredientsAr   String          @default("")
+  allergens       String[]        @default([])
+  price           Decimal         @db.Decimal(10, 3)
+  oldPrice        Decimal?        @db.Decimal(10, 3)
+  image           String
+  images          String[]        @default([])
+  category        String
+  isBestSeller    Boolean         @default(false)
+  isPromo         Boolean         @default(false)
+  isCustomizable  Boolean         @default(false)
+  isAvailable     Boolean         @default(true)
+  isNew           Boolean         @default(false)
+  stockQty        Int?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  orderItems      OrderItem[]
+  reviews         Review[]
+  wishlistItems   WishlistItem[]
+  giftBasketItems GiftBasketItem[]
+  promoCodes      PromoCodeProduct[]
+  branchAvailability BranchProductAvailability[]
+}
+
+// =====================================================================
+// ORDERS
+// =====================================================================
+
+model Order {
+  id              String           @id @default(cuid())
+  customerName    String
+  customerEmail   String?
+  phone           String
+  address         String
+  latitude        Float?
+  longitude       Float?
+  deliveryArea    String
+  deliverySlot    String
+  scheduledDate   DateTime?
+  customerNotes   String?
+  customerUserId  String?
+  customer        Customer?        @relation(fields: [customerUserId], references: [id])
+  fulfillmentType FulfillmentType  @default(DELIVERY)
+  paymentMethod   PaymentMethod?
+  paymentRef      String?
+  subtotal        Decimal          @db.Decimal(10, 3)
+  deliveryFee     Decimal          @db.Decimal(10, 3)
+  discountAmount  Decimal          @default(0) @db.Decimal(10, 3)
+  giftCardApplied Decimal          @default(0) @db.Decimal(10, 3)
+  pointsRedeemed  Int              @default(0)
+  pointsEarned    Int              @default(0)
+  loyaltyRedemptionCodeId String?
+  loyaltyRedemptionCode   LoyaltyRedemptionCode? @relation("OrderLoyaltyCode", fields: [loyaltyRedemptionCodeId], references: [id])
+  loyaltyRedemptionApplied Decimal     @default(0) @db.Decimal(10, 3)
+  total           Decimal          @db.Decimal(10, 3)
+  promoCodeId     String?
+  promoCode       PromoCode?       @relation(fields: [promoCodeId], references: [id])
+  giftCardCode    String?
+  branchId        String?
+  branch          Branch?          @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  status          OrderStatus      @default(PENDING)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  items           OrderItem[]
+  giftCardItems   OrderGiftCardItem[]
+  giftBasketItems OrderGiftBasketItem[]
+  loyaltyTxns     LoyaltyTxn[]
+  giftCardTxns    GiftCardTxn[]
+
+  @@index([customerUserId])
+  @@index([status])
+  @@index([branchId])
+}
+
+model OrderItem {
+  id                  String           @id @default(cuid())
+  orderId             String
+  order               Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId           String
+  product             Product          @relation(fields: [productId], references: [id])
+  quantity            Int
+  note                String?
+  giftWrap            Boolean          @default(false)
+  cardMessage         String?
+  extraToppings       Boolean          @default(false)
+  unitPrice           Decimal          @db.Decimal(10, 3)
+  lineTotal           Decimal          @db.Decimal(10, 3)
+  giftFulfillmentType FulfillmentType?
+  recipientName       String?
+  receiverPhone       String?
+  receiverAddress     String?          @db.Text
+  pickupBranch        String?
+  deliveryDate        DateTime?
+  deliveryTimeSlot    String?
+  deliveryNotes       String?          @db.Text
+}
+
+// =====================================================================
+// BRANCHES / MULTI-LOCATION
+// =====================================================================
+
+enum AdminRole {
+  SUPER_ADMIN
+  BRANCH_ADMIN
+}
+
+model Branch {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  nameAr    String   @default("")
+  area      String   @default("")
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  admins              AdminUser[]
+  productAvailability BranchProductAvailability[]
+  deliveryAreas       BranchDeliveryArea[]
+  orders           Order[]
+  offerBanners     OfferBanner[]
+  headerOffers     HeaderOffer[]
+  contactSubmissions ContactSubmission[]
+}
+
+model BranchDeliveryArea {
+  id             String   @id @default(cuid())
+  branchId       String
+  governorate    String
+  area           String
+  enabled        Boolean  @default(true)
+  deliveryFeeKwd Decimal  @default(0) @db.Decimal(10, 3)
+  branch         Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, area])
+  @@index([area])
+  @@index([governorate, area])
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String    @default("")
+  role         AdminRole @default(BRANCH_ADMIN)
+  branchId     String?
+  branch       Branch?   @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([branchId])
+}
+
+model BranchProductAvailability {
+  id            String   @id @default(cuid())
+  branchId      String
+  productId     String
+  available     Boolean  @default(true)
+  priceOverride Decimal? @db.Decimal(10, 3)
+  branch        Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, productId])
+  @@index([branchId])
+  @@index([productId])
+}
+
+// =====================================================================
+// CMS / MARKETING
+// =====================================================================
+
+model SiteContent {
+  id      String @id @default(cuid())
+  key     String @unique
+  valueEn String @db.Text
+  valueAr String @db.Text
+}
+
+model OfferBanner {
+  id         String   @id @default(cuid())
+  titleEn    String
+  titleAr    String
+  subtitleEn String   @default("")
+  subtitleAr String   @default("")
+  imageUrl   String   @default("")
+  linkUrl    String   @default("")
+  branchId   String?
+  branch     Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  sortOrder  Int      @default(0)
+  enabled    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([branchId])
+}
+
+enum HeaderOfferPlacement {
+  TOP_ANNOUNCEMENT
+  HERO_BADGE
+  FEATURE_STRIP
+}
+
+model HeaderOffer {
+  id          String               @id @default(cuid())
+  titleEn     String
+  titleAr     String
+  shortTextEn String               @default("")
+  shortTextAr String               @default("")
+  icon        String               @default("sparkles")
+  image       String               @default("")
+  ctaTextEn   String               @default("")
+  ctaTextAr   String               @default("")
+  ctaLink     String               @default("")
+  placement   HeaderOfferPlacement
+  branchId    String?
+  branch      Branch?              @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  sortOrder   Int                  @default(0)
+  enabled     Boolean              @default(true)
+  startsAt    DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@index([placement, enabled, sortOrder])
+  @@index([branchId])
+}
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  titleEn     String
+  titleAr     String
+  excerptEn   String   @db.Text
+  excerptAr   String   @db.Text
+  bodyEn      String   @db.Text
+  bodyAr      String   @db.Text
+  image       String   @default("")
+  tag         String   @default("")
+  published   Boolean  @default(true)
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published])
+  @@index([slug])
+}
+
+// =====================================================================
+// PROMOTIONS
+// =====================================================================
+
+model PromoCode {
+  id                   String              @id @default(cuid())
+  code                 String              @unique
+  description          String              @default("")
+  discountType         PromoDiscountType
+  discountValue        Decimal             @db.Decimal(10, 3)
+  buyQty               Int?
+  getQty               Int?
+  startsAt             DateTime?
+  endsAt               DateTime?
+  minOrderAmount       Decimal?            @db.Decimal(10, 3)
+  maxUses              Int?
+  maxUsesPerCustomer   Int?
+  usedCount            Int                 @default(0)
+  customerId           String?
+  customer             Customer?           @relation(fields: [customerId], references: [id])
+  isPublic             Boolean             @default(true)
+  enabled              Boolean             @default(true)
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  orders               Order[]
+  products             PromoCodeProduct[]
+  categories           PromoCodeCategory[]
+
+  @@index([code])
+  @@index([enabled])
+  @@index([isPublic])
+}
+
+model PromoCodeProduct {
+  promoCodeId String
+  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([promoCodeId, productId])
+  @@index([productId])
+}
+
+model PromoCodeCategory {
+  promoCodeId String
+  promoCode   PromoCode       @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+  category    String
+
+  @@id([promoCodeId, category])
+}
+
+// =====================================================================
+// CUSTOMERS / AUTH (DB-backed, cookie session — see lib/customer-auth)
+// =====================================================================
+
+model Customer {
+  id               String              @id @default(cuid())
+  email            String              @unique
+  passwordHash     String
+  passwordSalt     String
+  name             String
+  phone            String              @default("")
+  birthday         DateTime?
+  referralCode     String              @unique @default(cuid())
+  referredById     String?
+  referredBy       Customer?           @relation("CustomerReferral", fields: [referredById], references: [id])
+  referrals        Customer[]          @relation("CustomerReferral")
+  loyaltyBalance   Int                 @default(0)
+  lifetimePoints   Int                 @default(0)
+  storeCredit      Decimal             @default(0) @db.Decimal(10, 3)
+  tier             LoyaltyTier         @default(SILVER)
+  firstOrderBonusGiven Boolean         @default(false)
+  birthdayBonusYear Int?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  addresses        CustomerAddress[]
+  orders           Order[]
+  sessions         CustomerSession[]
+  loyaltyTxns      LoyaltyTxn[]
+  loyaltyPointLots LoyaltyPointLot[]
+  loyaltyRedemptionCodes LoyaltyRedemptionCode[]
+  giftCardTxns     GiftCardTxn[]
+  giftCardsOwned   GiftCard[]          @relation("GiftCardOwner")
+  giftCardsRedeemed GiftCard[]         @relation("GiftCardRedeemedBy")
+  walletTxns       CustomerWalletTxn[]
+  wishlist         WishlistItem[]
+  reviews          Review[]
+  rewards          RewardRedemption[]
+  promoCodes       PromoCode[]
+
+  @@index([email])
+  @@index([referralCode])
+}
+
+model CustomerSession {
+  id         String   @id @default(cuid())
+  token      String   @unique
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([token])
+  @@index([customerId])
+}
+
+model CustomerAddress {
+  id          String   @id @default(cuid())
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  label       String   @default("Home")
+  street      String
+  building    String   @default("")
+  block       String   @default("")
+  houseNumber String   @default("")
+  floor       String   @default("")
+  doorNumber  String   @default("")
+  area        String
+  city        String   @default("Kuwait City")
+  notes       String?
+  latitude    Float?
+  longitude   Float?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([customerId])
+}
+
+// =====================================================================
+// LOYALTY
+// =====================================================================
+
+model LoyaltySettings {
+  id                    String   @id @default("default")
+  enabled               Boolean  @default(true)
+  pointsExpiryDays      Int      @default(365)
+  silverEarnPercent     Decimal  @default(2) @db.Decimal(5, 2)
+  goldEarnPercent       Decimal  @default(2.5) @db.Decimal(5, 2)
+  platinumEarnPercent   Decimal  @default(3) @db.Decimal(5, 2)
+  redemptionPoints      Int      @default(100)
+  redemptionValueKwd    Decimal  @default(0.5) @db.Decimal(10, 3)
+  minPointsToRedeem     Int      @default(100)
+  firstOrderBonusPoints Int      @default(200)
+  birthdayBonusPoints   Int      @default(500)
+  referralBonusPoints   Int      @default(250)
+  silverThreshold       Int      @default(0)
+  goldThreshold         Int      @default(500)
+  platinumThreshold     Int      @default(2000)
+  updatedAt             DateTime @updatedAt
+}
+
+model LoyaltyTxn {
+  id          String         @id @default(cuid())
+  customerId  String
+  customer    Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  orderId     String?
+  order       Order?         @relation(fields: [orderId], references: [id])
+  type        LoyaltyTxnType
+  points      Int
+  reason      String         @default("")
+  expiresAt   DateTime?
+  createdAt   DateTime       @default(now())
+  lot         LoyaltyPointLot?
+
+  @@index([customerId])
+  @@index([orderId])
+  @@index([type])
+}
+
+model LoyaltyPointLot {
+  id              String     @id @default(cuid())
+  customerId      String
+  customer        Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  sourceTxnId     String     @unique
+  sourceTxn       LoyaltyTxn @relation(fields: [sourceTxnId], references: [id], onDelete: Cascade)
+  pointsInitial   Int
+  pointsRemaining Int
+  expiresAt       DateTime
+  createdAt       DateTime   @default(now())
+
+  @@index([customerId, expiresAt])
+}
+
+model LoyaltyRedemptionCode {
+  id              String                      @id @default(cuid())
+  code            String                      @unique
+  customerId      String
+  customer        Customer                    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  pointsRedeemed  Int
+  initialValueKwd Decimal                     @db.Decimal(10, 3)
+  balanceKwd      Decimal                     @db.Decimal(10, 3)
+  status          LoyaltyRedemptionCodeStatus @default(ACTIVE)
+  expiresAt       DateTime?
+  createdAt       DateTime                    @default(now())
+  updatedAt       DateTime                    @updatedAt
+  orders          Order[]                     @relation("OrderLoyaltyCode")
+
+  @@index([customerId])
+  @@index([code])
+  @@index([status])
+}
+
+// =====================================================================
+// GIFT CARDS
+// =====================================================================
+
+/// Admin-configured gift card designs sold on /gifts/buy
+model GiftCardProduct {
+  id            String              @id @default(cuid())
+  titleEn       String
+  titleAr       String              @default("")
+  descriptionEn String              @default("") @db.Text
+  descriptionAr String              @default("") @db.Text
+  image             String
+  price             Decimal             @db.Decimal(10, 3)
+  allowCustomAmount Boolean             @default(false)
+  presetAmounts     Decimal[]           @default([])
+  minCustomAmount   Decimal?            @db.Decimal(10, 3)
+  maxCustomAmount   Decimal?            @db.Decimal(10, 3)
+  enabled           Boolean             @default(true)
+  sortOrder         Int                 @default(0)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  orderLines    OrderGiftCardItem[]
+  giftCards     GiftCard[]
+  occasions     GiftOccasionGiftCard[]
+
+  @@index([enabled, sortOrder])
+}
+
+model OrderGiftCardItem {
+  id                  String           @id @default(cuid())
+  orderId             String
+  order               Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  giftCardProductId   String
+  giftCardProduct     GiftCardProduct  @relation(fields: [giftCardProductId], references: [id])
+  quantity            Int              @default(1)
+  unitPrice           Decimal          @db.Decimal(10, 3)
+  lineTotal           Decimal          @db.Decimal(10, 3)
+  recipientName       String?
+  recipientEmail      String?
+  cardMessage         String?
+  giftFulfillmentType FulfillmentType?
+  receiverPhone       String?
+  receiverAddress     String?          @db.Text
+  pickupBranch        String?
+  deliveryDate        DateTime?
+  deliveryTimeSlot    String?
+  deliveryNotes       String?          @db.Text
+  giftCardId          String?          @unique
+  giftCard            GiftCard?        @relation(fields: [giftCardId], references: [id])
+  createdAt           DateTime         @default(now())
+
+  @@index([orderId])
+  @@index([giftCardProductId])
+}
+
+model GiftCard {
+  id                    String             @id @default(cuid())
+  code                  String             @unique
+  initialValue          Decimal            @db.Decimal(10, 3)
+  balance               Decimal            @db.Decimal(10, 3)
+  status                GiftCardStatus     @default(PENDING)
+  recipientName         String?
+  recipientEmail        String?
+  recipientPhone        String?
+  ownerEmail            String?
+  ownerId               String?
+  owner                 Customer?          @relation("GiftCardOwner", fields: [ownerId], references: [id])
+  redeemedById          String?
+  redeemedBy            Customer?          @relation("GiftCardRedeemedBy", fields: [redeemedById], references: [id])
+  purchasedByCustomerId String?
+  message               String             @default("")
+  deliveryDate          DateTime?
+  giftCardProductId     String?
+  giftCardProduct       GiftCardProduct?   @relation(fields: [giftCardProductId], references: [id])
+  sourceOrderId         String?
+  expiresAt             DateTime?
+  activatedAt           DateTime?
+  redeemedAt            DateTime?
+  enabled               Boolean            @default(true)
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+  txns                  GiftCardTxn[]
+  redemptionOtps        GiftCardRedemptionOtp[]
+  orderLine             OrderGiftCardItem?
+
+  @@index([code])
+  @@index([giftCardProductId])
+  @@index([status])
+  @@index([recipientEmail])
+  @@index([recipientPhone])
+}
+
+model GiftCardRedemptionOtp {
+  id         String   @id @default(cuid())
+  giftCardId String
+  giftCard   GiftCard @relation(fields: [giftCardId], references: [id], onDelete: Cascade)
+  channel    String
+  target     String
+  code       String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([giftCardId])
+  @@index([target])
+}
+
+model CustomerWalletTxn {
+  id           String         @id @default(cuid())
+  customerId   String
+  customer     Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  type         WalletTxnType
+  amount       Decimal        @db.Decimal(10, 3)
+  balanceAfter Decimal        @db.Decimal(10, 3)
+  giftCardId   String?
+  orderId      String?
+  reason       String         @default("")
+  createdAt    DateTime       @default(now())
+
+  @@index([customerId])
+  @@index([orderId])
+}
+
+// =====================================================================
+// GIFT BASKETS
+// =====================================================================
+
+model GiftBasket {
+  id              String                @id @default(cuid())
+  slug            String                @unique
+  nameEn          String
+  nameAr          String                @default("")
+  descriptionEn   String                @default("") @db.Text
+  descriptionAr   String                @default("") @db.Text
+  image           String
+  pricingMode     GiftBasketPricingMode @default(AUTO)
+  manualPrice     Decimal?              @db.Decimal(10, 3)
+  visibility      GiftBasketVisibility  @default(DRAFT)
+  sortOrder       Int                   @default(0)
+  isFeatured      Boolean               @default(false)
+  isSeasonal      Boolean               @default(false)
+  isNew           Boolean               @default(false)
+  isBestSeller    Boolean               @default(false)
+  includeGiftWrap Boolean               @default(true)
+  showOnGiftsPage Boolean               @default(false)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  items           GiftBasketItem[]
+  orderLines      OrderGiftBasketItem[]
+  occasions       GiftOccasionBasket[]
+
+  @@index([visibility, sortOrder])
+}
+
+model GiftBasketItem {
+  id           String     @id @default(cuid())
+  giftBasketId String
+  giftBasket   GiftBasket @relation(fields: [giftBasketId], references: [id], onDelete: Cascade)
+  productId    String
+  product      Product    @relation(fields: [productId], references: [id])
+  quantity     Int        @default(1)
+  sortOrder    Int        @default(0)
+
+  @@unique([giftBasketId, productId])
+  @@index([giftBasketId])
+  @@index([productId])
+}
+
+model OrderGiftBasketItem {
+  id                  String           @id @default(cuid())
+  orderId             String
+  order               Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  giftBasketId        String
+  giftBasket          GiftBasket       @relation(fields: [giftBasketId], references: [id])
+  quantity            Int              @default(1)
+  unitPrice           Decimal          @db.Decimal(10, 3)
+  lineTotal           Decimal          @db.Decimal(10, 3)
+  recipientName       String?
+  cardMessage         String?
+  giftFulfillmentType FulfillmentType?
+  receiverPhone       String?
+  receiverAddress     String?          @db.Text
+  pickupBranch        String?
+  deliveryDate        DateTime?
+  deliveryTimeSlot    String?
+  deliveryNotes       String?          @db.Text
+  createdAt           DateTime         @default(now())
+
+  @@index([orderId])
+  @@index([giftBasketId])
+}
+
+// =====================================================================
+// GIFT OCCASIONS
+// =====================================================================
+
+model GiftOccasion {
+  id          String                 @id @default(cuid())
+  slug        String                 @unique
+  nameEn      String
+  nameAr      String                 @default("")
+  enabled     Boolean                @default(true)
+  sortOrder   Int                    @default(0)
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  giftBaskets GiftOccasionBasket[]
+  giftCards   GiftOccasionGiftCard[]
+
+  @@index([enabled, sortOrder])
+}
+
+model GiftOccasionBasket {
+  id           String       @id @default(cuid())
+  occasionId   String
+  occasion     GiftOccasion @relation(fields: [occasionId], references: [id], onDelete: Cascade)
+  giftBasketId String
+  giftBasket   GiftBasket   @relation(fields: [giftBasketId], references: [id], onDelete: Cascade)
+
+  @@unique([occasionId, giftBasketId])
+  @@index([occasionId])
+  @@index([giftBasketId])
+}
+
+model GiftOccasionGiftCard {
+  id                String          @id @default(cuid())
+  occasionId          String
+  occasion            GiftOccasion    @relation(fields: [occasionId], references: [id], onDelete: Cascade)
+  giftCardProductId String
+  giftCardProduct   GiftCardProduct @relation(fields: [giftCardProductId], references: [id], onDelete: Cascade)
+
+  @@unique([occasionId, giftCardProductId])
+  @@index([occasionId])
+  @@index([giftCardProductId])
+}
+
+model GiftCardTxn {
+  id          String          @id @default(cuid())
+  giftCardId  String
+  giftCard    GiftCard        @relation(fields: [giftCardId], references: [id], onDelete: Cascade)
+  customerId  String?
+  customer    Customer?       @relation(fields: [customerId], references: [id])
+  orderId     String?
+  order       Order?          @relation(fields: [orderId], references: [id])
+  type        GiftCardTxnType
+  amount      Decimal         @db.Decimal(10, 3)
+  reason      String          @default("")
+  createdAt   DateTime        @default(now())
+
+  @@index([giftCardId])
+  @@index([customerId])
+}
+
+// =====================================================================
+// REWARDS
+// =====================================================================
+
+model RewardRedemption {
+  id          String        @id @default(cuid())
+  customerId  String
+  customer    Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  rewardType  RewardType
+  trigger     RewardTrigger
+  pointsCost  Int           @default(0)
+  detail      String        @default("")
+  appliedToOrderId String?
+  createdAt   DateTime      @default(now())
+
+  @@index([customerId])
+}
+
+// =====================================================================
+// WISHLIST
+// =====================================================================
+
+model WishlistItem {
+  id          String   @id @default(cuid())
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([customerId, productId])
+  @@index([customerId])
+}
+
+// =====================================================================
+// REVIEWS
+// =====================================================================
+
+model Review {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  rating      Int
+  title       String   @default("")
+  body        String   @db.Text
+  approved    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([productId])
+  @@index([customerId])
+}
+
+// =====================================================================
+// CONTACT + NEWSLETTER
+// =====================================================================
+
+model ContactSubmission {
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  phone        String   @default("")
+  subject      String   @default("")
+  message      String   @db.Text
+  // Branch that serves the customer's selected area/pickup (null = no match).
+  branchId     String?
+  branch       Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  // Human-readable area from header picker, e.g. "Jabriya, Hawalli".
+  customerArea String   @default("")
+  handled      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@index([handled])
+  @@index([branchId])
+}
+
+model NewsletterSubscriber {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  locale    String    @default("en")
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  unsubscribedAt DateTime?
+
+  @@index([active])
+}
