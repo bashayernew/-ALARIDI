@@ -55,7 +55,7 @@ export type GiftBasketForm = {
   occasionIds: string[];
 };
 
-export const MAX_GIFTS_PAGE_BASKETS = 2;
+const MAX_GIFTS_PAGE_BASKETS = 2;
 
 // Enforce that at most MAX_GIFTS_PAGE_BASKETS baskets are featured on the Gifts page.
 async function assertGiftsPageLimit(enabled: boolean, excludeId?: string) {
