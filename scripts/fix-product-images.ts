@@ -6,7 +6,7 @@
  *
  *   npx tsx scripts/fix-product-images.ts   (or: npm run db:fix-product-images)
  */
-import { PrismaClient, ProductCategory } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 
@@ -32,19 +32,19 @@ function tokens(s: string): string[] {
     .filter((t) => t.length >= 3 && !STOP.has(t));
 }
 
-const CATEGORY_DEFAULT: Record<ProductCategory, string> = {
-  [ProductCategory.MUST_TRY]: "kunafa.jpg",
-  [ProductCategory.PROMO]: "mixedbaklawa.jpg",
-  [ProductCategory.KUNAFA]: "kunafa.jpg",
-  [ProductCategory.BAKERY]: "saj.jpg",
-  [ProductCategory.BAKLAVA]: "baklawa.jpg",
-  [ProductCategory.BASMAH]: "basmah_cashew.png",
-  [ProductCategory.MAAMOUL]: "maamoul.jpg",
-  [ProductCategory.GHRAYBE]: "kuwaiti ghrayba.png",
-  [ProductCategory.KASHTA_SWEETS]: "assorted.jpg",
-  [ProductCategory.ASSORTED_SWEETS]: "assorted.jpg",
-  [ProductCategory.DIET_SWEETS]: "assorted.jpg",
-  [ProductCategory.LEBANESE_MOONE]: "green_olives.png",
+const CATEGORY_DEFAULT: Record<string, string> = {
+  MUST_TRY: "kunafa.jpg",
+  PROMO: "mixedbaklawa.jpg",
+  KUNAFA: "kunafa.jpg",
+  BAKERY: "saj.jpg",
+  BAKLAVA: "baklawa.jpg",
+  BASMAH: "basmah_cashew.png",
+  MAAMOUL: "maamoul.jpg",
+  GHRAYBE: "kuwaiti ghrayba.png",
+  KASHTA_SWEETS: "assorted.jpg",
+  ASSORTED_SWEETS: "assorted.jpg",
+  DIET_SWEETS: "assorted.jpg",
+  LEBANESE_MOONE: "green_olives.png",
 };
 
 async function main() {

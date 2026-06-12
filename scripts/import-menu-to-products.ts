@@ -6,17 +6,17 @@
  *
  *   npx tsx scripts/import-menu-to-products.ts   (or: npm run db:import-menu-products)
  */
-import { PrismaClient, ProductCategory } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { MENU_SECTIONS } from "../lib/menu-data";
 import { MENU_PRODUCT_AR } from "../lib/menu-product-ar";
 import { CATEGORY_SECTION_SLUG } from "../lib/categories";
 
 const prisma = new PrismaClient();
 
-// Reverse the category → slug map to get slug → ProductCategory.
+// Reverse the category → slug map to get slug → category key.
 const SLUG_TO_CATEGORY = Object.fromEntries(
   Object.entries(CATEGORY_SECTION_SLUG).map(([cat, slug]) => [slug, cat])
-) as Record<string, ProductCategory>;
+) as Record<string, string>;
 
 async function main() {
   let created = 0;
