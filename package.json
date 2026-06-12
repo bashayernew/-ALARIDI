@@ -18,6 +18,7 @@
     "db:seed-delivery-areas": "npx tsx scripts/seed-delivery-areas.ts",
     "db:restore-gift-cards": "npx tsx scripts/restore-gift-cards.ts",
     "db:import-menu-products": "npx tsx scripts/import-menu-to-products.ts",
+    "db:set-gift-cards": "npx tsx scripts/set-gift-card-designs.ts",
     "db:fix-product-images": "npx tsx scripts/fix-product-images.ts",
     "db:assign-orders-branch": "npx tsx scripts/assign-orders-branch.ts",
     "db:studio": "prisma studio"

@@ -416,52 +416,22 @@ async function main() {
     },
   });
 
+  // Branded gift card designs — one per denomination (image under /public).
   await prisma.giftCardProduct.createMany({
-    data: [
-      {
-        titleEn: "Classic Gold Gift Card",
-        titleAr: "بطاقة ذهبية كلاسيكية",
-        descriptionEn:
-          "Our signature gold design — perfect for any sweet occasion.",
-        descriptionAr: "تصميمنا الذهبي المميز — مثالي لكل مناسبة.",
-        image: "/assorted.jpg",
-        price: 10,
-        presetAmounts: [10, 25, 50],
-        allowCustomAmount: true,
-        minCustomAmount: 5,
-        maxCustomAmount: 500,
-        sortOrder: 0,
-        enabled: true,
-      },
-      {
-        titleEn: "Royal Eid Gift Card",
-        titleAr: "بطاقة عيد ملكية",
-        descriptionEn: "Celebrate Eid with a premium gift they can redeem anytime.",
-        descriptionAr: "احتفل بالعيد بهدية فاخرة يستبدلونها في أي وقت.",
-        image: "/baklawa.jpg",
-        price: 25,
-        presetAmounts: [10, 25, 50],
-        allowCustomAmount: true,
-        minCustomAmount: 5,
-        maxCustomAmount: 500,
-        sortOrder: 1,
-        enabled: true,
-      },
-      {
-        titleEn: "Corporate Premium Card",
-        titleAr: "بطاقة شركات فاخرة",
-        descriptionEn: "Elegant tray motif for teams, clients, and partners.",
-        descriptionAr: "تصميم أنيق للفرق والعملاء والشركاء.",
-        image: "/mixedbaklawa.jpg",
-        price: 50,
-        presetAmounts: [10, 25, 50],
-        allowCustomAmount: true,
-        minCustomAmount: 5,
-        maxCustomAmount: 500,
-        sortOrder: 2,
-        enabled: true,
-      },
-    ],
+    data: [5, 10, 15, 20, 25, 30].map((amt, i) => ({
+      titleEn: `Al Aridi Gift Card — ${amt} KD`,
+      titleAr: `بطاقة هدايا العريضي — ${amt} د.ك`,
+      descriptionEn: `A ${amt} KD Al Aridi Sweets gift card — redeemable on any order.`,
+      descriptionAr: `بطاقة هدايا حلويات العريضي بقيمة ${amt} د.ك — قابلة للاستخدام على أي طلب.`,
+      image: `/${amt}card.jpeg`,
+      price: amt,
+      presetAmounts: [amt],
+      allowCustomAmount: false,
+      minCustomAmount: amt,
+      maxCustomAmount: amt,
+      sortOrder: i,
+      enabled: true,
+    })),
   });
 
   const basketRows = await prisma.giftBasket.findMany({
@@ -495,7 +465,7 @@ async function main() {
         ],
       },
       giftCards: {
-        create: [{ giftCardProductId: cardId("Royal Eid Gift Card") }],
+        create: [{ giftCardProductId: cardId("Al Aridi Gift Card — 25 KD") }],
       },
     },
   });
@@ -511,7 +481,7 @@ async function main() {
         create: [{ giftBasketId: basketId("royal-baklava-kunafa-basket") }],
       },
       giftCards: {
-        create: [{ giftCardProductId: cardId("Classic Gold Gift Card") }],
+        create: [{ giftCardProductId: cardId("Al Aridi Gift Card — 10 KD") }],
       },
     },
   });
@@ -527,7 +497,7 @@ async function main() {
         create: [{ giftBasketId: basketId("sweet-starter-box") }],
       },
       giftCards: {
-        create: [{ giftCardProductId: cardId("Classic Gold Gift Card") }],
+        create: [{ giftCardProductId: cardId("Al Aridi Gift Card — 10 KD") }],
       },
     },
   });
@@ -543,7 +513,7 @@ async function main() {
         create: [{ giftBasketId: basketId("royal-baklava-kunafa-basket") }],
       },
       giftCards: {
-        create: [{ giftCardProductId: cardId("Corporate Premium Card") }],
+        create: [{ giftCardProductId: cardId("Al Aridi Gift Card — 30 KD") }],
       },
     },
   });
