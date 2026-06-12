@@ -385,6 +385,14 @@ export function CheckoutForm({
       return;
     }
 
+    // Loyalty wallet codes are formatted "LR-...". Anything else is a promo, so
+    // surface the real promo error instead of masking it with a loyalty message.
+    if (!/^LR-/i.test(promoInput.trim())) {
+      setPromoChecking(false);
+      toast.error(t(`checkout.promo.error.${promoRes.code}` as const));
+      return;
+    }
+
     const loyaltyRes = await validateLoyaltyCodeAtCheckout({
       code: promoInput.trim(),
       orderTotalKwd: orderTotalBeforeCode,

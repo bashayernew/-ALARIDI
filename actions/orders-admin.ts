@@ -7,7 +7,6 @@ import { isAdminSession } from "@/actions/admin-auth";
 import { getAdminSession } from "@/lib/admin-session";
 import { listBranches } from "@/lib/admin-branch";
 import { assertAdminCanAccessOrder } from "@/lib/order-branch";
-import { isGatewayPaymentMethod } from "@/lib/payment-method";
 import {
   activateGiftCardsForOrder,
   disableGiftCardAdmin,
@@ -32,23 +31,10 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
     const branches = await listBranches();
     await assertAdminCanAccessOrder(existing.branchId, session, branches);
 
-    // Online (gateway) orders are marked PAID by the payment gateway, not by an
-    // admin. While such an order is unpaid (PENDING) it can only stay pending or
-    // be cancelled — an admin can't hand-mark it paid or push it into
-    // fulfillment. Cash orders keep full manual control. (When the gateway
-    // integration goes live it will set PAID via its own confirmation handler,
-    // reusing the loyalty/gift-card activation below.)
-    if (
-      isGatewayPaymentMethod(existing.paymentMethod) &&
-      existing.status === OrderStatus.PENDING &&
-      status !== OrderStatus.PENDING &&
-      status !== OrderStatus.CANCELLED
-    ) {
-      throw new Error(
-        "This online order can't proceed until the payment gateway confirms payment."
-      );
-    }
-
+    // Payments are handled manually until a payment gateway is integrated, so an
+    // admin can move an order through any status. Marking it PAID still triggers
+    // the loyalty / gift-card activation below. (When a gateway goes live it can
+    // set PAID via its own confirmation handler, reusing the same activation.)
     await tx.order.update({
       where: { id: orderId },
       data: { status },

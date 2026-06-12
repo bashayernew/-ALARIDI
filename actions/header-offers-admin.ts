@@ -5,6 +5,7 @@ import { mkdir, writeFile } from "fs/promises";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { isAdminSession } from "@/actions/admin-auth";
+import { saveUploadedImage } from "@/lib/upload-image";
 import type { HeaderOfferPlacement } from "@prisma/client";
 
 async function requireAdmin() {
@@ -19,13 +20,7 @@ export async function uploadHeaderOfferImage(
   if (!(file instanceof File) || file.size === 0) {
     throw new Error("No file uploaded");
   }
-  const buf = Buffer.from(await file.arrayBuffer());
-  const ext = path.extname(file.name) || ".jpg";
-  const name = `offer-${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;
-  const dir = path.join(process.cwd(), "public", "uploads");
-  await mkdir(dir, { recursive: true });
-  await writeFile(path.join(dir, name), buf);
-  return `/uploads/${name}`;
+  return saveUploadedImage(file, "offer-");
 }
 
 function parseOptionalDate(v: string | null | undefined): Date | null {

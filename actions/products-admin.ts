@@ -6,6 +6,7 @@ import path from "path";
 import { type Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { isAdminSession } from "@/actions/admin-auth";
+import { saveUploadedImage } from "@/lib/upload-image";
 
 async function requireAdmin() {
   if (!(await isAdminSession())) throw new Error("Unauthorized");
@@ -17,14 +18,7 @@ export async function uploadProductImage(formData: FormData): Promise<string> {
   if (!(file instanceof File) || file.size === 0) {
     throw new Error("No file uploaded");
   }
-  const buf = Buffer.from(await file.arrayBuffer());
-  const ext = path.extname(file.name) || ".jpg";
-  const name = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;
-  const dir = path.join(process.cwd(), "public", "uploads");
-  await mkdir(dir, { recursive: true });
-  const full = path.join(dir, name);
-  await writeFile(full, buf);
-  return `/uploads/${name}`;
+  return saveUploadedImage(file);
 }
 
 export type ProductForm = {

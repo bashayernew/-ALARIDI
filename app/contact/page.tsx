@@ -5,6 +5,8 @@ import { translate, type TranslationKey } from "@/lib/dictionary";
 import { ContactForm } from "@/components/contact-form";
 import { fetchSiteContentMap } from "@/lib/site-content";
 import { mergeSocialUrlsFromContent } from "@/lib/site-content-types";
+import { resolveStorefrontBranchId } from "@/lib/order-branch";
+import { resolveStorefrontWhatsappUrl } from "@/lib/branch-whatsapp";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -22,9 +24,14 @@ export default async function ContactPage() {
   const locale = await getLocale();
   const t = (k: TranslationKey) => translate(locale, k);
 
-  // WhatsApp number is managed in the admin dashboard (Site copy → WhatsApp).
+  // WhatsApp number: the customer's branch number when set, else the global
+  // one (Site copy → WhatsApp). Managed per branch under admin → Branch WhatsApp.
   const socialUrls = mergeSocialUrlsFromContent(await fetchSiteContentMap());
-  const whatsappUrl = socialUrls.whatsapp;
+  const branchId = await resolveStorefrontBranchId();
+  const whatsappUrl = await resolveStorefrontWhatsappUrl(
+    branchId,
+    socialUrls.whatsapp
+  );
   const whatsappNumber = whatsappUrl.match(/(\d{6,})/)?.[1] ?? "";
 
   return (

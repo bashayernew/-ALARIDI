@@ -24,6 +24,7 @@ const BASE_LINKS: { href: string; labelKey: TranslationKey }[] = [
   { href: "/admin/loyalty", labelKey: "admin.nav.loyalty" },
   { href: "/admin/banners", labelKey: "admin.nav.banners" },
   { href: "/admin/header-offers", labelKey: "admin.nav.headerOffers" },
+  { href: "/admin/branch-whatsapp", labelKey: "admin.nav.branchWhatsapp" },
   { href: "/admin/users", labelKey: "admin.nav.users" },
   { href: "/admin/contact", labelKey: "admin.nav.contact" },
 ];

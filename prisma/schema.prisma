@@ -258,6 +258,9 @@ model Branch {
   area      String   @default("")
   active    Boolean  @default(true)
   sortOrder Int      @default(0)
+  // Per-branch WhatsApp number (digits only, e.g. 9655xxxxxxx). When set, the
+  // storefront routes WhatsApp links for this branch's customers here.
+  whatsappNumber String @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

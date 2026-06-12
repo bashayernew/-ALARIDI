@@ -1,7 +1,6 @@
 "use client";
 
 import { FulfillmentType, OrderStatus, PaymentMethod } from "@prisma/client";
-import { isGatewayPaymentMethod } from "@/lib/payment-method";
 import {
   Select,
   SelectContent,
@@ -50,24 +49,11 @@ export function OrderRow({ locale, order }: Props) {
   const total = order.total;
   const t = (key: TranslationKey) => translate(locale, key);
 
-  // Online (gateway) orders are marked PAID by the payment gateway, not the
-  // admin. While such an order is still unpaid (PENDING) the admin may only
-  // leave it pending or cancel it — it can't be hand-marked paid or pushed into
-  // fulfillment. Cash orders keep full manual control of every status.
-  const isGateway = isGatewayPaymentMethod(order.paymentMethod);
-  const gatewayUnpaid = isGateway && order.status === OrderStatus.PENDING;
-
-  const statusOptions = STATUS_ORDER.filter((s) => {
-    if (gatewayUnpaid) {
-      return s === OrderStatus.PENDING || s === OrderStatus.CANCELLED;
-    }
-    if (s === OrderStatus.PAID) {
-      // "Paid" is a manual choice only for cash orders. For gateway orders it
-      // is shown only to display the already-paid current value.
-      return !isGateway || order.status === OrderStatus.PAID;
-    }
-    return true;
-  });
+  // Payments are handled manually until a payment gateway is integrated, so the
+  // admin keeps full manual control over every order status (Pending → Paid →
+  // Preparing → Out for delivery → Delivered, or Cancelled). Once a gateway is
+  // wired up, gateway orders can again be auto-marked Paid.
+  const statusOptions = STATUS_ORDER;
 
   async function onChange(v: string | null) {
     if (!v) return;
