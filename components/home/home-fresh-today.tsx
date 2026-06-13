@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { ProductImage } from "@/components/ui/product-image";
 import type { ProductDTO } from "@/types";
 import { formatKwd } from "@/lib/format";
 import { HomeQuickAddButton } from "@/components/home/home-quick-add-button";
@@ -58,7 +58,7 @@ export function HomeFreshToday({ products }: Props) {
                 className="w-[min(240px,78vw)] shrink-0 overflow-hidden rounded-2xl border border-border/50 bg-card/50 shadow-md"
               >
                 <div className="relative aspect-square bg-muted">
-                  <Image
+                  <ProductImage
                     src={p.image}
                     alt={d.name}
                     fill

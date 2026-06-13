@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { Gift, Heart, Sparkles } from "lucide-react";
+import { ProductImage } from "@/components/ui/product-image";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { ProductDTO } from "@/types";
@@ -175,11 +175,12 @@ export function HomeSections({
                 className="surface-card lift hover:lift-hover group flex flex-row-reverse gap-4 overflow-hidden rounded-3xl p-4"
               >
                 <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-2xl bg-muted">
-                  <Image
+                  <ProductImage
                     src={p.image}
                     alt={d.name}
                     fill
                     className="object-cover transition duration-500 group-hover:scale-105"
+                    fallbackTextClassName="text-xs"
                   />
                 </div>
                 <div className="min-w-0 flex-1">

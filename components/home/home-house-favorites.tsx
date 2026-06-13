@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { ProductImage } from "@/components/ui/product-image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -80,12 +80,13 @@ export function HomeHouseFavorites({ items }: Props) {
               className="group flex flex-col overflow-hidden rounded-3xl border border-border/55 bg-card/45 shadow-[0_18px_50px_-28px_rgba(0,0,0,0.85)] transition-shadow duration-300 hover:border-primary/25 hover:shadow-[0_28px_70px_-24px_rgba(201,169,110,0.18)]"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <Image
+                <ProductImage
                   src={product.image}
-                  alt={d.name}
+                  alt={translatedCardTitle(cardTitle, t)}
                   fill
                   className="object-cover transition duration-700 group-hover:scale-105"
                   sizes="(max-width:1024px)50vw,25vw"
+                  fallbackTextClassName="text-base"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
                 <Badge className="absolute start-3 top-3 border border-primary/35 bg-primary/90 text-[10px] font-semibold uppercase tracking-wide text-primary-foreground shadow-md">

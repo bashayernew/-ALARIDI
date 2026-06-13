@@ -201,8 +201,11 @@ function EditProductDialog({
       toast.success(t("admin.products.toast.updated"));
       setOpen(false);
       router.refresh();
-    } catch {
-      toast.error(t("admin.products.error.update"));
+    } catch (err) {
+      console.error(err);
+      toast.error(t("admin.products.error.update"), {
+        description: err instanceof Error ? err.message : undefined,
+      });
     }
     setBusy(false);
   }
@@ -585,7 +588,9 @@ export function ProductsAdmin({ products, categories, dbOffline }: Props) {
       setIsNew(false);
     } catch (err) {
       console.error(err);
-      toast.error(t("admin.products.error.create"));
+      toast.error(t("admin.products.error.create"), {
+        description: err instanceof Error ? err.message : undefined,
+      });
     }
     setBusy(false);
   }

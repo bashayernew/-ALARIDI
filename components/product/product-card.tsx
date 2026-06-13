@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ProductImage } from "@/components/ui/product-image";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -55,12 +55,13 @@ export function ProductCard({ product, rank, onOpen }: Props) {
         href={`/product/${product.slug}`}
         className="relative h-28 w-28 shrink-0 overflow-hidden rounded-xl bg-muted sm:h-32 sm:w-32"
       >
-        <Image
+        <ProductImage
           src={product.image}
           alt={product.name}
           fill
           className="object-cover transition duration-500 group-hover:scale-105"
           sizes="(max-width:640px)112px,128px"
+          fallbackTextClassName="text-xs"
         />
       </Link>
       <div className="flex min-w-0 flex-1 flex-col">
