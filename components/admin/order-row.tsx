@@ -153,11 +153,6 @@ export function OrderRow({ locale, order }: Props) {
             ))}
           </SelectContent>
         </Select>
-        {gatewayUnpaid ? (
-          <p className="mt-1 max-w-[160px] text-[11px] leading-snug text-muted-foreground">
-            {t("admin.orderRow.awaitingOnlinePayment")}
-          </p>
-        ) : null}
       </td>
     </tr>
   );

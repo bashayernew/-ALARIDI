@@ -16,12 +16,18 @@ export async function resolveStorefrontWhatsappUrl(
   fallbackUrl: string
 ): Promise<string> {
   if (!branchId) return fallbackUrl;
-  const branch = await dbQuery(null, () =>
-    prisma.branch.findUnique({
-      where: { id: branchId },
-      select: { whatsappNumber: true },
-    })
-  );
-  const num = whatsappDigits(branch?.whatsappNumber ?? "");
-  return num ? `https://wa.me/${num}` : fallbackUrl;
+  try {
+    // Guard against an un-migrated DB where whatsappNumber doesn't exist yet.
+    const branch = await dbQuery(null, () =>
+      prisma.branch.findUnique({
+        where: { id: branchId },
+        select: { whatsappNumber: true },
+      })
+    );
+    const num = whatsappDigits(branch?.whatsappNumber ?? "");
+    return num ? `https://wa.me/${num}` : fallbackUrl;
+  } catch {
+    // Never let a WhatsApp lookup take down the page that calls this.
+    return fallbackUrl;
+  }
 }
