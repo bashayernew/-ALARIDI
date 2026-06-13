@@ -161,7 +161,7 @@ export function MenuFullPage({
           ))}
         </HorizontalScrollHints>
         </div>
-        <div className="mx-auto grid max-w-6xl gap-2 px-4 pb-3 sm:grid-cols-4 sm:px-6">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-3 gap-y-2 px-4 pb-3 sm:grid-cols-4 sm:px-6">
           <label className="text-xs text-muted-foreground">
             {t("menu.filter.maxPrice")}
             <input
@@ -190,7 +190,7 @@ export function MenuFullPage({
               </option>
             </select>
           </label>
-          <label className="text-xs text-muted-foreground sm:col-span-2">
+          <label className="col-span-2 text-xs text-muted-foreground">
             {t("menu.filter.sort")}
             <select
               value={sortBy}

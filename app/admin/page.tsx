@@ -169,33 +169,14 @@ export default async function AdminDashboardPage({
         </Button>
       </form>
 
-      <div className="mt-8 overflow-x-auto rounded-2xl border border-border bg-card/40">
-        <table className="w-full min-w-[960px] border-collapse text-start">
-          <thead className="border-b border-border bg-muted/30 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            <tr>
-              <th className="whitespace-nowrap px-4 py-3 text-start">{t("admin.dashboard.th.id")}</th>
-              <th className="whitespace-nowrap px-4 py-3 text-start">{t("admin.orders.th.type")}</th>
-              <th className="whitespace-nowrap px-4 py-3 text-start">{t("admin.dashboard.th.customer")}</th>
-              <th className="whitespace-nowrap px-4 py-3 text-start">{t("admin.orders.th.address")}</th>
-              <th className="whitespace-nowrap px-4 py-3 text-start">{t("admin.orders.th.items")}</th>
-              <th className="whitespace-nowrap px-4 py-3 text-start">{t("admin.dashboard.th.total")}</th>
-              <th className="whitespace-nowrap px-4 py-3 text-start">{t("admin.dashboard.th.created")}</th>
-              <th className="whitespace-nowrap px-4 py-3 text-start">{t("admin.dashboard.th.status")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={8}
-                  className="px-4 py-10 text-center text-muted-foreground"
-                >
-                  {dbOffline
-                    ? t("admin.dashboard.ordersLoad")
-                    : t("admin.dashboard.noOrders")}
-                </td>
-              </tr>
-            ) : (
+      <div className="mt-8 space-y-3">
+        {filtered.length === 0 ? (
+          <div className="rounded-2xl border border-border bg-card/40 px-4 py-10 text-center text-muted-foreground">
+            {dbOffline
+              ? t("admin.dashboard.ordersLoad")
+              : t("admin.dashboard.noOrders")}
+          </div>
+        ) : (
               filtered.map((o) => (
                 <OrderRow
                   key={o.id}
@@ -275,9 +256,7 @@ export default async function AdminDashboardPage({
                   }}
                 />
               ))
-            )}
-          </tbody>
-        </table>
+        )}
       </div>
     </div>
   );

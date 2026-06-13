@@ -18,7 +18,16 @@ export async function saveUploadedImage(
     .toString(36)
     .slice(2)}${ext}`;
 
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  // Use Vercel Blob in production. On Vercel the filesystem is read-only, and a
+  // connected Blob store authenticates the SDK automatically (via
+  // BLOB_READ_WRITE_TOKEN on older stores, or BLOB_STORE_ID + platform OIDC on
+  // newer ones). Only fall back to local disk in dev.
+  const useBlob =
+    Boolean(process.env.VERCEL) ||
+    Boolean(process.env.BLOB_READ_WRITE_TOKEN) ||
+    Boolean(process.env.BLOB_STORE_ID);
+
+  if (useBlob) {
     const blob = await put(`uploads/${name}`, file, {
       access: "public",
       contentType: file.type || undefined,

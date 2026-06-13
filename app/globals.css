@@ -134,9 +134,13 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     font-feature-settings: "cv11", "ss01";
+    /* Never let the page scroll sideways on mobile. `clip` (not hidden) keeps
+       the sticky header working. */
+    overflow-x: clip;
   }
   html {
     @apply font-sans;
+    overflow-x: clip;
   }
   .font-heading {
     letter-spacing: -0.015em;

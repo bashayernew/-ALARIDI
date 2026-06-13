@@ -76,9 +76,9 @@ export function SiteHeader({
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
       {/* Top row: search · logo · account/cart */}
-      <div className="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 py-3 sm:py-4 md:px-6">
+      <div className="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 py-3 sm:gap-3 sm:px-4 sm:py-4 md:px-6">
         {/* Left: search */}
-        <div className="flex items-center justify-start gap-1">
+        <div className="flex min-w-0 items-center justify-start gap-1">
           <StorefrontAreaPicker
             selected={selectedArea}
             areaLabel={areaLabel}
@@ -113,7 +113,7 @@ export function SiteHeader({
         </Link>
 
         {/* Right: account + cart */}
-        <div className="flex items-center justify-end gap-1 sm:gap-2">
+        <div className="flex min-w-0 items-center justify-end gap-0.5 sm:gap-2">
           <ThemeToggle />
           <div className="hidden lg:block">
             <LanguageToggle />
@@ -162,7 +162,7 @@ export function SiteHeader({
 
       {/* Bottom row: centered nav */}
       <div className="border-t border-border/40">
-        <nav className="scrollbar-none mx-auto flex max-w-6xl items-center justify-center gap-1 overflow-x-auto px-4 py-2 sm:gap-2 md:px-6">
+        <nav className="scrollbar-none mx-auto flex max-w-6xl items-center justify-start gap-1 overflow-x-auto px-4 py-2 sm:justify-center sm:gap-2 md:px-6">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}

@@ -66,94 +66,135 @@ export function OrderRow({ locale, order }: Props) {
   }
 
   const account = Boolean(order.customerUserId);
+  const deliveries = order.items.filter((i) => i.deliverySummary);
 
   return (
-    <tr className="border-b border-border text-sm transition-colors hover:bg-muted/20">
-      <td className="px-4 py-3 align-top font-mono text-xs text-muted-foreground">
-        {order.id.slice(0, 8)}…
-      </td>
-      <td className="px-4 py-3 align-top">
-        <span
-          className={
-            account
-              ? "inline-block whitespace-nowrap rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[11px] text-emerald-600 dark:text-emerald-300"
-              : "inline-block whitespace-nowrap rounded-md bg-muted/30 px-1.5 py-0.5 text-[11px] text-muted-foreground"
-          }
-        >
-          {account ? t("admin.orders.accountOrder") : t("admin.orders.guestOrder")}
-        </span>
-      </td>
-      <td className="px-4 py-3 align-top">
-        <div className="font-medium text-foreground">{order.customerName}</div>
-        <div className="whitespace-nowrap text-xs text-muted-foreground">
-          {order.phone}
-        </div>
-      </td>
-      <td className="min-w-[200px] max-w-[280px] px-4 py-3 align-top text-xs text-muted-foreground">
-        {order.fulfillmentType === FulfillmentType.PICKUP &&
-        order.pickupBranchName ? (
-          <div className="mb-1 font-medium text-foreground">
-            {t("admin.orders.pickupBranch")}: {order.pickupBranchName}
+    <div className="rounded-2xl border border-border bg-card/50 p-4 shadow-sm transition-colors hover:bg-muted/10 sm:p-5">
+      {/* Header: id + type + date, with the status control on the right */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 space-y-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-mono text-xs text-muted-foreground">
+              #{order.id.slice(0, 8)}
+            </span>
+            <span
+              className={
+                account
+                  ? "rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[11px] text-emerald-600 dark:text-emerald-300"
+                  : "rounded-md bg-muted/40 px-1.5 py-0.5 text-[11px] text-muted-foreground"
+              }
+            >
+              {account
+                ? t("admin.orders.accountOrder")
+                : t("admin.orders.guestOrder")}
+            </span>
           </div>
-        ) : null}
-        <span className="block whitespace-pre-wrap break-words">
-          {order.address}
-        </span>
-        {order.latitude != null && order.longitude != null ? (
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${order.latitude},${order.longitude}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline"
-          >
-            <MapPin className="size-3" />
-            {t("admin.orders.viewOnMap")}
-          </a>
-        ) : null}
-      </td>
-      <td className="max-w-[280px] px-4 py-3 align-top text-xs text-muted-foreground">
+          <p className="text-[11px] text-muted-foreground">
+            {new Date(order.createdAt).toLocaleString()}
+          </p>
+        </div>
+        <div className="shrink-0">
+          <Select value={order.status} onValueChange={onChange}>
+            <SelectTrigger
+              size="sm"
+              className="w-[150px] border-border bg-card text-foreground"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {statusOptions.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {t(orderStatusLabelKey(s, order.fulfillmentType))}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Customer + address + total */}
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_1.4fr_auto]">
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {t("admin.dashboard.th.customer")}
+          </p>
+          <p className="mt-0.5 truncate font-medium text-foreground">
+            {order.customerName}
+          </p>
+          <p className="text-xs text-muted-foreground">{order.phone}</p>
+        </div>
+
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {t("admin.orders.th.address")}
+          </p>
+          {order.fulfillmentType === FulfillmentType.PICKUP &&
+          order.pickupBranchName ? (
+            <p className="mt-0.5 text-xs font-medium text-foreground">
+              {t("admin.orders.pickupBranch")}: {order.pickupBranchName}
+            </p>
+          ) : null}
+          <p className="mt-0.5 whitespace-pre-wrap break-words text-xs text-muted-foreground">
+            {order.address}
+          </p>
+          {order.latitude != null && order.longitude != null ? (
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${order.latitude},${order.longitude}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline"
+            >
+              <MapPin className="size-3" />
+              {t("admin.orders.viewOnMap")}
+            </a>
+          ) : null}
+        </div>
+
+        <div className="sm:text-end">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {t("admin.dashboard.th.total")}
+          </p>
+          <p className="mt-0.5 text-lg font-semibold tabular-nums text-foreground">
+            {formatKwd(total)}
+          </p>
+        </div>
+      </div>
+
+      {/* Items — compact wrapping chips instead of a tall stacked column */}
+      <div className="mt-4 border-t border-border/60 pt-3">
+        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {t("admin.orders.th.items")}
+        </p>
         {order.items.length ? (
-          <div className="space-y-2">
+          <div className="flex flex-wrap gap-1.5">
             {order.items.map((item, idx) => (
-              <div key={`${item.name}-${idx}`}>
-                <p>
-                  {item.quantity}× {item.name}
-                </p>
-                {item.deliverySummary ? (
-                  <p className="mt-0.5 text-[11px] leading-snug text-primary/80">
-                    {item.deliverySummary}
-                  </p>
-                ) : null}
-              </div>
+              <span
+                key={`${item.name}-${idx}`}
+                className="inline-flex items-center rounded-md bg-muted/40 px-2 py-0.5 text-xs text-foreground"
+              >
+                <span className="tabular-nums text-muted-foreground">
+                  {item.quantity}×
+                </span>
+                <span className="ms-1">{item.name}</span>
+              </span>
             ))}
           </div>
         ) : (
-          "—"
+          <span className="text-xs text-muted-foreground">—</span>
         )}
-      </td>
-      <td className="whitespace-nowrap px-4 py-3 align-top tabular-nums font-medium text-foreground">
-        {formatKwd(total)}
-      </td>
-      <td className="whitespace-nowrap px-4 py-3 align-top text-xs text-muted-foreground">
-        {new Date(order.createdAt).toLocaleString()}
-      </td>
-      <td className="px-4 py-3 align-top">
-        <Select value={order.status} onValueChange={onChange}>
-          <SelectTrigger
-            size="sm"
-            className="w-[160px] border-border bg-card text-foreground"
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {statusOptions.map((s) => (
-              <SelectItem key={s} value={s}>
-                {t(orderStatusLabelKey(s, order.fulfillmentType))}
-              </SelectItem>
+        {deliveries.length ? (
+          <div className="mt-2 space-y-0.5">
+            {deliveries.map((item, idx) => (
+              <p
+                key={`d-${idx}`}
+                className="text-[11px] leading-snug text-primary/80"
+              >
+                {item.name}: {item.deliverySummary}
+              </p>
             ))}
-          </SelectContent>
-        </Select>
-      </td>
-    </tr>
+          </div>
+        ) : null}
+      </div>
+    </div>
   );
 }

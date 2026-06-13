@@ -99,7 +99,7 @@ export function StorefrontAreaPicker({
         variant="ghost"
         size="sm"
         className={cn(
-          "max-w-[200px] gap-1.5 truncate px-2 text-muted-foreground hover:text-foreground sm:max-w-[240px]",
+          "max-w-[120px] gap-1.5 truncate px-1.5 text-muted-foreground hover:text-foreground sm:max-w-[240px] sm:px-2",
           className
         )}
         onClick={() => setOpen(true)}
@@ -109,7 +109,7 @@ export function StorefrontAreaPicker({
         <span className="truncate text-xs sm:text-sm">
           {selected ? (
             <>
-              <span className="text-muted-foreground">
+              <span className="hidden text-muted-foreground sm:inline">
                 {t("area.picker.deliverTo")}{" "}
               </span>
               {label}
