@@ -38,14 +38,14 @@ export function HomeHouseFavorites({ items }: Props) {
   const { t, locale, dir } = useI18n();
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+    <section className="mx-auto max-w-6xl overflow-x-clip px-4 py-12 sm:px-6 sm:py-16 md:py-24">
       <HomeFadeUp>
         <div className="mb-10 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
               {t("home.favorites.kicker")}
             </p>
-            <h2 className="mt-2 font-heading text-3xl sm:text-4xl">
+            <h2 className="mt-2 font-heading text-3xl leading-[1.08] sm:text-4xl lg:text-5xl">
               {t("home.favorites.title")}
             </h2>
             <p className="mt-2 max-w-lg text-sm text-muted-foreground">
@@ -62,9 +62,11 @@ export function HomeHouseFavorites({ items }: Props) {
         </div>
       </HomeFadeUp>
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
         {items.map(({ product, cardTitle }, i) => {
           const d = displayDbProduct(product, locale);
+          const hasDiscount =
+            product.oldPrice != null && product.oldPrice > product.price;
           return (
             <motion.article
               key={product.id}
@@ -76,35 +78,51 @@ export function HomeHouseFavorites({ items }: Props) {
                 delay: i * 0.07,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              whileHover={{ y: -4, scale: 1.02 }}
-              className="group flex flex-col overflow-hidden rounded-3xl border border-border/55 bg-card/45 shadow-[0_18px_50px_-28px_rgba(0,0,0,0.85)] transition-shadow duration-300 hover:border-primary/25 hover:shadow-[0_28px_70px_-24px_rgba(201,169,110,0.18)]"
+              whileHover={{ y: -5 }}
+              className="group flex flex-col overflow-hidden rounded-3xl border border-border/40 bg-card/30 text-center backdrop-blur-sm transition-colors duration-300 hover:border-primary/30 hover:bg-card/55"
             >
-              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+              <div className="relative aspect-[4/3] overflow-hidden bg-muted/40">
                 <ProductImage
                   src={product.image}
                   alt={translatedCardTitle(cardTitle, t)}
                   fill
-                  className="object-cover transition duration-700 group-hover:scale-105"
+                  className="object-cover transition duration-700 group-hover:scale-110"
                   sizes="(max-width:1024px)50vw,25vw"
                   fallbackTextClassName="text-base"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
                 <Badge className="absolute start-3 top-3 border border-primary/35 bg-primary/90 text-[10px] font-semibold uppercase tracking-wide text-primary-foreground shadow-md">
                   {t("home.favorites.badge")}
                 </Badge>
+                {hasDiscount && (
+                  <span className="absolute end-3 top-3 inline-flex items-center rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-md">
+                    Sale
+                  </span>
+                )}
               </div>
-              <div className="flex flex-1 flex-col p-4 sm:p-5">
-                <h3 className="font-heading text-lg leading-snug sm:text-xl">
+              <div className="flex flex-1 flex-col items-center p-5">
+                <h3 className="font-heading text-xl leading-snug">
                   {translatedCardTitle(cardTitle, t)}
                 </h3>
-                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground sm:text-sm">
+                <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
                   {d.name}
                 </p>
-                <div className="mt-auto flex flex-col gap-3 pt-4">
-                  <p className="font-heading text-xl text-primary tabular-nums">
+                <div className="mt-3 flex items-baseline justify-center gap-2">
+                  <span className="font-heading text-xl text-primary tabular-nums">
                     {formatKwd(product.price)}
-                  </p>
-                  <HomeQuickAddButton product={product} className="w-full" size="sm" />
+                  </span>
+                  {hasDiscount && (
+                    <span className="text-sm text-muted-foreground line-through tabular-nums">
+                      {formatKwd(product.oldPrice!)}
+                    </span>
+                  )}
+                </div>
+                {/* Smooth reveal on hover (always shown on touch devices) */}
+                <div className="mt-3 w-full max-h-0 overflow-hidden opacity-0 transition-all duration-300 group-hover:max-h-16 group-hover:opacity-100 [@media(hover:none)]:max-h-16 [@media(hover:none)]:opacity-100">
+                  <HomeQuickAddButton
+                    product={product}
+                    className="w-full"
+                    size="sm"
+                  />
                 </div>
               </div>
             </motion.article>

@@ -10,7 +10,7 @@ export function MainArea({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
   return (
-    <main className={isAdmin ? "flex-1" : "flex-1 pb-24 sm:pb-0 md:ps-[4.25rem]"}>
+    <main className={isAdmin ? "flex-1" : "flex-1 overflow-x-clip pb-24 sm:pb-0 md:ps-[4.25rem]"}>
       {children}
     </main>
   );

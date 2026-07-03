@@ -23,14 +23,14 @@ export function HomeOffersGrid({ products }: Props) {
   );
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+    <section className="mx-auto max-w-6xl overflow-x-clip px-4 py-12 sm:px-6 sm:py-16 md:py-24">
       <HomeFadeUp>
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-wrap items-center gap-3">
             <Badge className="border border-red-500/35 bg-red-500/15 text-red-400">
               {t("home.promos.badge")}
             </Badge>
-            <h2 className="font-heading text-3xl sm:text-4xl">
+            <h2 className="font-heading text-3xl leading-[1.08] sm:text-4xl lg:text-5xl">
               {t("home.promos.title")}
             </h2>
           </div>
@@ -44,7 +44,7 @@ export function HomeOffersGrid({ products }: Props) {
         </div>
       </HomeFadeUp>
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
         {list.slice(0, 6).map((p, i) => {
           const pct =
             p.oldPrice != null ? discountPercent(p.price, p.oldPrice) : 0;

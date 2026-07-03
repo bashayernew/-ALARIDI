@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Search, ShoppingBag, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart-store";
 import { cn } from "@/lib/utils";
 import { LanguageToggle } from "@/components/layout/language-toggle";
+import { MobileNav } from "@/components/layout/mobile-nav";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useI18n } from "@/components/i18n/i18n-provider";
 import { useCustomerAuth } from "@/components/auth/customer-auth-provider";
@@ -68,17 +70,28 @@ export function SiteHeader({
 }: SiteHeaderProps) {
   const { t } = useI18n();
   const { user, ready } = useCustomerAuth();
+  const pathname = usePathname();
+  // On the homepage the header floats transparently over the hero (not sticky,
+  // no solid bar). Elsewhere it stays a normal sticky bar.
+  const overlay = pathname === "/";
   const count = useCartStore((s) =>
     s.lines.reduce((n, l) => n + l.quantity, 0)
   );
   const setOpen = useCartStore((s) => s.setOpen);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
+    <header
+      className={cn(
+        overlay
+          ? "bg-gradient-to-b from-[#0c0803]/85 via-[#0c0803]/45 to-transparent"
+          : "border-b border-border/60 bg-background/80 backdrop-blur-xl"
+      )}
+    >
       {/* Top row: search · logo · account/cart */}
-      <div className="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 py-3 sm:gap-3 sm:px-4 sm:py-4 md:px-6">
-        {/* Left: search */}
-        <div className="flex min-w-0 items-center justify-start gap-1">
+      <div className="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-1.5 px-2.5 py-2.5 sm:gap-3 sm:px-4 sm:py-4 md:px-6">
+        {/* Left: menu (mobile) · search */}
+        <div className="flex min-w-0 items-center justify-start gap-0.5 sm:gap-1">
+          <MobileNav />
           <StorefrontAreaPicker
             selected={selectedArea}
             areaLabel={areaLabel}
@@ -87,7 +100,7 @@ export function SiteHeader({
           />
           <Link
             href="/search"
-            className="group inline-flex items-center gap-2 rounded-lg px-2 py-2 text-muted-foreground transition hover:text-foreground"
+            className="group inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-lg px-2 py-2 text-muted-foreground transition hover:text-foreground sm:min-w-0 sm:justify-start"
             aria-label={t("nav.search")}
           >
             <Search className="size-5 transition group-hover:text-primary" />
@@ -101,27 +114,27 @@ export function SiteHeader({
           className="group flex flex-col items-center leading-none"
           aria-label="Al Aridi Sweets"
         >
-          <BrandMark className="mb-1.5 size-7 text-primary transition group-hover:scale-105 sm:size-9" />
-          <span className="font-heading text-2xl tracking-[0.28em] text-gradient-gold sm:text-3xl">
+          <BrandMark className="mb-1 size-6 text-primary transition group-hover:scale-105 sm:mb-1.5 sm:size-9" />
+          <span className="font-heading text-xl tracking-[0.22em] text-gradient-gold sm:text-2xl sm:tracking-[0.28em] md:text-3xl">
             AL ARIDI
           </span>
-          <span className="mt-1 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.45em] text-muted-foreground sm:text-xs">
-            <span className="h-px w-5 bg-primary/40" />
+          <span className="mt-0.5 flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.35em] text-muted-foreground sm:mt-1 sm:gap-2 sm:text-xs sm:tracking-[0.45em]">
+            <span className="h-px w-3 bg-primary/40 sm:w-5" />
             Sweets
-            <span className="h-px w-5 bg-primary/40" />
+            <span className="h-px w-3 bg-primary/40 sm:w-5" />
           </span>
         </Link>
 
         {/* Right: account + cart */}
-        <div className="flex min-w-0 items-center justify-end gap-0.5 sm:gap-2">
-          <ThemeToggle />
+        <div className="flex min-w-0 items-center justify-end gap-0 sm:gap-2">
+          <ThemeToggle className="shrink-0" />
           <div className="hidden lg:block">
             <LanguageToggle />
           </div>
           {ready && user ? (
             <Link
               href="/account"
-              className="inline-flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm text-muted-foreground transition hover:text-foreground"
+              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-sm text-muted-foreground transition hover:text-foreground sm:min-w-0"
               title={t("nav.account")}
             >
               <User className="size-5" />
@@ -130,7 +143,7 @@ export function SiteHeader({
           ) : (
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm text-muted-foreground transition hover:text-foreground"
+              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-sm text-muted-foreground transition hover:text-foreground sm:min-w-0"
               title={t("nav.account")}
             >
               <User className="size-5" />
@@ -142,7 +155,7 @@ export function SiteHeader({
             variant="outline"
             size="sm"
             className={cn(
-              "relative border-primary/30 bg-secondary/40 hover:bg-secondary",
+              "relative min-h-11 min-w-11 shrink-0 border-primary/30 bg-secondary/40 px-2.5 hover:bg-secondary sm:min-w-0 sm:px-3",
               count > 0 && "gold-glow"
             )}
             onClick={() => setOpen(true)}
@@ -160,15 +173,15 @@ export function SiteHeader({
         </div>
       </div>
 
-      {/* Bottom row: centered nav */}
-      <div className="border-t border-border/40">
-        <nav className="scrollbar-none mx-auto flex max-w-6xl items-center justify-start gap-1 overflow-x-auto px-4 py-2 sm:justify-center sm:gap-2 md:px-6">
+      {/* Bottom row: centered nav (desktop only — mobile uses the drawer) */}
+      <div className={cn("hidden lg:block", overlay ? "" : "border-t border-border/40")}>
+        <nav className="scrollbar-none mx-auto flex max-w-6xl snap-x snap-mandatory items-center justify-start gap-0.5 overflow-x-auto px-3 py-2 sm:justify-center sm:gap-1.5 sm:px-4 md:px-6">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "whitespace-nowrap rounded-lg px-3 py-1.5 text-sm tracking-wide text-muted-foreground transition hover:bg-muted hover:text-foreground",
+                "inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-lg px-3 py-2.5 text-sm tracking-wide text-muted-foreground transition hover:bg-muted hover:text-foreground",
                 link.show
               )}
             >

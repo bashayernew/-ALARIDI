@@ -99,14 +99,14 @@ export function StorefrontAreaPicker({
         variant="ghost"
         size="sm"
         className={cn(
-          "max-w-[120px] gap-1.5 truncate px-1.5 text-muted-foreground hover:text-foreground sm:max-w-[240px] sm:px-2",
+          "max-w-[2.75rem] min-h-11 min-w-11 shrink-0 gap-1.5 truncate px-2 text-muted-foreground hover:text-foreground sm:max-w-[240px] sm:px-2",
           className
         )}
         onClick={() => setOpen(true)}
         aria-label={t("area.picker.choose")}
       >
         <MapPin className="size-4 shrink-0 text-primary" />
-        <span className="truncate text-xs sm:text-sm">
+        <span className="hidden truncate text-xs sm:inline sm:text-sm">
           {selected ? (
             <>
               <span className="hidden text-muted-foreground sm:inline">

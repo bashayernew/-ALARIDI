@@ -20,7 +20,7 @@ export function HomeFreshToday({ products }: Props) {
   const { t, locale, dir } = useI18n();
 
   return (
-    <section className="bg-secondary/30 py-14 sm:py-20">
+    <section className="bg-secondary/30 py-10 sm:py-14 md:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <HomeFadeUp>
           <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -28,7 +28,7 @@ export function HomeFreshToday({ products }: Props) {
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
                 {t("home.freshToday.kicker")}
               </p>
-              <h2 className="mt-2 font-heading text-3xl sm:text-4xl">
+              <h2 className="mt-2 font-heading text-3xl leading-[1.08] sm:text-4xl lg:text-5xl">
                 {t("home.freshToday.title")}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -55,7 +55,7 @@ export function HomeFreshToday({ products }: Props) {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="w-[min(240px,78vw)] shrink-0 overflow-hidden rounded-2xl border border-border/50 bg-card/50 shadow-md"
+                className="w-[min(220px,85vw)] shrink-0 overflow-hidden rounded-2xl border border-border/50 bg-card/50 shadow-md"
               >
                 <div className="relative aspect-square bg-muted">
                   <ProductImage

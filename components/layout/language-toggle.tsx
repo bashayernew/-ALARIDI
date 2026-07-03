@@ -18,7 +18,7 @@ export function LanguageToggle() {
         variant={locale === "en" ? "default" : "ghost"}
         size="sm"
         className={cn(
-          "h-8 min-w-9 px-2 text-xs font-semibold",
+          "h-11 min-w-11 px-2.5 text-xs font-semibold",
           locale !== "en" && "text-muted-foreground"
         )}
         onClick={() => setLocale("en")}
@@ -30,7 +30,7 @@ export function LanguageToggle() {
         variant={locale === "ar" ? "default" : "ghost"}
         size="sm"
         className={cn(
-          "h-8 min-w-9 px-2 text-xs font-semibold",
+          "h-11 min-w-11 px-2.5 text-xs font-semibold",
           locale !== "ar" && "text-muted-foreground"
         )}
         onClick={() => setLocale("ar")}

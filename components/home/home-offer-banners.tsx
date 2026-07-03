@@ -48,7 +48,7 @@ export function HomeOfferBanners({ banners }: Props) {
   const href = b.linkUrl?.trim() || "/menu";
 
   return (
-    <section className="px-4 py-10 sm:px-6 sm:py-14">
+    <section className="px-4 py-8 sm:px-6 sm:py-12 md:py-14">
       <div className="mx-auto max-w-6xl">
         <div className="surface-card lift hover:lift-hover group relative overflow-hidden rounded-[1.75rem] border-primary/20">
           {/* Ambient gold glow */}
@@ -85,11 +85,16 @@ export function HomeOfferBanners({ banners }: Props) {
                     />
                   </motion.div>
                 </AnimatePresence>
+                {/* Soft vignette for depth */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent"
+                />
               </div>
             )}
 
             {/* Content */}
-            <div className="relative z-10 flex flex-col justify-center gap-5 p-7 sm:p-10 lg:p-12">
+            <div className="relative z-10 flex flex-col justify-center gap-4 p-5 sm:gap-5 sm:p-10 lg:p-12">
               <span className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-primary backdrop-blur-sm">
                 <Sparkles className="size-3.5" />
                 {t("home.offer.kicker")}
@@ -104,7 +109,7 @@ export function HomeOfferBanners({ banners }: Props) {
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                   className="space-y-3"
                 >
-                  <h2 className="font-heading text-3xl leading-tight text-balance sm:text-4xl lg:text-[2.75rem]">
+                  <h2 className="font-heading text-2xl leading-[1.12] text-balance sm:text-3xl md:text-4xl lg:text-5xl">
                     {title}
                   </h2>
                   {subtitle ? (
@@ -112,13 +117,17 @@ export function HomeOfferBanners({ banners }: Props) {
                       {subtitle}
                     </p>
                   ) : null}
+                  <div
+                    aria-hidden
+                    className="mt-1 h-px w-20 bg-gradient-to-r from-primary/60 to-transparent"
+                  />
                 </motion.div>
               </AnimatePresence>
 
               <div className="flex flex-wrap items-center gap-4 pt-1">
                 <Link
                   href={href}
-                  className="gold-glow group/cta inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:brightness-105"
+                  className="gold-glow group/cta inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:brightness-105"
                 >
                   {t("hero.cta.order")}
                   <ArrowRight

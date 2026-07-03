@@ -31,7 +31,7 @@ import { areaDisplayLabel } from "@/lib/kuwait-areas";
 import { getServedAreas } from "@/lib/served-areas";
 import { HeaderOffersProvider } from "@/components/header-offers/header-offers-provider";
 import { HeaderAnnouncementBar } from "@/components/layout/header-announcement-bar";
-import { HeaderFeatureStrip } from "@/components/layout/header-feature-strip";
+import { HeaderOverlay } from "@/components/layout/header-overlay";
 import { mergeSocialUrlsFromContent } from "@/lib/site-content-types";
 import { getCurrentCustomer } from "@/lib/customer-auth/server";
 
@@ -145,25 +145,26 @@ fbq('track', 'PageView');`}
           socialUrls={socialUrls}
           initialUser={initialUser}
         >
-          <StorefrontOnly>
-            <HeaderOffersProvider offers={headerOffers}>
-              <HeaderAnnouncementBar />
-              <SiteHeader
-                selectedArea={selectedArea}
-                areaLabel={areaLabel}
-                servedAreas={servedAreas}
-                promptAreaOnMount={!selectedArea}
-              />
-              <HeaderFeatureStrip />
-            </HeaderOffersProvider>
-          </StorefrontOnly>
-          <MainArea>{children}</MainArea>
-          <StorefrontOnly>
-            <SiteFooter />
-            <CartDrawer />
-            <MobileCartBar />
-            <FloatingSocials />
-          </StorefrontOnly>
+          <HeaderOffersProvider offers={headerOffers}>
+            <StorefrontOnly>
+              <HeaderOverlay>
+                <HeaderAnnouncementBar />
+                <SiteHeader
+                  selectedArea={selectedArea}
+                  areaLabel={areaLabel}
+                  servedAreas={servedAreas}
+                  promptAreaOnMount={!selectedArea}
+                />
+              </HeaderOverlay>
+            </StorefrontOnly>
+            <MainArea>{children}</MainArea>
+            <StorefrontOnly>
+              <SiteFooter />
+              <CartDrawer />
+              <MobileCartBar />
+              <FloatingSocials />
+            </StorefrontOnly>
+          </HeaderOffersProvider>
         </Providers>
         </ThemeProvider>
       </body>

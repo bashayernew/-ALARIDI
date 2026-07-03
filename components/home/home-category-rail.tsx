@@ -60,13 +60,25 @@ export function HomeCategoryRail({
   );
 
   return (
-    <section className="border-y border-border/50 bg-card/25 py-14 sm:py-20">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+    <section className="overflow-x-clip px-4 py-12 sm:px-6 sm:py-16 md:py-24">
+      <div className="relative mx-auto max-w-6xl">
+        {/* Tilted gold frame accent (rotation) */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -inset-1 -z-10 rotate-[1.5deg] rounded-[2.2rem] border border-primary/25 sm:-inset-3"
+        />
+        {/* Distinct framed panel with rotation accent */}
+        <div className="relative overflow-hidden rounded-[1.75rem] border border-primary/15 bg-gradient-to-br from-secondary/55 via-card/40 to-background p-5 sm:rounded-[2rem] sm:p-10">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 starfield opacity-70"
+          />
+          <div className="relative">
         <HomeFadeUp>
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
             {t("home.categories.kicker")}
           </p>
-          <h2 className="mt-2 font-heading text-3xl sm:text-4xl">
+          <h2 className="mt-2 font-heading text-3xl leading-[1.08] sm:text-4xl lg:text-5xl">
             {t("home.categories.title")}
           </h2>
           <p className="mt-2 max-w-xl text-sm text-muted-foreground">
@@ -90,7 +102,7 @@ export function HomeCategoryRail({
                     href={`/menu#cat-${cat}`}
                     onClick={() => setActive(cat)}
                     className={cn(
-                      "flex min-w-[148px] shrink-0 flex-col gap-2 rounded-2xl border px-4 py-4 transition-all duration-300",
+                      "flex min-h-11 min-w-[128px] shrink-0 flex-col gap-2 rounded-2xl border px-3.5 py-3.5 transition-all duration-300 sm:min-w-[148px] sm:px-4 sm:py-4",
                       isActive
                         ? "border-primary/55 bg-primary/12 gold-glow shadow-lg"
                         : "border-border/55 bg-background/55 hover:border-primary/45 hover:bg-primary/8 hover:shadow-[0_0_0_1px_rgba(201,169,110,0.25),0_12px_40px_-12px_rgba(201,169,110,0.35)]"
@@ -116,6 +128,8 @@ export function HomeCategoryRail({
             })}
           </HorizontalScrollHints>
         </HomeFadeUp>
+          </div>
+        </div>
       </div>
     </section>
   );

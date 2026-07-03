@@ -45,7 +45,7 @@ export function HeaderFeatureStrip() {
             );
 
             const className = cn(
-              "flex min-w-[9.5rem] max-w-[14rem] shrink-0 items-center gap-2.5 rounded-xl border border-border/50 bg-card/30 px-3 py-2 transition",
+              "flex min-h-11 min-w-[9rem] max-w-[14rem] shrink-0 items-center gap-2.5 rounded-xl border border-border/50 bg-card/30 px-3 py-2.5 transition",
               "hover:border-primary/25 hover:bg-card/50 sm:min-w-[10.5rem]"
             );
 

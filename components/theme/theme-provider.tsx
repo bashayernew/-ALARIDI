@@ -19,9 +19,10 @@ function areaFor(pathname: string | null): Area {
   return pathname && pathname.startsWith("/admin") ? "admin" : "site";
 }
 function keyFor(area: Area) {
-  return `alaridi-theme:${area}`;
+  return `alaridi-theme2:${area}`;
 }
 function defaultFor(area: Area): Theme {
+  // Elegant dark on the storefront (matches the brand), light on /admin.
   return area === "admin" ? "light" : "dark";
 }
 function apply(theme: Theme) {

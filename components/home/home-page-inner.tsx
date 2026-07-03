@@ -3,7 +3,6 @@ import {
   getFreshTodayProducts,
   getPromoProducts,
   getMooneProducts,
-  getAllProducts,
 } from "@/lib/data";
 import { HomeSections } from "@/components/home/home-sections";
 import { fetchEnabledOfferBanners } from "@/lib/site-content";
@@ -16,17 +15,14 @@ export async function HomePageInner() {
     freshToday,
     promoProducts,
     mooneProducts,
-    allProducts,
     offerBanners,
   ] = await Promise.all([
     getHouseFavoriteProducts(),
     getFreshTodayProducts(6),
     getPromoProducts(),
     getMooneProducts(),
-    getAllProducts(),
     fetchEnabledOfferBanners(storefrontBranchId),
   ]);
-  const newArrivals = allProducts.slice(0, 8);
 
   return (
     <HomeSections
@@ -34,7 +30,6 @@ export async function HomePageInner() {
       freshToday={freshToday}
       promoProducts={promoProducts}
       mooneProducts={mooneProducts}
-      newArrivals={newArrivals}
       offerBanners={offerBanners}
     />
   );

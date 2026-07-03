@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Gift, Heart, Sparkles } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
@@ -9,11 +10,14 @@ import { cn } from "@/lib/utils";
 import type { ProductDTO } from "@/types";
 import { formatKwd } from "@/lib/format";
 import { HomeHero } from "@/components/home/home-hero";
+import { HeaderFeatureStrip } from "@/components/layout/header-feature-strip";
 import {
   HomeOfferBanners,
   type OfferBannerDTO,
 } from "@/components/home/home-offer-banners";
 import { HomeHouseFavorites } from "@/components/home/home-house-favorites";
+import { HomeFeatures } from "@/components/home/home-features";
+import { HomeGallery } from "@/components/home/home-gallery";
 import { HomeCategoryRail } from "@/components/home/home-category-rail";
 import { HomeOffersGrid } from "@/components/home/home-offers-grid";
 import { HomeFreshToday } from "@/components/home/home-fresh-today";
@@ -30,7 +34,6 @@ type Props = {
   freshToday: ProductDTO[];
   promoProducts: ProductDTO[];
   mooneProducts: ProductDTO[];
-  newArrivals: ProductDTO[];
   offerBanners: OfferBannerDTO[];
 };
 
@@ -39,7 +42,6 @@ export function HomeSections({
   freshToday,
   promoProducts,
   mooneProducts,
-  newArrivals,
   offerBanners,
 }: Props) {
   const { t, locale } = useI18n();
@@ -57,9 +59,13 @@ export function HomeSections({
     <>
       <HomeHero />
 
+      <HeaderFeatureStrip />
+
       <HomeOfferBanners banners={offerBanners} />
 
       <HomeHouseFavorites items={houseFavorites} />
+
+      <HomeFeatures />
 
       <HomeCategoryRail />
 
@@ -67,42 +73,7 @@ export function HomeSections({
 
       <HomeFreshToday products={freshToday} />
 
-      <section className="bg-card/20 py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <HomeFadeUp>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
-              <span className="kicker-rule" aria-hidden />
-              {t("home.new.kicker")}
-            </p>
-            <h2 className="mt-2 font-heading text-3xl sm:text-4xl">
-              {t("home.new.title")}
-            </h2>
-          </HomeFadeUp>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {newArrivals.slice(0, 4).map((p) => {
-              const d = displayDbProduct(p, locale);
-              return (
-                <div
-                  key={p.id}
-                  className="surface-card lift hover:lift-hover rounded-2xl p-5"
-                >
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
-                    {t("home.new.badge")}
-                  </p>
-                  <p className="mt-2 font-heading text-xl text-foreground">
-                    {d.name}
-                  </p>
-                  <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-                    {d.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-secondary/40 py-16 sm:py-24">
+      <section className="bg-secondary/40 py-12 sm:py-16 md:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <HomeFadeUp>
             <div className="mb-10 max-w-2xl">
@@ -110,10 +81,10 @@ export function HomeSections({
                 <span className="kicker-rule" aria-hidden />
                 {t("home.occasions.kicker")}
               </p>
-              <h2 className="mt-2 font-heading text-3xl sm:text-4xl">
+              <h2 className="mt-2 font-heading text-3xl leading-[1.08] sm:text-4xl lg:text-5xl">
                 {t("home.occasions.title")}
               </h2>
-              <p className="mt-3 text-muted-foreground">
+              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
                 {t("home.occasions.body")}
               </p>
             </div>
@@ -143,7 +114,7 @@ export function HomeSections({
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+      <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 md:py-24">
         <HomeFadeUp>
           <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -151,7 +122,7 @@ export function HomeSections({
                 <span className="kicker-rule" aria-hidden />
                 {t("home.moone.kicker")}
               </p>
-              <h2 className="mt-2 font-heading text-3xl sm:text-4xl">
+              <h2 className="mt-2 font-heading text-3xl leading-[1.08] sm:text-4xl lg:text-5xl">
                 {t("home.moone.title")}
               </h2>
             </div>
@@ -200,30 +171,50 @@ export function HomeSections({
         </div>
       </section>
 
-      <section className="border-t border-border/50 bg-card/20 py-16 sm:py-24">
-        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
+      <section className="border-t border-border/50 bg-card/20 py-12 sm:py-16 md:py-24">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16">
           <HomeFadeUp>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
-              <span className="kicker-rule" aria-hidden />
-              {t("home.about.kicker")}
-            </p>
-            <h2 className="mt-3 font-heading text-3xl sm:text-4xl">
-              {t("home.about.title")}
-            </h2>
-            <p className="mt-6 text-base leading-relaxed text-muted-foreground sm:text-lg">
-              {t("home.about.body")}
-            </p>
+            <motion.div
+              initial={{ opacity: 0, scale: 1.04 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="group relative aspect-[5/4] overflow-hidden rounded-[2rem] border border-primary/15 shadow-[0_30px_70px_-40px_rgba(120,80,20,0.55)]"
+            >
+              <Image
+                src="/mixedbaklawa.jpg"
+                alt={t("home.about.title")}
+                fill
+                className="object-cover transition duration-700 group-hover:scale-105"
+                sizes="(max-width:1024px)100vw,50vw"
+              />
+            </motion.div>
+          </HomeFadeUp>
+          <HomeFadeUp delay={0.1}>
+            <div className="max-w-xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
+                <span className="kicker-rule" aria-hidden />
+                {t("home.about.kicker")}
+              </p>
+              <h2 className="mt-3 font-heading text-3xl leading-[1.08] sm:text-4xl lg:text-5xl">
+                {t("home.about.title")}
+              </h2>
+              <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:mt-6 sm:text-base md:text-lg">
+                {t("home.about.body")}
+              </p>
+              <div className="mt-7 h-px w-24 bg-gradient-to-r from-primary/60 to-transparent" />
+            </div>
           </HomeFadeUp>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-6xl gap-6 px-4 py-16 sm:px-6 md:grid-cols-2">
+      <section className="mx-auto grid max-w-6xl gap-4 px-4 py-12 sm:gap-6 sm:px-6 sm:py-16 md:grid-cols-2 md:py-20">
         <div className="surface-card lift hover:lift-hover rounded-3xl border-primary/25 p-7">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
             <span className="kicker-rule" aria-hidden />
             {t("home.loyaltyBlock.kicker")}
           </p>
-          <h3 className="mt-3 font-heading text-3xl text-foreground">
+          <h3 className="mt-3 font-heading text-2xl text-foreground sm:text-3xl">
             {t("home.loyaltyBlock.title")}
           </h3>
           <p className="mt-3 text-muted-foreground">
@@ -252,44 +243,9 @@ export function HomeSections({
         </div>
       </section>
 
-      <section className="border-t border-border/50 py-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-6 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
-                <span className="kicker-rule" aria-hidden />
-                {t("home.instagram.kicker")}
-              </p>
-              <h3 className="mt-2 font-heading text-3xl">
-                {t("home.instagram.title")}
-              </h3>
-            </div>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noreferrer"
-              className="shrink-0 text-sm text-primary"
-            >
-              @alaridi_sweets
-            </a>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {["#EidBoxes", "#KunafaDaily", "#KuwaitGifting"].map((tag) => (
-              <div
-                key={tag}
-                className="surface-card lift hover:lift-hover rounded-2xl p-5"
-              >
-                <p className="font-heading text-lg text-foreground">{tag}</p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {t("home.instagram.placeholder")}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HomeGallery />
 
-      <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6">
+      <section className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 sm:pb-16">
         <NewsletterSignup />
       </section>
     </>

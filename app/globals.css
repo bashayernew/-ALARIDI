@@ -163,6 +163,33 @@
   }
 }
 
+/* Ambient starfield — a faint field of gold dots behind the dark storefront,
+   echoing the Crems backdrop. Fixed so it stays put while the page scrolls.
+   Sections with their own solid backgrounds simply sit on top of it. */
+.dark body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(
+    rgba(226, 198, 132, 0.11) 1px,
+    transparent 1.7px
+  );
+  background-size: 26px 26px;
+  background-position: center;
+}
+
+/* A denser, reusable starfield for individual sections that want it. */
+@utility starfield {
+  background-image: radial-gradient(
+    rgba(226, 198, 132, 0.1) 1px,
+    transparent 1.6px
+  );
+  background-size: 24px 24px;
+  background-position: center;
+}
+
 @utility gold-glow {
   box-shadow:
     0 0 0 1px oklch(0.72 0.1 72 / 0.3),
@@ -181,7 +208,7 @@
   color: transparent;
 }
 
-/* Elevated surface card: subtle gradient, hairline border, soft depth */
+/* Elevated surface card: subtle gradient, hairline border, soft warm depth */
 @utility surface-card {
   background-image: linear-gradient(
     160deg,
@@ -190,8 +217,8 @@
   );
   border: 1px solid var(--border);
   box-shadow:
-    0 1px 0 0 oklch(1 0 0 / 0.04) inset,
-    0 18px 40px -28px oklch(0 0 0 / 0.7);
+    0 1px 0 0 oklch(1 0 0 / 0.35) inset,
+    0 22px 50px -34px oklch(0.45 0.08 70 / 0.4);
 }
 
 /* Interactive lift on hover */
@@ -202,11 +229,11 @@
     box-shadow 0.35s ease;
 }
 @utility lift-hover {
-  transform: translateY(-4px);
-  border-color: oklch(0.78 0.08 80 / 0.4);
+  transform: translateY(-5px);
+  border-color: oklch(0.72 0.1 72 / 0.45);
   box-shadow:
-    0 1px 0 0 oklch(1 0 0 / 0.05) inset,
-    0 30px 60px -30px oklch(0 0 0 / 0.85);
+    0 1px 0 0 oklch(1 0 0 / 0.4) inset,
+    0 34px 64px -34px oklch(0.5 0.1 70 / 0.45);
 }
 
 /* Small gold kicker rule used before section labels */
@@ -285,4 +312,18 @@
 
 @utility animate-scroll-hint-end {
   animation: scroll-hint-pulse-end 4.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lift {
+    transition: none;
+  }
+  .lift-hover,
+  .group:hover .lift-hover {
+    transform: none;
+  }
+  .animate-scroll-hint-start,
+  .animate-scroll-hint-end {
+    animation: none;
+  }
 }

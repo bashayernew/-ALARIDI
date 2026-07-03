@@ -57,6 +57,29 @@ export const EN_DICT = {
   "home.about.title": "Heritage recipes, Kuwait hospitality",
   "home.about.body":
     "Al Aridi Sweets brings together craft kunafa, refined baklava, and pantry moone in one premium destination. We obsess over texture, sourcing, and presentation — so every box feels like a gift, even when it is just for you.",
+  "home.features.kicker": "Why Al Aridi",
+  "home.features.title": "Crafted with care, delivered with pride",
+  "home.features.f1.title": "Freshly Made Daily",
+  "home.features.f1.body":
+    "Baked every morning with premium ingredients — never mass-produced.",
+  "home.features.f2.title": "Same-Day Kuwait Delivery",
+  "home.features.f2.body":
+    "Delivered fast across Kuwait, with careful packaging that arrives perfect.",
+  "home.features.f3.title": "Authentic Lebanese Recipes",
+  "home.features.f3.body":
+    "Heritage recipes perfected over generations — from kunafa to baklava.",
+  "home.features.f4.title": "Beautiful Gift Packaging",
+  "home.features.f4.body":
+    "Elegant trays and boxes that make every order feel like a gift.",
+  "home.features.headline": "Our kitchen crafts",
+  "home.features.headlineEm": "unique sweets",
+  "home.features.headlineRest": "made with love",
+  "home.features.body":
+    "From kunafa and baklava to artisan moone, every piece is made fresh with premium ingredients and finished by hand — crafted to feel like a gift.",
+  "home.features.cta": "Explore the menu",
+  "home.gallery.kicker": "Gallery",
+  "home.gallery.quote":
+    "“Our pastry chefs craft every sweet with creativity and love”",
   "home.loyaltyBlock.kicker": "Loyalty",
   "home.loyaltyBlock.title": "Earn points on every order",
   "home.loyaltyBlock.body":
@@ -714,7 +737,7 @@ export const EN_DICT = {
   "admin.users.enable": "Enable account",
   "admin.users.addressesHeading": "Saved addresses",
   "admin.users.ordersHeading": "Order history (demo)",
-  "admin.categories.title": "Category labels & order",
+  "admin.categories.title": "Categories",
   "admin.categories.note":
     "Slugs must match menu sections (e.g. must-try). Lower sort = first.",
   "admin.promos.title": "Promo codes",
@@ -1314,7 +1337,6 @@ export const EN_DICT = {
   "admin.giftBaskets.flag.bestSeller": "Bestseller",
   "admin.giftBaskets.includeWrap": "Include gift wrap fee",
   "admin.giftBaskets.showOnGifts": "Show on gifts page (max 2)",
-  "admin.categories.title": "Categories",
   "admin.categories.subtitle": "Create and manage product categories. Products can be assigned to any category.",
   "admin.categories.manage": "Manage",
   "admin.categories.hide": "Hide",
@@ -1324,7 +1346,6 @@ export const EN_DICT = {
   "admin.categories.order": "Order",
   "admin.categories.active": "Active",
   "admin.categories.add": "Add category",
-  "admin.categories.delete": "Delete",
   "admin.categories.created": "Category created",
   "admin.categories.confirmDelete": "Delete this category? Products using it must be reassigned first.",
   "admin.categories.nameRequired": "Category name is required",
@@ -1538,6 +1559,24 @@ export const AR_DICT: Record<TranslationKey, string> = {
   "home.about.title": "وصفات أصيلة وكرم كويتي",
   "home.about.body":
     "يجمع «Al Aridi Sweets» بين كنافة يدوية وبقلاوة راقية ومونة مخزنية في وجهة واحدة فاخرة. نهتم بالقوام والمكونات والتقديم — لتبدو كل علبة كهدية حتى لو كانت لك وحدك.",
+  "home.features.kicker": "لماذا العريضي",
+  "home.features.title": "نصنعها بعناية ونوصلها بفخر",
+  "home.features.f1.title": "طازجة كل يوم",
+  "home.features.f1.body": "تُحضّر كل صباح بمكوّنات فاخرة — وليست إنتاجاً ضخماً.",
+  "home.features.f2.title": "توصيل بنفس اليوم في الكويت",
+  "home.features.f2.body": "توصيل سريع في جميع أنحاء الكويت بتغليف يحافظ عليها.",
+  "home.features.f3.title": "وصفات لبنانية أصيلة",
+  "home.features.f3.body": "وصفات تراثية أتقنّاها عبر الأجيال — من الكنافة إلى البقلاوة.",
+  "home.features.f4.title": "تغليف هدايا أنيق",
+  "home.features.f4.body": "صواني وعلب أنيقة تجعل كل طلب يبدو كهدية.",
+  "home.features.headline": "مطبخنا يصنع",
+  "home.features.headlineEm": "حلويات مميّزة",
+  "home.features.headlineRest": "بكل حب",
+  "home.features.body":
+    "من الكنافة والبقلاوة إلى المونة الحرفية، تُحضّر كل قطعة طازجة بمكوّنات فاخرة وبلمسة يدويّة — لتبدو كهدية.",
+  "home.features.cta": "تصفّح القائمة",
+  "home.gallery.kicker": "المعرض",
+  "home.gallery.quote": "«يصنع حلوانيّونا كل قطعة بإبداعٍ ومحبة»",
   "home.loyaltyBlock.kicker": "الولاء",
   "home.loyaltyBlock.title": "اكسب نقاطاً مع كل طلب",
   "home.loyaltyBlock.body":
@@ -2180,7 +2219,7 @@ export const AR_DICT: Record<TranslationKey, string> = {
   "admin.users.enable": "تفعيل الحساب",
   "admin.users.addressesHeading": "العناوين المحفوظة",
   "admin.users.ordersHeading": "سجل الطلبات (تجريبي)",
-  "admin.categories.title": "أسماء الأقسام وترتيبها",
+  "admin.categories.title": "الفئات",
   "admin.categories.note":
     "المعرّفات يجب أن تطابق أقسام القائمة (مثل must-try). الرقم الأصغر = أولاً.",
   "admin.promos.title": "أكواد الخصم",
@@ -2755,7 +2794,6 @@ export const AR_DICT: Record<TranslationKey, string> = {
   "admin.giftBaskets.flag.bestSeller": "الأكثر مبيعاً",
   "admin.giftBaskets.includeWrap": "يشمل رسوم التغليف",
   "admin.giftBaskets.showOnGifts": "عرض في صفحة الهدايا (٢ كحد أقصى)",
-  "admin.categories.title": "الفئات",
   "admin.categories.subtitle": "أنشئ وأدر فئات المنتجات. يمكن تعيين المنتجات لأي فئة.",
   "admin.categories.manage": "إدارة",
   "admin.categories.hide": "إخفاء",
@@ -2765,7 +2803,6 @@ export const AR_DICT: Record<TranslationKey, string> = {
   "admin.categories.order": "الترتيب",
   "admin.categories.active": "مفعّل",
   "admin.categories.add": "إضافة فئة",
-  "admin.categories.delete": "حذف",
   "admin.categories.created": "تم إنشاء الفئة",
   "admin.categories.confirmDelete": "حذف هذه الفئة؟ يجب إعادة تعيين المنتجات التي تستخدمها أولاً.",
   "admin.categories.nameRequired": "اسم الفئة مطلوب",

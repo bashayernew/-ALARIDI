@@ -117,7 +117,7 @@ export function ProductCard({ product, rank, onOpen }: Props) {
           <Button
             type="button"
             size="sm"
-            className="shrink-0 gap-1 rounded-xl"
+            className="min-h-11 shrink-0 gap-1 rounded-xl px-4"
             onClick={handleAction}
           >
             <Sparkles className="size-3.5 opacity-80" />
