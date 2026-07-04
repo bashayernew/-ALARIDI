@@ -76,7 +76,7 @@ export function LoginForm() {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={cn(errors.email && "border-destructive")}
+            className={cn("h-12 text-base", errors.email && "border-destructive")}
           />
           {errors.email && (
             <p className="text-sm text-destructive">{errors.email}</p>
@@ -90,7 +90,7 @@ export function LoginForm() {
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={cn(errors.password && "border-destructive")}
+            className={cn("h-12 text-base", errors.password && "border-destructive")}
           />
           {errors.password && (
             <p className="text-sm text-destructive">{errors.password}</p>

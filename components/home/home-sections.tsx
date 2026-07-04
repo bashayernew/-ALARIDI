@@ -24,7 +24,6 @@ import { HomeFreshToday } from "@/components/home/home-fresh-today";
 import { HomeFadeUp } from "@/components/home/home-fade-up";
 import { useI18n } from "@/components/i18n/i18n-provider";
 import { displayDbProduct } from "@/lib/db-product-ar";
-import { NewsletterSignup } from "@/components/newsletter-signup";
 import type { TranslationKey } from "@/lib/dictionary";
 
 type HouseSlot = { product: ProductDTO; cardTitle: string };
@@ -244,10 +243,6 @@ export function HomeSections({
       </section>
 
       <HomeGallery />
-
-      <section className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 sm:pb-16">
-        <NewsletterSignup />
-      </section>
     </>
   );
 }

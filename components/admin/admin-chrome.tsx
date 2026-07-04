@@ -1,7 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
+import { Menu, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/components/i18n/i18n-provider";
@@ -46,6 +48,21 @@ export function AdminChrome({
   const { t } = useI18n();
   const router = useRouter();
   const [busy, setBusy] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => setMounted(true), []);
+  React.useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+  React.useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [menuOpen]);
 
   if (pathname?.startsWith("/admin/login")) {
     return <>{children}</>;
@@ -181,7 +198,17 @@ export function AdminChrome({
 
       <div className="min-w-0 flex-1">
         <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur md:hidden">
-          <p className="font-heading text-foreground">Admin</p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Menu"
+              className="inline-flex size-9 items-center justify-center rounded-lg text-foreground transition hover:text-primary"
+            >
+              <Menu className="size-6" />
+            </button>
+            <p className="font-heading text-foreground">Admin</p>
+          </div>
           <div className="flex items-center gap-2">
             {session && branches.length > 0 && isSuper ? (
               <select
@@ -210,25 +237,96 @@ export function AdminChrome({
             </Button>
           </div>
         </header>
-        <div className="md:hidden">
-          <nav className="flex gap-1 overflow-x-auto border-b border-border px-2 py-2">
-            {navItems.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
+        {children}
+
+        {/* Mobile side-drawer navigation */}
+        {mounted &&
+          createPortal(
+            <div
+              className={cn(
+                "fixed inset-0 z-[100] md:hidden",
+                menuOpen ? "" : "pointer-events-none"
+              )}
+            >
+              <button
+                type="button"
+                aria-label="Close menu"
+                onClick={() => setMenuOpen(false)}
                 className={cn(
-                  "shrink-0 rounded-full px-3 py-1 text-xs",
-                  isActive(href)
-                    ? "bg-primary/15 text-primary"
-                    : "bg-muted text-muted-foreground"
+                  "absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300",
+                  menuOpen ? "opacity-100" : "opacity-0"
+                )}
+              />
+              <aside
+                className={cn(
+                  "absolute inset-y-0 start-0 flex w-[80%] max-w-xs flex-col overflow-y-auto border-e border-border bg-sidebar px-3 py-5 shadow-2xl transition-transform duration-300 ease-out",
+                  menuOpen
+                    ? "translate-x-0"
+                    : "-translate-x-full rtl:translate-x-full"
                 )}
               >
-                {label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-        {children}
+                <div className="flex items-center justify-between px-1">
+                  <div className="leading-tight">
+                    <p className="font-heading text-lg text-primary">Al Aridi</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary/70">
+                      Admin
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setMenuOpen(false)}
+                    aria-label="Close menu"
+                    className="inline-flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:border-primary/50 hover:text-foreground"
+                  >
+                    <X className="size-5" />
+                  </button>
+                </div>
+
+                <BranchSwitcher className="mt-5" />
+
+                <nav className="mt-5 flex flex-1 flex-col gap-0.5">
+                  {navItems.map(({ href, label }) => (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setMenuOpen(false)}
+                      className={cn(
+                        "rounded-lg px-3 py-2.5 text-sm transition-colors",
+                        isActive(href)
+                          ? "bg-primary/15 font-medium text-primary"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      )}
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                </nav>
+
+                {session ? (
+                  <div className="mt-3 border-t border-border pt-3">
+                    <p className="truncate px-2 text-xs text-foreground">
+                      {session.email}
+                    </p>
+                    <p className="px-2 text-[10px] uppercase tracking-wide text-muted-foreground">
+                      {isSuper ? "Super admin" : "Branch admin"}
+                    </p>
+                  </div>
+                ) : null}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 w-full"
+                  disabled={busy}
+                  onClick={() => void onLogout()}
+                >
+                  {t("admin.dashboard.signOut")}
+                </Button>
+              </aside>
+            </div>,
+            document.body
+          )}
       </div>
     </div>
   );

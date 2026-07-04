@@ -137,81 +137,84 @@ export function MenuFullPage({
         </HomeFadeUp>
       </div>
 
-      <div className="sticky top-16 z-40 mt-8 border-y border-primary/[0.08] bg-background/92 backdrop-blur-xl supports-[backdrop-filter]:bg-background/85">
+      {/* Thin sticky category chips — sits at the very top (header auto-hides on scroll) */}
+      <div className="sticky top-0 z-40 mt-8 border-y border-primary/[0.08] bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
         <div className="mx-auto w-full min-w-0 max-w-6xl px-4 sm:px-6">
-        <HorizontalScrollHints
-          className="min-w-0"
-          scrollerClassName="flex gap-2 py-3"
-          edgeFadeClassName="from-background/95 via-background/55"
-        >
-          {sections.map((s) => (
-            <button
-              key={s.slug}
-              type="button"
-              onClick={() => scrollTo(s.slug)}
-              className={cn(
-                "shrink-0 rounded-full border px-4 py-2.5 text-start text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 sm:text-[13px]",
-                activeSlug === s.slug
-                  ? "border-primary/55 bg-primary/15 text-primary gold-glow"
-                  : "border-border bg-card text-muted-foreground hover:border-primary/35 hover:text-foreground"
-              )}
-            >
-              {s.label}
-            </button>
-          ))}
-        </HorizontalScrollHints>
+          <HorizontalScrollHints
+            className="min-w-0"
+            scrollerClassName="flex gap-2 py-2.5"
+            edgeFadeClassName="from-background/95 via-background/55"
+          >
+            {sections.map((s) => (
+              <button
+                key={s.slug}
+                type="button"
+                onClick={() => scrollTo(s.slug)}
+                className={cn(
+                  "shrink-0 rounded-full border px-4 py-2 text-start text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 sm:text-[13px]",
+                  activeSlug === s.slug
+                    ? "border-primary/55 bg-primary/15 text-primary gold-glow"
+                    : "border-border bg-card text-muted-foreground hover:border-primary/35 hover:text-foreground"
+                )}
+              >
+                {s.label}
+              </button>
+            ))}
+          </HorizontalScrollHints>
         </div>
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-3 gap-y-2 px-4 pb-3 sm:grid-cols-4 sm:px-6">
-          <label className="text-xs text-muted-foreground">
-            {t("menu.filter.maxPrice")}
-            <input
-              type="range"
-              min={1}
-              max={50}
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(Number(e.target.value))}
-              className="mt-1 w-full"
-            />
-          </label>
-          <label className="text-xs text-muted-foreground">
-            {t("menu.filter.dietary")}
-            <select
-              value={dietary}
-              onChange={(e) => setDietary(e.target.value)}
-              className="mt-1 h-9 w-full rounded-lg border border-border/60 bg-card px-2"
-            >
-              <option value="all">{t("menu.filter.dietary.all")}</option>
-              <option value="sugar-free">
-                {t("menu.filter.dietary.sugarFree")}
-              </option>
-              <option value="vegan">{t("menu.filter.dietary.vegan")}</option>
-              <option value="gluten-free">
-                {t("menu.filter.dietary.glutenFree")}
-              </option>
-            </select>
-          </label>
-          <label className="col-span-2 text-xs text-muted-foreground">
-            {t("menu.filter.sort")}
-            <select
-              value={sortBy}
-              onChange={(e) =>
-                setSortBy(
-                  e.target.value as
-                    | "popularity"
-                    | "price-asc"
-                    | "price-desc"
-                    | "newest"
-                )
-              }
-              className="mt-1 h-9 w-full rounded-lg border border-border/60 bg-card px-2"
-            >
-              <option value="popularity">{t("menu.sort.popularity")}</option>
-              <option value="price-asc">{t("menu.sort.priceAsc")}</option>
-              <option value="price-desc">{t("menu.sort.priceDesc")}</option>
-              <option value="newest">{t("menu.sort.newest")}</option>
-            </select>
-          </label>
-        </div>
+      </div>
+
+      {/* Filters (non-sticky, so they don't crowd the screen while scrolling) */}
+      <div className="mx-auto mt-4 grid max-w-6xl grid-cols-2 gap-3 px-4 sm:grid-cols-4 sm:px-6">
+        <label className="text-xs font-medium text-muted-foreground">
+          {t("menu.filter.maxPrice")}
+          <input
+            type="range"
+            min={1}
+            max={50}
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(Number(e.target.value))}
+            className="mt-2 w-full accent-primary"
+          />
+        </label>
+        <label className="text-xs font-medium text-muted-foreground">
+          {t("menu.filter.dietary")}
+          <select
+            value={dietary}
+            onChange={(e) => setDietary(e.target.value)}
+            className="mt-1.5 h-11 w-full rounded-lg border border-border/60 bg-card px-3 text-sm text-foreground"
+          >
+            <option value="all">{t("menu.filter.dietary.all")}</option>
+            <option value="sugar-free">
+              {t("menu.filter.dietary.sugarFree")}
+            </option>
+            <option value="vegan">{t("menu.filter.dietary.vegan")}</option>
+            <option value="gluten-free">
+              {t("menu.filter.dietary.glutenFree")}
+            </option>
+          </select>
+        </label>
+        <label className="col-span-2 text-xs font-medium text-muted-foreground">
+          {t("menu.filter.sort")}
+          <select
+            value={sortBy}
+            onChange={(e) =>
+              setSortBy(
+                e.target.value as
+                  | "popularity"
+                  | "price-asc"
+                  | "price-desc"
+                  | "newest"
+              )
+            }
+            className="mt-1.5 h-11 w-full rounded-lg border border-border/60 bg-card px-3 text-sm text-foreground"
+          >
+            <option value="popularity">{t("menu.sort.popularity")}</option>
+            <option value="price-asc">{t("menu.sort.priceAsc")}</option>
+            <option value="price-desc">{t("menu.sort.priceDesc")}</option>
+            <option value="newest">{t("menu.sort.newest")}</option>
+          </select>
+        </label>
       </div>
 
       <div className="mx-auto max-w-6xl space-y-16 px-4 py-12 sm:space-y-20 sm:px-6 sm:py-14">
