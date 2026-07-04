@@ -8,7 +8,6 @@ import { ProductDetailDialog } from "@/components/product/product-detail-dialog"
 import { menuProductToDTO } from "@/lib/menu-mapper";
 import type { ProductDTO } from "@/types";
 import { cn } from "@/lib/utils";
-import { HorizontalScrollHints } from "@/components/ui/horizontal-scroll-hints";
 import { HomeFadeUp } from "@/components/home/home-fade-up";
 import { useI18n } from "@/components/i18n/i18n-provider";
 import type { MenuSection } from "@/lib/menu-data";
@@ -122,29 +121,37 @@ export function MenuFullPage({
   }
 
   return (
-    <div className="bg-background pb-14 pt-6 sm:pb-16 sm:pt-8">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <HomeFadeUp>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary">
-            Al Aridi Sweets
-          </p>
-          <h1 className="mt-3 font-heading text-4xl tracking-tight text-foreground sm:text-5xl">
-            {t("menu.title")}
-          </h1>
-          <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {t("menu.subtitle")}
-          </p>
-        </HomeFadeUp>
+    <div className="bg-background pb-14 sm:pb-16">
+      {/* Eye-catching menu header */}
+      <div className="relative overflow-hidden border-b border-primary/10">
+        <div
+          aria-hidden
+          className="glow-radial pointer-events-none absolute inset-x-0 -top-28 h-64"
+        />
+        <div className="relative mx-auto max-w-6xl px-4 py-12 text-center sm:px-6 sm:py-16">
+          <HomeFadeUp>
+            <div className="flex items-center justify-center gap-3" aria-hidden>
+              <span className="h-px w-10 bg-gradient-to-r from-transparent to-primary/70" />
+              <span className="size-1.5 rotate-45 bg-primary" />
+              <span className="h-px w-10 bg-gradient-to-l from-transparent to-primary/70" />
+            </div>
+            <p className="mt-4 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+              Al Aridi Sweets
+            </p>
+            <h1 className="text-gradient-gold mt-3 font-heading text-5xl leading-[1.02] tracking-tight sm:text-6xl md:text-7xl">
+              {t("menu.title")}
+            </h1>
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+              {t("menu.subtitle")}
+            </p>
+          </HomeFadeUp>
+        </div>
       </div>
 
       {/* Thin sticky category chips — sits at the very top (header auto-hides on scroll) */}
       <div className="sticky top-0 z-40 mt-8 border-y border-primary/[0.08] bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
         <div className="mx-auto w-full min-w-0 max-w-6xl px-4 sm:px-6">
-          <HorizontalScrollHints
-            className="min-w-0"
-            scrollerClassName="flex gap-2 py-2.5"
-            edgeFadeClassName="from-background/95 via-background/55"
-          >
+          <div className="scrollbar-none flex gap-2 overflow-x-auto py-2.5">
             {sections.map((s) => (
               <button
                 key={s.slug}
@@ -160,13 +167,13 @@ export function MenuFullPage({
                 {s.label}
               </button>
             ))}
-          </HorizontalScrollHints>
+          </div>
         </div>
       </div>
 
       {/* Filters (non-sticky, so they don't crowd the screen while scrolling) */}
-      <div className="mx-auto mt-4 grid max-w-6xl grid-cols-2 gap-3 px-4 sm:grid-cols-4 sm:px-6">
-        <label className="text-xs font-medium text-muted-foreground">
+      <div className="mx-auto mt-5 max-w-6xl space-y-3 px-4 sm:px-6">
+        <label className="block text-xs font-medium text-muted-foreground">
           {t("menu.filter.maxPrice")}
           <input
             type="range"
@@ -177,44 +184,47 @@ export function MenuFullPage({
             className="mt-2 w-full accent-primary"
           />
         </label>
-        <label className="text-xs font-medium text-muted-foreground">
-          {t("menu.filter.dietary")}
-          <select
-            value={dietary}
-            onChange={(e) => setDietary(e.target.value)}
-            className="mt-1.5 h-11 w-full rounded-lg border border-border/60 bg-card px-3 text-sm text-foreground"
-          >
-            <option value="all">{t("menu.filter.dietary.all")}</option>
-            <option value="sugar-free">
-              {t("menu.filter.dietary.sugarFree")}
-            </option>
-            <option value="vegan">{t("menu.filter.dietary.vegan")}</option>
-            <option value="gluten-free">
-              {t("menu.filter.dietary.glutenFree")}
-            </option>
-          </select>
-        </label>
-        <label className="col-span-2 text-xs font-medium text-muted-foreground">
-          {t("menu.filter.sort")}
-          <select
-            value={sortBy}
-            onChange={(e) =>
-              setSortBy(
-                e.target.value as
-                  | "popularity"
-                  | "price-asc"
-                  | "price-desc"
-                  | "newest"
-              )
-            }
-            className="mt-1.5 h-11 w-full rounded-lg border border-border/60 bg-card px-3 text-sm text-foreground"
-          >
-            <option value="popularity">{t("menu.sort.popularity")}</option>
-            <option value="price-asc">{t("menu.sort.priceAsc")}</option>
-            <option value="price-desc">{t("menu.sort.priceDesc")}</option>
-            <option value="newest">{t("menu.sort.newest")}</option>
-          </select>
-        </label>
+        {/* The two dropdowns side by side */}
+        <div className="grid grid-cols-2 gap-3">
+          <label className="text-xs font-medium text-muted-foreground">
+            {t("menu.filter.dietary")}
+            <select
+              value={dietary}
+              onChange={(e) => setDietary(e.target.value)}
+              className="mt-1.5 h-11 w-full rounded-lg border border-border/60 bg-card px-3 text-sm text-foreground"
+            >
+              <option value="all">{t("menu.filter.dietary.all")}</option>
+              <option value="sugar-free">
+                {t("menu.filter.dietary.sugarFree")}
+              </option>
+              <option value="vegan">{t("menu.filter.dietary.vegan")}</option>
+              <option value="gluten-free">
+                {t("menu.filter.dietary.glutenFree")}
+              </option>
+            </select>
+          </label>
+          <label className="text-xs font-medium text-muted-foreground">
+            {t("menu.filter.sort")}
+            <select
+              value={sortBy}
+              onChange={(e) =>
+                setSortBy(
+                  e.target.value as
+                    | "popularity"
+                    | "price-asc"
+                    | "price-desc"
+                    | "newest"
+                )
+              }
+              className="mt-1.5 h-11 w-full rounded-lg border border-border/60 bg-card px-3 text-sm text-foreground"
+            >
+              <option value="popularity">{t("menu.sort.popularity")}</option>
+              <option value="price-asc">{t("menu.sort.priceAsc")}</option>
+              <option value="price-desc">{t("menu.sort.priceDesc")}</option>
+              <option value="newest">{t("menu.sort.newest")}</option>
+            </select>
+          </label>
+        </div>
       </div>
 
       <div className="mx-auto max-w-6xl space-y-16 px-4 py-12 sm:space-y-20 sm:px-6 sm:py-14">
