@@ -46,12 +46,12 @@ export function NewsletterSignup({ variant = "card" }: Props) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={t("home.newsletter.placeholder")}
-          className="h-11 flex-1 rounded-xl border border-border/60 bg-background px-4 text-sm"
+          className="h-14 flex-1 rounded-xl border border-border/60 bg-background px-5 text-base"
         />
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+          className="inline-flex h-14 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
         >
           {pending ? <Loader2 className="size-4 animate-spin" /> : null}
           {t("home.newsletter.subscribe")}
@@ -79,12 +79,12 @@ export function NewsletterSignup({ variant = "card" }: Props) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={t("home.newsletter.placeholder")}
-          className="h-11 flex-1 rounded-xl border border-border/60 bg-background px-4 text-sm"
+          className="h-14 flex-1 rounded-xl border border-border/60 bg-background px-5 text-base"
         />
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+          className="inline-flex h-14 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
         >
           {pending ? <Loader2 className="size-4 animate-spin" /> : null}
           {t("home.newsletter.subscribe")}

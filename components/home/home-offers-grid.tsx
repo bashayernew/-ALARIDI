@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ProductImage } from "@/components/ui/product-image";
 import type { ProductDTO } from "@/types";
 import { formatKwd, discountPercent } from "@/lib/format";
 import { HomeFadeUp } from "@/components/home/home-fade-up";
@@ -60,7 +60,7 @@ export function HomeOffersGrid({ products }: Props) {
               className="group overflow-hidden rounded-3xl border border-border/55 bg-card/50 shadow-[0_16px_50px_-28px_rgba(0,0,0,0.75)] transition hover:border-primary/25"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <Image
+                <ProductImage
                   src={p.image}
                   alt={d.name}
                   fill

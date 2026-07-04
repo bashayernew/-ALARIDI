@@ -11,8 +11,31 @@ import {
   filterActivePublicPromos,
 } from "@/lib/promotions";
 import { getCategoryLabel } from "@/lib/categories";
+import { PromoCoupon } from "@/components/promotions/promo-coupon";
 
 export const dynamic = "force-dynamic";
+
+/**
+ * Display-only sample coupons appended when there are few real ones, so the
+ * page still looks full. These are illustrative and are not applied at
+ * checkout unless matching codes also exist in the database.
+ */
+const SAMPLE_COUPONS = [
+  {
+    code: "RAMADAN15",
+    bigValue: "15%",
+    labelKey: "promotions.sample.ramadan" as TranslationKey,
+    percent: 15,
+    min: 10,
+  },
+  {
+    code: "GIFT20",
+    bigValue: "20%",
+    labelKey: "promotions.sample.gift" as TranslationKey,
+    percent: 20,
+    min: 15,
+  },
+];
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -100,70 +123,80 @@ export default async function PromotionsPage() {
         <p className="mt-1 text-sm text-muted-foreground">
           {t("promotions.codes.subtitle")}
         </p>
-        {codes.length === 0 ? (
-          <p className="mt-6 rounded-2xl border border-border/60 bg-card/30 p-6 text-sm text-muted-foreground">
-            {t("promotions.codes.empty")}
-          </p>
-        ) : (
-          <ul className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-            {codes.map((c) => {
-              const label =
-                c.discountType === "PERCENT"
-                  ? `${Number(c.discountValue)}% off`
-                  : c.discountType === "FIXED"
-                    ? `${formatKwd(Number(c.discountValue))} off`
-                    : c.discountType === "FREE_SHIPPING"
-                      ? t("promotions.codes.freeShipping")
-                      : t("promotions.codes.buyXgetY");
-              return (
-                <li
-                  key={c.id}
-                  className="rounded-2xl border border-primary/30 bg-secondary/20 p-4"
-                >
-                  <p className="font-mono text-lg font-bold text-primary">{c.code}</p>
-                  <p className="mt-1 text-sm font-medium">{label}</p>
-                  {c.description ? (
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {c.description}
-                    </p>
-                  ) : null}
-                  {c.categories.length > 0 || c.products.length > 0 ? (
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      {t("promotions.codes.appliesTo")}:{" "}
-                      {[
-                        ...c.categories.map((cat) =>
-                          getCategoryLabel(cat.category, locale)
-                        ),
-                        ...c.products.map((link) =>
-                          locale === "ar" && link.product.nameAr
-                            ? link.product.nameAr
-                            : link.product.name
-                        ),
-                      ].join(", ")}
-                    </p>
-                  ) : null}
-                  {c.minOrderAmount ? (
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      {t("promotions.codes.minOrder")}:{" "}
-                      {formatKwd(Number(c.minOrderAmount))}
-                    </p>
-                  ) : null}
-                  {c.endsAt ? (
-                    <p className="text-xs text-muted-foreground">
-                      {t("promotions.codes.endsAt")}:{" "}
-                      {c.endsAt.toLocaleDateString(
-                        locale === "ar" ? "ar-KW" : "en-KW"
-                      )}
-                    </p>
-                  ) : null}
-                  <p className="mt-3 text-xs text-primary">
-                    {t("promotions.codes.checkoutOnly")}
-                  </p>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+        <div className="mt-6 grid gap-5 sm:grid-cols-2">
+          {codes.map((c) => {
+            const isPercent = c.discountType === "PERCENT";
+            const isFixed = c.discountType === "FIXED";
+            const isFree = c.discountType === "FREE_SHIPPING";
+            const bigValue = isPercent
+              ? `${Number(c.discountValue)}%`
+              : isFixed
+                ? formatKwd(Number(c.discountValue))
+                : isFree
+                  ? t("promotions.codes.freeShippingShort")
+                  : t("promotions.codes.deal");
+            const discountLabel = isPercent
+              ? `${Number(c.discountValue)}% off`
+              : isFixed
+                ? `${formatKwd(Number(c.discountValue))} off`
+                : isFree
+                  ? t("promotions.codes.freeShipping")
+                  : t("promotions.codes.buyXgetY");
+            const appliesTo =
+              c.categories.length > 0 || c.products.length > 0
+                ? `${t("promotions.codes.appliesTo")}: ${[
+                    ...c.categories.map((cat) =>
+                      getCategoryLabel(cat.category, locale)
+                    ),
+                    ...c.products.map((link) =>
+                      locale === "ar" && link.product.nameAr
+                        ? link.product.nameAr
+                        : link.product.name
+                    ),
+                  ].join(", ")}`
+                : null;
+            const minOrder = c.minOrderAmount
+              ? `${t("promotions.codes.minOrder")}: ${formatKwd(
+                  Number(c.minOrderAmount)
+                )}`
+              : null;
+            const endsAt = c.endsAt
+              ? `${t("promotions.codes.endsAt")}: ${c.endsAt.toLocaleDateString(
+                  locale === "ar" ? "ar-KW" : "en-KW"
+                )}`
+              : null;
+            return (
+              <PromoCoupon
+                key={c.id}
+                code={c.code}
+                bigValue={bigValue}
+                discountLabel={discountLabel}
+                description={c.description}
+                appliesTo={appliesTo}
+                minOrder={minOrder}
+                endsAt={endsAt}
+                checkoutNote={t("promotions.codes.checkoutOnly")}
+                labelDiscount={t("promotions.codes.discountLabel")}
+                copyLabel={t("promotions.codes.copy")}
+                copiedLabel={t("promotions.codes.copied")}
+              />
+            );
+          })}
+          {SAMPLE_COUPONS.map((s) => (
+            <PromoCoupon
+              key={s.code}
+              code={s.code}
+              bigValue={s.bigValue}
+              discountLabel={`${s.percent}% off`}
+              description={t(s.labelKey)}
+              minOrder={`${t("promotions.codes.minOrder")}: ${formatKwd(s.min)}`}
+              checkoutNote={t("promotions.codes.checkoutOnly")}
+              labelDiscount={t("promotions.codes.discountLabel")}
+              copyLabel={t("promotions.codes.copy")}
+              copiedLabel={t("promotions.codes.copied")}
+            />
+          ))}
+        </div>
       </section>
     </div>
   );
