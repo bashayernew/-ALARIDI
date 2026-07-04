@@ -148,8 +148,8 @@ export function MenuFullPage({
         </div>
       </div>
 
-      {/* Thin sticky category chips — sits at the very top (header auto-hides on scroll) */}
-      <div className="sticky top-0 z-40 mt-8 border-y border-primary/[0.08] bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
+      {/* Category chips — non-sticky so they scroll away and never overlap content */}
+      <div className="mt-8 border-y border-primary/[0.08] bg-card/15">
         <div className="mx-auto w-full min-w-0 max-w-6xl px-4 sm:px-6">
           <div className="scrollbar-none flex gap-2 overflow-x-auto py-2.5">
             {sections.map((s) => (

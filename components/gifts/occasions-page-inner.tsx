@@ -3,6 +3,15 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import {
+  Gift,
+  Moon,
+  Cake,
+  Heart,
+  Sparkles,
+  PartyPopper,
+  type LucideIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { useI18n } from "@/components/i18n/i18n-provider";
@@ -16,6 +25,20 @@ type Props = {
   giftBaskets: GiftBasketDTO[];
   pickupBranches: PickupBranchOption[];
 };
+
+const OCCASION_ICONS: { match: string; icon: LucideIcon }[] = [
+  { match: "ramadan", icon: Moon },
+  { match: "eid", icon: Sparkles },
+  { match: "birthday", icon: Cake },
+  { match: "wedding", icon: Heart },
+  { match: "graduat", icon: PartyPopper },
+  { match: "celebrat", icon: PartyPopper },
+];
+
+function occasionIcon(name: string): LucideIcon {
+  const n = name.toLowerCase();
+  return OCCASION_ICONS.find((o) => n.includes(o.match))?.icon ?? Gift;
+}
 
 export function OccasionsPageInner({
   occasions,
@@ -48,44 +71,66 @@ export function OccasionsPageInner({
 
   return (
     <div className="mx-auto max-w-6xl space-y-12 px-4 py-12 sm:px-6">
-      <header className="max-w-2xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
-          {t("gifts.occasions.kicker")}
-        </p>
-        <h1 className="mt-2 font-heading text-4xl">{t("occasions.title")}</h1>
-        <p className="mt-3 text-muted-foreground">{t("occasions.subtitle")}</p>
+      {/* Eye-catching header */}
+      <header className="relative overflow-hidden rounded-[1.75rem] border border-primary/15 bg-gradient-to-br from-primary/10 via-card/50 to-background px-5 py-12 text-center sm:px-8 sm:py-16">
+        <div
+          aria-hidden
+          className="glow-radial pointer-events-none absolute inset-x-0 -top-24 h-56"
+        />
+        <div className="relative">
+          <div className="flex items-center justify-center gap-3" aria-hidden>
+            <span className="h-px w-10 bg-gradient-to-r from-transparent to-primary/70" />
+            <Gift className="size-5 text-primary" />
+            <span className="h-px w-10 bg-gradient-to-l from-transparent to-primary/70" />
+          </div>
+          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+            {t("gifts.occasions.kicker")}
+          </p>
+          <h1 className="text-gradient-gold mt-3 font-heading text-4xl leading-[1.03] sm:text-5xl md:text-6xl">
+            {t("occasions.title")}
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
+            {t("occasions.subtitle")}
+          </p>
+        </div>
       </header>
 
       {occasions.length > 0 && (
         <section>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap justify-center gap-2.5 sm:justify-start">
             <button
               type="button"
               onClick={() => setOccasion(null)}
               className={cn(
-                "rounded-full border px-4 py-2 text-sm transition",
+                "inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition-all duration-300",
                 !selectedOccasion
-                  ? "border-primary/50 bg-primary/10 text-foreground"
-                  : "border-border/60 bg-card/40 hover:border-primary/40"
+                  ? "border-primary/55 bg-primary/15 text-primary gold-glow"
+                  : "border-border/60 bg-card/40 text-muted-foreground hover:border-primary/40 hover:text-foreground"
               )}
             >
+              <Sparkles className="size-4" />
               {t("gifts.occasions.all")}
             </button>
-            {occasions.map((occasion) => (
-              <button
-                key={occasion.id}
-                type="button"
-                onClick={() => setOccasion(occasion.slug)}
-                className={cn(
-                  "rounded-full border px-4 py-2 text-sm transition",
-                  selectedOccasion?.id === occasion.id
-                    ? "border-primary/50 bg-primary/10 text-foreground"
-                    : "border-border/60 bg-card/40 hover:border-primary/40"
-                )}
-              >
-                {occasion.name}
-              </button>
-            ))}
+            {occasions.map((occasion) => {
+              const Icon = occasionIcon(occasion.name);
+              const active = selectedOccasion?.id === occasion.id;
+              return (
+                <button
+                  key={occasion.id}
+                  type="button"
+                  onClick={() => setOccasion(occasion.slug)}
+                  className={cn(
+                    "inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition-all duration-300",
+                    active
+                      ? "border-primary/55 bg-primary/15 text-primary gold-glow"
+                      : "border-border/60 bg-card/40 text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                  )}
+                >
+                  <Icon className="size-4" />
+                  {occasion.name}
+                </button>
+              );
+            })}
           </div>
         </section>
       )}
