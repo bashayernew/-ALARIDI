@@ -38,32 +38,51 @@ export function GiftsPageInner({
 
   return (
     <div className="mx-auto max-w-6xl space-y-12 px-4 py-12 sm:px-6">
-      <header className="max-w-2xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
-          {t("gifts.kicker")}
-        </p>
-        <h1 className="mt-2 font-heading text-4xl">{t("gifts.title")}</h1>
-        <p className="mt-3 text-muted-foreground">{t("gifts.subtitle")}</p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Link
-            href="/gifts/buy"
-            className={cn(buttonVariants({ variant: "default" }), "rounded-xl")}
-          >
-            <Gift className="me-1 size-4" />
-            {t("gifts.buyGiftCard")}
-          </Link>
-          {occasions.length > 0 && (
+      {/* Eye-catching header */}
+      <header className="relative overflow-hidden rounded-[1.75rem] border border-primary/15 bg-gradient-to-br from-primary/10 via-card/50 to-background px-5 py-12 text-center sm:px-8 sm:py-16">
+        <div
+          aria-hidden
+          className="glow-radial pointer-events-none absolute inset-x-0 -top-24 h-56"
+        />
+        <div className="relative">
+          <div className="flex items-center justify-center gap-3" aria-hidden>
+            <span className="h-px w-10 bg-gradient-to-r from-transparent to-primary/70" />
+            <Gift className="size-5 text-primary" />
+            <span className="h-px w-10 bg-gradient-to-l from-transparent to-primary/70" />
+          </div>
+          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+            {t("gifts.kicker")}
+          </p>
+          <h1 className="text-gradient-gold mt-3 font-heading text-4xl leading-[1.03] sm:text-5xl md:text-6xl">
+            {t("gifts.title")}
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
+            {t("gifts.subtitle")}
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link
-              href="/occasions"
+              href="/gifts/buy"
               className={cn(
-                buttonVariants({ variant: "outline" }),
-                "rounded-xl"
+                buttonVariants({ variant: "default" }),
+                "gold-glow rounded-full px-6"
               )}
             >
-              <Sparkles className="me-1 size-4" />
-              {t("gifts.occasions.cta")}
+              <Gift className="me-1 size-4" />
+              {t("gifts.buyGiftCard")}
             </Link>
-          )}
+            {occasions.length > 0 && (
+              <Link
+                href="/occasions"
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "rounded-full border-primary/30 px-6"
+                )}
+              >
+                <Sparkles className="me-1 size-4" />
+                {t("gifts.occasions.cta")}
+              </Link>
+            )}
+          </div>
         </div>
       </header>
 
