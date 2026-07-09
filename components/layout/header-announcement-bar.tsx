@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/components/i18n/i18n-provider";
@@ -30,7 +29,6 @@ export function HeaderAnnouncementBar() {
   if (offers.length === 0) return null;
 
   const offer = offers[index]!;
-  const hasCta = Boolean(offer.ctaLink?.trim() && offer.ctaText?.trim());
   const Prev = dir === "rtl" ? ChevronRight : ChevronLeft;
   const Next = dir === "rtl" ? ChevronLeft : ChevronRight;
 
@@ -68,14 +66,6 @@ export function HeaderAnnouncementBar() {
               </span>
             ) : null}
           </p>
-          {hasCta ? (
-            <Link
-              href={offer.ctaLink}
-              className="ms-1 shrink-0 text-[11px] font-semibold text-primary underline-offset-2 hover:underline sm:text-xs"
-            >
-              {offer.ctaText}
-            </Link>
-          ) : null}
         </div>
 
         {offers.length > 1 ? (

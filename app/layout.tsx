@@ -15,7 +15,6 @@ import { MainArea } from "@/components/layout/main-area";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { THEME_INIT_SCRIPT } from "@/lib/theme-script";
 import { CartDrawer } from "@/components/cart/cart-drawer";
-import { MobileCartBar } from "@/components/cart/mobile-cart-bar";
 import { FloatingSocials } from "@/components/FloatingSocials";
 import { isRtl } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
@@ -161,7 +160,6 @@ fbq('track', 'PageView');`}
             <StorefrontOnly>
               <SiteFooter />
               <CartDrawer />
-              <MobileCartBar />
               <FloatingSocials />
             </StorefrontOnly>
           </HeaderOffersProvider>

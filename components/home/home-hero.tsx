@@ -118,10 +118,6 @@ export function HomeHero() {
           <span className="h-px w-10 bg-gradient-to-l from-transparent to-[#e7c87f]" />
         </div>
 
-        <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#f0dca6] [text-shadow:0_1px_10px_rgba(0,0,0,0.75)]">
-          {t("hero.kicker")}
-        </p>
-
         <h1 className="max-w-[18ch] font-heading text-[1.85rem] font-medium leading-[1.08] text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.85),0_1px_4px_rgba(0,0,0,0.7)] sm:max-w-none sm:text-5xl sm:leading-[1.05] md:text-[5rem]">
           {t("hero.title.before")}
           <br />
@@ -144,15 +140,6 @@ export function HomeHero() {
           >
             {t("hero.cta.order")}
             <ArrowRight className={cn("size-4", dir === "rtl" && "rotate-180")} />
-          </Link>
-          <Link
-            href="/menu"
-            className={cn(
-              buttonVariants({ size: "lg", variant: "outline" }),
-              "inline-flex w-full justify-center rounded-2xl border-white/30 bg-white/10 px-8 text-base text-white backdrop-blur-md hover:bg-white/20 sm:w-auto"
-            )}
-          >
-            {t("hero.cta.browse")}
           </Link>
         </div>
       </div>

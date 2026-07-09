@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Search, ShoppingBag, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,6 @@ import { useCartStore } from "@/store/cart-store";
 import { cn } from "@/lib/utils";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { MobileNav } from "@/components/layout/mobile-nav";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useI18n } from "@/components/i18n/i18n-provider";
 import { useCustomerAuth } from "@/components/auth/customer-auth-provider";
 import {
@@ -23,33 +23,6 @@ type SiteHeaderProps = {
   servedAreas?: ServedArea[];
   promptAreaOnMount?: boolean;
 };
-
-/** Decorative gold mark sitting above the wordmark (sweets/pistachio motif). */
-function BrandMark({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 48 48"
-      fill="none"
-      aria-hidden="true"
-      className={className}
-    >
-      <path
-        d="M24 3c7 6 11 12 11 19 0 8.5-5.4 14-11 23-5.6-9-11-14.5-11-23C13 15 17 9 24 3Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M24 9c4.2 4 6.6 8 6.6 13 0 5.4-3 9.4-6.6 15-3.6-5.6-6.6-9.6-6.6-15 0-5 2.4-9 6.6-13Z"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinejoin="round"
-        opacity="0.7"
-      />
-      <path d="M24 3v42" stroke="currentColor" strokeWidth="1" opacity="0.45" />
-    </svg>
-  );
-}
 
 const NAV_LINKS = [
   { href: "/", key: "nav.home" as const, show: "" },
@@ -100,7 +73,7 @@ export function SiteHeader({
           />
           <Link
             href="/search"
-            className="group inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-lg px-2 py-2 text-muted-foreground transition hover:text-foreground sm:min-w-0 sm:justify-start"
+            className="group hidden min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-lg px-2 py-2 text-muted-foreground transition hover:text-foreground sm:min-w-0 sm:justify-start lg:inline-flex"
             aria-label={t("nav.search")}
           >
             <Search className="size-5 transition group-hover:text-primary" />
@@ -114,20 +87,18 @@ export function SiteHeader({
           className="group flex flex-col items-center leading-none"
           aria-label="Al Aridi Sweets"
         >
-          <BrandMark className="mb-1 size-6 text-primary transition group-hover:scale-105 sm:mb-1.5 sm:size-9" />
-          <span className="font-heading text-xl tracking-[0.22em] text-gradient-gold sm:text-2xl sm:tracking-[0.28em] md:text-3xl">
-            AL ARIDI
-          </span>
-          <span className="mt-0.5 flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.35em] text-muted-foreground sm:mt-1 sm:gap-2 sm:text-xs sm:tracking-[0.45em]">
-            <span className="h-px w-3 bg-primary/40 sm:w-5" />
-            Sweets
-            <span className="h-px w-3 bg-primary/40 sm:w-5" />
-          </span>
+          <Image
+            src="/logo-white.png"
+            alt="Al Aridi Sweets"
+            width={550}
+            height={262}
+            priority
+            className="h-[4.5rem] w-auto transition group-hover:scale-105 sm:h-20 md:h-24"
+          />
         </Link>
 
         {/* Right: account + cart */}
         <div className="flex min-w-0 items-center justify-end gap-0 sm:gap-2">
-          <ThemeToggle className="shrink-0" />
           <div className="hidden lg:block">
             <LanguageToggle />
           </div>
@@ -185,6 +156,7 @@ export function SiteHeader({
                 link.show
               )}
             >
+              
               {t(link.key)}
             </Link>
           ))}

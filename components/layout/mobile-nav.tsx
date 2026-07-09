@@ -9,6 +9,7 @@ import {
   Menu,
   X,
   Home,
+  Search,
   UtensilsCrossed,
   Gift,
   Sparkles,
@@ -29,6 +30,7 @@ import type { TranslationKey } from "@/lib/dictionary";
 
 const LINKS: { href: string; key: TranslationKey; icon: LucideIcon }[] = [
   { href: "/", key: "nav.home", icon: Home },
+  { href: "/search", key: "nav.search", icon: Search },
   { href: "/menu", key: "nav.menu", icon: UtensilsCrossed },
   { href: "/gifts", key: "nav.gifts", icon: Gift },
   { href: "/occasions", key: "nav.occasions", icon: Sparkles },

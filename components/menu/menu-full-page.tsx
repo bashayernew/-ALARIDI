@@ -20,7 +20,6 @@ export function MenuFullPage({
   const { t } = useI18n();
   const sections = initialSections;
 
-  const [maxPrice, setMaxPrice] = React.useState<number>(50);
   const [dietary, setDietary] = React.useState<string>("all");
   const [sortBy, setSortBy] = React.useState<
     "popularity" | "price-asc" | "price-desc" | "newest"
@@ -29,7 +28,6 @@ export function MenuFullPage({
   const filterProducts = React.useCallback(
     (products: MenuProduct[]) => {
       const filtered = products.filter((p) => {
-        if (p.price > maxPrice) return false;
         if (
           dietary !== "all" &&
           !(p.dietary ?? []).includes(
@@ -49,7 +47,7 @@ export function MenuFullPage({
         return Number(Boolean(b.bestSeller)) - Number(Boolean(a.bestSeller));
       });
     },
-    [maxPrice, dietary, sortBy]
+    [dietary, sortBy]
   );
 
   const visibleSections = React.useMemo(
@@ -128,20 +126,20 @@ export function MenuFullPage({
           aria-hidden
           className="glow-radial pointer-events-none absolute inset-x-0 -top-28 h-64"
         />
-        <div className="relative mx-auto max-w-6xl px-4 py-12 text-center sm:px-6 sm:py-16">
+        <div className="relative mx-auto max-w-6xl px-4 py-7 text-center sm:px-6 sm:py-10">
           <HomeFadeUp>
             <div className="flex items-center justify-center gap-3" aria-hidden>
               <span className="h-px w-10 bg-gradient-to-r from-transparent to-primary/70" />
               <span className="size-1.5 rotate-45 bg-primary" />
               <span className="h-px w-10 bg-gradient-to-l from-transparent to-primary/70" />
             </div>
-            <p className="mt-4 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+            <p className="mt-3 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
               Al Aridi Sweets
             </p>
-            <h1 className="text-gradient-gold mt-3 font-heading text-5xl leading-[1.02] tracking-tight sm:text-6xl md:text-7xl">
+            <h1 className="text-gradient-gold mt-2 font-heading text-4xl leading-[1.02] tracking-tight sm:text-6xl md:text-7xl">
               {t("menu.title")}
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
               {t("menu.subtitle")}
             </p>
           </HomeFadeUp>
@@ -149,7 +147,7 @@ export function MenuFullPage({
       </div>
 
       {/* Category chips — non-sticky so they scroll away and never overlap content */}
-      <div className="mt-8 border-y border-primary/[0.08] bg-card/15">
+      <div className="mt-4 border-y border-primary/[0.08] bg-card/15">
         <div className="mx-auto w-full min-w-0 max-w-6xl px-4 sm:px-6">
           <div className="scrollbar-none flex gap-2 overflow-x-auto py-2.5">
             {sections.map((s) => (
@@ -172,18 +170,7 @@ export function MenuFullPage({
       </div>
 
       {/* Filters (non-sticky, so they don't crowd the screen while scrolling) */}
-      <div className="mx-auto mt-5 max-w-6xl space-y-3 px-4 sm:px-6">
-        <label className="block text-xs font-medium text-muted-foreground">
-          {t("menu.filter.maxPrice")}
-          <input
-            type="range"
-            min={1}
-            max={50}
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(Number(e.target.value))}
-            className="mt-2 w-full accent-primary"
-          />
-        </label>
+      <div className="mx-auto mt-4 max-w-6xl space-y-3 px-4 sm:px-6">
         {/* The two dropdowns side by side */}
         <div className="grid grid-cols-2 gap-3">
           <label className="text-xs font-medium text-muted-foreground">
@@ -227,7 +214,7 @@ export function MenuFullPage({
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl space-y-16 px-4 py-12 sm:space-y-20 sm:px-6 sm:py-14">
+      <div className="mx-auto max-w-6xl space-y-12 px-4 py-8 sm:space-y-16 sm:px-6 sm:py-10">
         {visibleSections.length === 0 ? (
           <p className="py-12 text-center text-sm text-muted-foreground">
             {t("menu.noFilterResults")}

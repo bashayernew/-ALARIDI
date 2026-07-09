@@ -38,13 +38,21 @@ const IMG = {
   kaake: "/kaake.jpg",
   /** Kunafa — public/kunafa.jpg */
   kunafa: "/kunafa.jpg",
-  /** Baklawa Mix (Must Try) — public/baklawa.jpg */
-  baklawaMix: "/baklawa.jpg",
+  /** Baklawa Mix — official photo in public/products/baklawa-mix.jpeg */
+  baklawaMix: "/products/baklawa-mix.jpeg",
   /** Mixed Baklawa Crystal Plate — public/mixedbaklawa.jpg */
   mixedBaklawaCrystal: "/mixedbaklawa.jpg",
   /** Assorted Diet Sweets Box — public/assorted.jpg */
   dietAssortedBox: "/assorted.jpg",
   baklavaMix: "/products/baklava-mix.jpg",
+  /** Baloreye Cashew — official photo */
+  baloreyeCashew: "/products/baloreye-cashew.jpeg",
+  /** Burma Cashew — official photo */
+  burmaCashew: "/products/burma-cashew.jpeg",
+  /** Barazek — public/Barazek.png */
+  barazek: "/Barazek.png",
+  /** Lebanese Kunafa Cheese — official photo */
+  lebaneseKunafaCheese: "/products/lebanese-kunafa-cheese.jpeg",
   /** Date maamoul — public/maamoul_dates.png */
   maamoulDates: "/maamoul_dates.png",
   /** Walnut maamoul — public/maamoul_walnut.png */
@@ -56,9 +64,10 @@ const IMG = {
   /** Kuwaiti Ghrayba — public/kuwaiti ghrayba.png */
   kuwaitiGhrayba: "/kuwaiti%20ghrayba.png",
   maamoul: "/products/maamoul-dates.jpg",
-  /** Mafrooke Pistachio — public/mafrooke.jpg */
-  mafrookePistachio: "/mafrooke.jpg",
-  mafrouke: "/products/mafrouke.jpg",
+  /** Mafrooke Pistachio — official photo */
+  mafrookePistachio: "/products/mafrooke-pistachio.jpeg",
+  /** Mafrooke — public/mafrooke.jpg */
+  mafrouke: "/mafrooke.jpg",
   /** Goat Labne — public/goat labn.png */
   goatLabne: "/goat%20labn.png",
   /** Green Olives — public/green_olives.png */
@@ -173,6 +182,13 @@ export const MENU_SECTIONS: MenuSection[] = [
     label: "Kunafa",
     products: [
       {
+        id: "kf-lebanese-cheese",
+        name: "Lebanese Kunafa Cheese",
+        description: "Roasted semolina with beef ghee, stuffed with fresh cheese.",
+        price: 1.75,
+        image: "/products/lebanese-kunafa-cheese.jpeg",
+      },
+      {
         id: "kn-kunafa",
         name: "Kunafa",
         description: "Golden kataifi, sweet cheese, orange blossom syrup.",
@@ -208,18 +224,53 @@ export const MENU_SECTIONS: MenuSection[] = [
     label: "Baklava",
     products: [
       {
+        id: "bv-sorar-cashew",
+        name: "Baklawa Sorar Cashew",
+        description: "Prepared from crisp dough sheets, stuffed with cashew and sweetened with syrup.",
+        price: 3.0,
+        image: "/products/baklawa-sorar-cashew.jpeg",
+      },
+      {
+        id: "bv-sorar-pistachio",
+        name: "Baklawa Sorar Pistachio",
+        description: "Prepared from crisp dough sheets, stuffed with pistachio and sweetened with syrup.",
+        price: 3.0,
+        image: "/products/baklawa-sorar-pistachio.jpeg",
+      },
+      {
+        id: "bv-koul-w-shkour-pistachio",
+        name: "Koul W Shkour Pistachio",
+        description: "Prepared from crisp dough sheets, stuffed with pistachio and sweetened with syrup.",
+        price: 3.0,
+        image: "/products/baklawa-koul-w-shkour-pistachio.jpeg",
+      },
+      {
+        id: "bv-baloreye-pistachio",
+        name: "Baloreye Pistachio",
+        description: "Made of fine vermicelli stuffed with pistachios, sweetened with syrup.",
+        price: 3.5,
+        image: "/products/baloreye-pistachio.jpeg",
+      },
+      {
+        id: "bv-osmalia-kashta",
+        name: "Osmalia Kashta",
+        description: "Two layers of roasted fine vermicelli, stuffed with cream.",
+        price: 2.0,
+        image: "/products/osmalia-kashta.jpeg",
+      },
+      {
         id: "bv-mixed",
         name: "Mixed Baklawa",
         description: "Premium mixed cuts — ideal for sharing trays.",
         price: 14.0,
-        image: IMG.baklavaMix,
+        image: IMG.baklawaMix,
       },
       {
         id: "bv-baloreye",
         name: "Baloreye Cashew",
         description: "Layered cashew baklava — light syrup.",
         price: 3.0,
-        image: IMG.baklavaMix,
+        image: IMG.baloreyeCashew,
       },
       {
         id: "bv-baklawa-pistachio",
@@ -255,7 +306,7 @@ export const MENU_SECTIONS: MenuSection[] = [
         name: "Burma Cashew",
         description: "Crunchy rolls with cashew cream.",
         price: 3.0,
-        image: IMG.baklavaMix,
+        image: IMG.burmaCashew,
       },
       {
         id: "bv-crescent-walnut",
@@ -285,6 +336,13 @@ export const MENU_SECTIONS: MenuSection[] = [
     label: "Basmah",
     products: [
       {
+        id: "bs-mix-nuts",
+        name: "Basma Mix Nuts",
+        description: "Prepared from kunafa dough and mixed nuts, sweetened with syrup.",
+        price: 3.25,
+        image: "/products/basma-mix-nuts.jpeg",
+      },
+      {
         id: "bs-pistachio",
         name: "Bismah Pistachios",
         description: "Hand-cut basmah squares — pistachio crown.",
@@ -304,6 +362,13 @@ export const MENU_SECTIONS: MenuSection[] = [
     slug: "maamoul",
     label: "Maamoul",
     products: [
+      {
+        id: "mm-walnuts-chocolate",
+        name: "Maamoul Walnuts & Chocolate",
+        description: "Prepared from semolina and walnuts, dipped in chocolate.",
+        price: 2.5,
+        image: "/products/maamoul-walnuts-chocolate.jpeg",
+      },
       {
         id: "mm-dates",
         name: "Maamoul Dates",
@@ -346,6 +411,20 @@ export const MENU_SECTIONS: MenuSection[] = [
     label: "Ghraybe",
     products: [
       {
+        id: "gh-ghraybe",
+        name: "Ghraybe",
+        description: "Prepared from ghee, sugar and flour.",
+        price: 1.5,
+        image: "/products/ghraybe.jpeg",
+      },
+      {
+        id: "gh-maha-eyes-chocolate",
+        name: "Maha Eyes with Chocolate",
+        description: "Prepared from ghee, sugar and flour, dipped in chocolate.",
+        price: 1.75,
+        image: "/products/maha-eyes-with-chocolate.jpeg",
+      },
+      {
         id: "gh-kuwaiti",
         name: "Kuwaiti Ghrayba Pistachio",
         description: "Shortbread melt — pistachio-forward.",
@@ -365,6 +444,13 @@ export const MENU_SECTIONS: MenuSection[] = [
     slug: "kashta-sweets",
     label: "Kashta Sweets",
     products: [
+      {
+        id: "ks-warbat-kashta",
+        name: "Warbat Kashta",
+        description: "Crisp dough sheets stuffed with fresh cream, sweetened with syrup.",
+        price: 2.0,
+        image: "/products/warbat-kashta.jpeg",
+      },
       {
         id: "ks-halawet",
         name: "Halawet El Jiben",
@@ -395,6 +481,62 @@ export const MENU_SECTIONS: MenuSection[] = [
     label: "Assorted Sweets",
     products: [
       {
+        id: "as-namoora-kashta",
+        name: "Namoora Kashta",
+        description: "Semolina cake stuffed with cream and soaked in sugar syrup.",
+        price: 1.5,
+        image: "/products/namoora-kashta.jpeg",
+      },
+      {
+        id: "as-barazek-chocolate",
+        name: "Barazek Chocolate",
+        description: "Roasted sesame and pistachio biscuits, dipped in chocolate.",
+        price: 1.75,
+        image: "/products/barazek-chocolate.jpeg",
+      },
+      {
+        id: "as-lawzeye",
+        name: "Lawzeye",
+        description: "Flour, butter and ground almonds, covered with fine sugar.",
+        price: 1.75,
+        image: "/products/lawzeye.jpeg",
+      },
+      {
+        id: "as-katayef-kashta",
+        name: "Katayef Kashta",
+        description: "Qatayef dough stuffed with cream.",
+        price: 1.75,
+        image: "/products/katayef-kashta.jpeg",
+      },
+      {
+        id: "as-katayef-walnut",
+        name: "Katayef Walnut",
+        description: "Qatayef dough stuffed with walnuts.",
+        price: 1.75,
+        image: "/products/katayef-walnut.jpeg",
+      },
+      {
+        id: "as-znood-al-set",
+        name: "Znood Al Set",
+        description: "Fried baklava dough stuffed with cream, sweetened with syrup.",
+        price: 1.75,
+        image: "/products/znood-al-set.jpeg",
+      },
+      {
+        id: "as-balah-sham",
+        name: "Balah Sham",
+        description: "Chef's special dough cut in zigzag shapes and soaked in syrup.",
+        price: 1.25,
+        image: "/products/balah-sham.jpeg",
+      },
+      {
+        id: "as-awamat",
+        name: "Awamat",
+        description: "Chef's special dough scooped in small rounds and soaked in syrup.",
+        price: 1.25,
+        image: "/products/awamat.jpeg",
+      },
+      {
         id: "as-vanilla",
         name: "Vanilla Petit Fours",
         description: "Bite-sized vanilla layers — afternoon tea.",
@@ -413,7 +555,7 @@ export const MENU_SECTIONS: MenuSection[] = [
         name: "Barazek",
         description: "Sesame-pistachio crisp biscuits.",
         price: 3.5,
-        image: IMG.baklavaMix,
+        image: IMG.barazek,
         dietary: ["sugar-free"],
       },
     ],
