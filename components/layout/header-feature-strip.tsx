@@ -35,11 +35,6 @@ export function HeaderFeatureStrip() {
                   <span className="block truncate text-xs font-medium text-foreground/95">
                     {offer.title}
                   </span>
-                  {offer.shortText ? (
-                    <span className="mt-0.5 block truncate text-[10px] text-muted-foreground">
-                      {offer.shortText}
-                    </span>
-                  ) : null}
                 </span>
               </>
             );

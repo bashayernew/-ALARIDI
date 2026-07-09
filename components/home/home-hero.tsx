@@ -126,10 +126,6 @@ export function HomeHero() {
           </span>
         </h1>
 
-        <p className="max-w-xl text-sm leading-relaxed text-white/90 [text-shadow:0_1px_16px_rgba(0,0,0,0.8)] sm:text-base md:text-lg">
-          {t("hero.subtitle")}
-        </p>
-
         <div className="flex w-full max-w-sm flex-col items-stretch gap-3 pt-2 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center sm:justify-center">
           <Link
             href="/menu"
