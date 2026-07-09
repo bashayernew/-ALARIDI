@@ -49,7 +49,7 @@ export function SiteFooter() {
         className="glow-radial pointer-events-none absolute inset-x-0 -top-24 h-48"
       />
 
-      <div className="relative mx-auto max-w-6xl px-5 py-14 sm:px-6 sm:py-20">
+      <div className="relative mx-auto max-w-6xl py-14 pe-5 ps-16 sm:py-20 sm:pe-6 xl:ps-6">
         <div className="grid gap-10 sm:grid-cols-2 sm:gap-12 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
