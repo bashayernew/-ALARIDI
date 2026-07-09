@@ -131,10 +131,10 @@ export const EN_DICT = {
   "home.promos.cta": "All offers",
   "home.promos.empty":
     "Promo items with an old price appear here automatically.",
-  "home.freshToday.kicker": "Just landed",
+  "home.freshToday.kicker": "Just baked",
   "home.freshToday.title": "Fresh today",
   "home.freshToday.subtitle":
-    "A rotating pick — quick add, then refine in your cart.",
+    "Choose your pick, quick add to cart, then check out.",
   "home.freshToday.shopAll": "Shop all",
   "home.freshToday.quickAdd": "Quick add",
   "home.freshToday.empty":
@@ -1650,10 +1650,10 @@ export const AR_DICT: Record<TranslationKey, string> = {
   "home.promos.cta": "كل العروض",
   "home.promos.empty":
     "تظهر هنا الأصناف المعرّضة التي يتوفر لها سعر قديم.",
-  "home.freshToday.kicker": "وصل للتو",
+  "home.freshToday.kicker": "مخبوز طازجاً",
   "home.freshToday.title": "طازج اليوم",
   "home.freshToday.subtitle":
-    "اختيار متجدد — أضف بسرعة ثم عدّل في السلة.",
+    "اختر ما يعجبك، أضفه للسلة بسرعة ثم أكمل الطلب.",
   "home.freshToday.shopAll": "تسوق الكل",
   "home.freshToday.quickAdd": "إضافة سريعة",
   "home.freshToday.empty":

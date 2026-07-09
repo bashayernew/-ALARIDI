@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   Camera,
   MessageCircle,
@@ -52,15 +53,13 @@ export function SiteFooter() {
         <div className="grid gap-10 sm:grid-cols-2 sm:gap-12 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-2.5">
-              <span
-                aria-hidden
-                className="inline-block size-2 rotate-45 bg-primary"
-              />
-              <p className="font-heading text-2xl text-gradient-gold">
-                Al Aridi Sweets
-              </p>
-            </div>
+            <Image
+              src="/logo-white.png"
+              alt="Al Aridi Sweets"
+              width={550}
+              height={262}
+              className="h-24 w-auto sm:h-28"
+            />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
               {t("footer.tagline")}
             </p>

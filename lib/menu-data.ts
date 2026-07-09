@@ -107,28 +107,6 @@ const IMG = {
 
 export const MENU_SECTIONS: MenuSection[] = [
   {
-    slug: "must-try",
-    label: "Must Try",
-    products: [
-      {
-        id: "mt-baklawa-mix",
-        name: "Baklawa Mix",
-        description: "Chef’s cut assortment — pistachio, cashew, clarified butter.",
-        price: 3.5,
-        image: IMG.baklawaMix,
-        bestSeller: true,
-      },
-      {
-        id: "mt-mafrooke-pistachio",
-        name: "Mafrooke Pistachio",
-        description: "Silky semolina crumble with kashta and pistachio.",
-        price: 3.0,
-        image: IMG.mafrookePistachio,
-        customizable: true,
-      },
-    ],
-  },
-  {
     slug: "kunafa",
     label: "Kunafa",
     products: [
@@ -145,6 +123,14 @@ export const MENU_SECTIONS: MenuSection[] = [
     slug: "baklava",
     label: "Baklava",
     products: [
+      {
+        id: "mt-baklawa-mix",
+        name: "Baklawa Mix",
+        description: "Chef’s cut assortment — pistachio, cashew, clarified butter.",
+        price: 3.5,
+        image: IMG.baklawaMix,
+        bestSeller: true,
+      },
       {
         id: "bv-sorar-cashew",
         name: "Baklawa Sorar Cashew",

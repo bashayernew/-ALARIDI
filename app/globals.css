@@ -88,7 +88,7 @@
 }
 
 .dark {
-  --background: #0a0806;
+  --background: #000000;
   --foreground: #f6f1e7;
   --card: #16110c;
   --card-foreground: #f6f1e7;
@@ -166,28 +166,11 @@
 /* Ambient starfield — a faint field of gold dots behind the dark storefront,
    echoing the Crems backdrop. Fixed so it stays put while the page scrolls.
    Sections with their own solid backgrounds simply sit on top of it. */
-.dark body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image: radial-gradient(
-    rgba(226, 198, 132, 0.11) 1px,
-    transparent 1.7px
-  );
-  background-size: 26px 26px;
-  background-position: center;
-}
+
 
 /* A denser, reusable starfield for individual sections that want it. */
 @utility starfield {
-  background-image: radial-gradient(
-    rgba(226, 198, 132, 0.1) 1px,
-    transparent 1.6px
-  );
-  background-size: 24px 24px;
-  background-position: center;
+  background-image: none;
 }
 
 @utility gold-glow {
