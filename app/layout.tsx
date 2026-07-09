@@ -29,7 +29,6 @@ import { resolveStorefrontWhatsappUrl } from "@/lib/branch-whatsapp";
 import { areaDisplayLabel } from "@/lib/kuwait-areas";
 import { getServedAreas } from "@/lib/served-areas";
 import { HeaderOffersProvider } from "@/components/header-offers/header-offers-provider";
-import { HeaderAnnouncementBar } from "@/components/layout/header-announcement-bar";
 import { HeaderOverlay } from "@/components/layout/header-overlay";
 import { mergeSocialUrlsFromContent } from "@/lib/site-content-types";
 import { getCurrentCustomer } from "@/lib/customer-auth/server";
@@ -147,7 +146,6 @@ fbq('track', 'PageView');`}
           <HeaderOffersProvider offers={headerOffers}>
             <StorefrontOnly>
               <HeaderOverlay>
-                <HeaderAnnouncementBar />
                 <SiteHeader
                   selectedArea={selectedArea}
                   areaLabel={areaLabel}
