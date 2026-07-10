@@ -21,6 +21,8 @@ const DEMO_NAMES = [
   "Mixed Baklawa Crystal Plate", "Maamoul Dates 250g", "Vanilla Petit Fours",
   "Assorted Diet Sweets Box", "Assorted Diet Sweets Box 1KG",
   "Oat Meal Cookies", "Maakaron",
+  // discontinued products
+  "Maamoul Walnuts & Chocolate", "Maha Eyes with Chocolate", "Barazek Chocolate",
   // test items
   "test", "test2", "test cat", "Bashayer",
 ].map((n) => n.toLowerCase());

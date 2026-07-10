@@ -272,4 +272,5 @@ export const MENU_SECTION_AR: Record<string, string> = {
   "assorted-sweets": "حلويات مشكلة",
   "diet-sweets": "حلويات دايت",
   "lebanese-moone": "مونة لبنانية",
+  "ramadan-sweets": "حلويات رمضانية",
 };

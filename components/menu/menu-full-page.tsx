@@ -133,9 +133,6 @@ export function MenuFullPage({
               <span className="size-1.5 rotate-45 bg-primary" />
               <span className="h-px w-10 bg-gradient-to-l from-transparent to-primary/70" />
             </div>
-            <p className="mt-3 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-              Al Aridi Sweets
-            </p>
             <h1 className="text-gradient-gold mt-2 font-heading text-4xl leading-[1.02] tracking-tight sm:text-6xl md:text-7xl">
               {t("menu.title")}
             </h1>

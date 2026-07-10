@@ -31,6 +31,7 @@ export const FALLBACK_CATEGORIES: CategoryDTO[] = [
   { id: "cat_assorted_sweets", key: "ASSORTED_SWEETS", nameEn: "Assorted Sweets", nameAr: "حلويات مشكلة", sectionSlug: "assorted-sweets", sortOrder: 9, isActive: true },
   { id: "cat_diet_sweets", key: "DIET_SWEETS", nameEn: "Diet Sweets", nameAr: "حلويات دايت", sectionSlug: "diet-sweets", sortOrder: 10, isActive: true },
   { id: "cat_lebanese_moone", key: "LEBANESE_MOONE", nameEn: "Lebanese Moone", nameAr: "مونة لبنانية", sectionSlug: "lebanese-moone", sortOrder: 11, isActive: true },
+  { id: "cat_ramadan_sweets", key: "RAMADAN_SWEETS", nameEn: "Ramadan Sweets", nameAr: "حلويات رمضانية", sectionSlug: "ramadan-sweets", sortOrder: 12, isActive: false },
 ];
 
 /** Static label maps (fallback only — prefer the DB-driven helpers below). */

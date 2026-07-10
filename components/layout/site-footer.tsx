@@ -2,14 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Camera,
-  MessageCircle,
-  Music2,
-  Ghost,
-  MapPin,
-  Phone,
-} from "lucide-react";
+import { MapPin, Phone } from "lucide-react";
+import { BRAND_PATHS } from "@/components/FloatingSocials";
 import { useI18n } from "@/components/i18n/i18n-provider";
 import { useSocialUrls } from "@/components/site-extras-provider";
 import { DEFAULT_SOCIAL_URLS } from "@/lib/site-content-types";
@@ -35,10 +29,10 @@ export function SiteFooter() {
   const urls = useSocialUrls() ?? DEFAULT_SOCIAL_URLS;
 
   const socials = [
-    { href: urls.instagram, label: "Instagram", Icon: Camera },
-    { href: urls.tiktok, label: "TikTok", Icon: Music2 },
-    { href: urls.snapchat, label: "Snapchat", Icon: Ghost },
-    { href: urls.whatsapp, label: "WhatsApp", Icon: MessageCircle },
+    { href: urls.instagram, label: "Instagram", path: BRAND_PATHS.instagram },
+    { href: urls.tiktok, label: "TikTok", path: BRAND_PATHS.tiktok },
+    { href: urls.snapchat, label: "Snapchat", path: BRAND_PATHS.snapchat },
+    { href: urls.whatsapp, label: "WhatsApp", path: BRAND_PATHS.whatsapp },
   ];
 
   return (
@@ -64,7 +58,7 @@ export function SiteFooter() {
               {t("footer.tagline")}
             </p>
             <div className="mt-6 flex flex-wrap gap-2.5">
-              {socials.map(({ href, label, Icon }) => (
+              {socials.map(({ href, label, path }) => (
                 <a
                   key={label}
                   href={href}
@@ -73,7 +67,14 @@ export function SiteFooter() {
                   aria-label={label}
                   className="inline-flex size-10 items-center justify-center rounded-full border border-primary/25 text-muted-foreground transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-primary/10 hover:text-primary"
                 >
-                  <Icon className="size-[18px]" />
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="size-[18px]"
+                    fill="currentColor"
+                    aria-hidden
+                  >
+                    <path d={path} />
+                  </svg>
                 </a>
               ))}
             </div>
