@@ -1,5 +1,7 @@
 /** Optional add-on fees (KWD), applied per line item */
 export const GIFT_WRAP_FEE_KWD = 1;
+/** Minimum items value (KWD) required to create a custom gift basket. */
+export const MIN_GIFT_BASKET_KWD = 15;
 export const EXTRA_TOPPINGS_FEE_KWD = 0.5;
 
 export function lineExtrasTotalKwd(

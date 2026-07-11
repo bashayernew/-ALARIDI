@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formatKwd } from "@/lib/format";
-import { GIFT_WRAP_FEE_KWD } from "@/lib/pricing";
+import { GIFT_WRAP_FEE_KWD, MIN_GIFT_BASKET_KWD } from "@/lib/pricing";
 import { useI18n } from "@/components/i18n/i18n-provider";
 import { cn } from "@/lib/utils";
 import type { BuilderProductDTO } from "@/lib/gift-baskets";
@@ -79,6 +79,8 @@ export function GiftBundleBuilder({
   );
   const bundleTotal = itemsTotal + wrapTotal;
   const totalItems = selections.reduce((n, s) => n + s.quantity, 0);
+  const remainingKwd = Math.max(0, MIN_GIFT_BASKET_KWD - itemsTotal);
+  const minReached = remainingKwd <= 0;
 
   function bump(id: string, delta: number) {
     setSelected((cur) => {
@@ -96,6 +98,10 @@ export function GiftBundleBuilder({
   function reviewBasket() {
     if (selections.length === 0) {
       toast.error(t("gifts.builder.empty"));
+      return;
+    }
+    if (!minReached) {
+      toast.error(t("gifts.builder.minError"));
       return;
     }
     const deliveryError = validateGiftDelivery(delivery, {
@@ -276,11 +282,21 @@ export function GiftBundleBuilder({
             <span className="tabular-nums">{formatKwd(bundleTotal)}</span>
           </div>
 
+          {minReached ? (
+            <p className="rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-medium text-primary">
+              {t("gifts.builder.minReached")}
+            </p>
+          ) : (
+            <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-400">
+              {t("gifts.builder.minNote", { amount: remainingKwd.toFixed(3) })}
+            </p>
+          )}
+
           <Button
             type="button"
             className="w-full gap-2 rounded-xl py-6"
             onClick={reviewBasket}
-            disabled={totalItems === 0}
+            disabled={totalItems === 0 || !minReached}
           >
             <Gift className="size-4" />
             {t("gifts.builder.reviewBasket")}

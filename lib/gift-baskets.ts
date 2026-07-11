@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { dbQuery } from "@/lib/db-safe";
 import { GIFT_WRAP_FEE_KWD } from "@/lib/pricing";
 import type { Locale } from "@/lib/i18n";
+import { getActiveCategories } from "@/lib/category-data";
 
 export type GiftBasketItemDTO = {
   productId: string;
@@ -222,7 +223,9 @@ export async function getBuilderCatalogProducts(
       orderBy: [{ category: "asc" }, { name: "asc" }],
     })
   );
-  return rows.map((p) => ({
+  // Only offer products from active categories (hides seasonal ones, e.g. Ramadan).
+  const activeKeys = new Set((await getActiveCategories()).map((c) => c.key));
+  return rows.filter((p) => activeKeys.has(p.category)).map((p) => ({
     id: p.id,
     slug: p.slug,
     name: locale === "ar" && p.nameAr.trim() ? p.nameAr : p.name,
