@@ -27,3 +27,23 @@ export function mergeSocialUrlsFromContent(
   });
   return out;
 }
+
+export type FeatureFlagKey = "giftCards" | "giftBaskets" | "promotions";
+
+export const DEFAULT_FEATURE_FLAGS: Record<FeatureFlagKey, boolean> = {
+  giftCards: true,
+  giftBaskets: true,
+  promotions: true,
+};
+
+/** Flags are stored in SiteContent as `feature.<key>` = "on" | "off". */
+export function mergeFeatureFlagsFromContent(
+  map: SiteContentOverrideMap
+): Record<FeatureFlagKey, boolean> {
+  const out = { ...DEFAULT_FEATURE_FLAGS };
+  (Object.keys(DEFAULT_FEATURE_FLAGS) as FeatureFlagKey[]).forEach((k) => {
+    const v = (map[`feature.${k}`]?.valueEn ?? "").trim().toLowerCase();
+    if (v === "off") out[k] = false;
+  });
+  return out;
+}

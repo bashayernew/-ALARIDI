@@ -1,5 +1,8 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { fetchSiteContentMap } from "@/lib/site-content";
+import { mergeFeatureFlagsFromContent } from "@/lib/site-content-types";
 import { getLocale } from "@/lib/i18n-server";
 import { translate } from "@/lib/dictionary";
 import {
@@ -23,9 +26,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function GiftsPage() {
+  const featureFlags = mergeFeatureFlagsFromContent(await fetchSiteContentMap());
+  if (!featureFlags.giftBaskets && !featureFlags.giftCards) notFound();
+
   const locale = await getLocale();
 
-  const [giftBaskets, builderProducts, giftCardProducts, allOccasions, pickupBranches] =
+  const [allGiftBaskets, allBuilderProducts, allGiftCardProducts, allOccasions, pickupBranches] =
     await Promise.all([
       getPublishedGiftBaskets(locale),
       getBuilderCatalogProducts(locale),
@@ -33,6 +39,10 @@ export default async function GiftsPage() {
       getEnabledGiftOccasions(locale),
       getPickupBranches(),
     ]);
+
+  const giftBaskets = featureFlags.giftBaskets ? allGiftBaskets : [];
+  const builderProducts = featureFlags.giftBaskets ? allBuilderProducts : [];
+  const giftCardProducts = featureFlags.giftCards ? allGiftCardProducts : [];
 
   const visibleBasketIds = new Set(giftBaskets.map((b) => b.id));
   const visibleCardIds = new Set(giftCardProducts.map((c) => c.id));
@@ -45,6 +55,7 @@ export default async function GiftsPage() {
   return (
     <Suspense fallback={null}>
       <GiftsPageInner
+        showBuilder={featureFlags.giftBaskets}
         occasions={occasions}
         giftBaskets={giftBaskets}
         giftCardProducts={giftCardProducts}

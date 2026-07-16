@@ -93,18 +93,18 @@ export function ProductCard({ product, rank, onOpen }: Props) {
             </Badge>
           )}
         </div>
-        <h3 className="font-heading text-lg leading-snug text-foreground sm:text-xl">
+        <h3 className="font-sans text-xl font-semibold leading-snug tracking-tight text-foreground sm:text-2xl">
           <Link href={`/product/${product.slug}`} className="hover:text-primary">
             {product.name}
           </Link>
         </h3>
-        <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-1.5 line-clamp-2 text-base leading-relaxed text-muted-foreground">
           {product.description}
         </p>
         <div className="mt-auto flex flex-wrap items-end justify-between gap-3 pt-4">
           <div className="flex flex-col gap-0.5">
             <div className="flex items-baseline gap-2">
-              <span className="font-heading text-lg text-primary tabular-nums sm:text-xl">
+              <span className="font-sans text-base font-semibold text-primary tabular-nums sm:text-lg">
                 {formatKwd(product.price)}
               </span>
               {hasDiscount && (

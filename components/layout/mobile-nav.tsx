@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/components/i18n/i18n-provider";
+import { useFeatureFlags } from "@/components/site-extras-provider";
 import { useCustomerAuth } from "@/components/auth/customer-auth-provider";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -42,6 +43,12 @@ const LINKS: { href: string; key: TranslationKey; icon: LucideIcon }[] = [
 
 export function MobileNav() {
   const { t, dir } = useI18n();
+  const flags = useFeatureFlags();
+  const links = LINKS.filter((l) => {
+    if (l.href === "/promotions") return flags.promotions;
+    if (l.href === "/gifts") return flags.giftCards || flags.giftBaskets;
+    return true;
+  });
   const { user, ready } = useCustomerAuth();
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
@@ -148,7 +155,7 @@ export function MobileNav() {
 
               {/* Links */}
               <nav className="mt-4 flex flex-col gap-1 px-3">
-                {LINKS.map(({ href, key, icon: Icon }) => {
+                {links.map(({ href, key, icon: Icon }) => {
                   const active = pathname === href;
                   return (
                     <Link

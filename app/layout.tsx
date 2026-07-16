@@ -30,7 +30,10 @@ import { areaDisplayLabel } from "@/lib/kuwait-areas";
 import { getServedAreas } from "@/lib/served-areas";
 import { HeaderOffersProvider } from "@/components/header-offers/header-offers-provider";
 import { HeaderOverlay } from "@/components/layout/header-overlay";
-import { mergeSocialUrlsFromContent } from "@/lib/site-content-types";
+import {
+  mergeFeatureFlagsFromContent,
+  mergeSocialUrlsFromContent,
+} from "@/lib/site-content-types";
 import { getCurrentCustomer } from "@/lib/customer-auth/server";
 
 const inter = Inter({
@@ -78,6 +81,7 @@ export default async function RootLayout({
   const rtl = isRtl(locale);
   const siteContentMap = await fetchSiteContentMap();
   const socialUrls = mergeSocialUrlsFromContent(siteContentMap);
+  const featureFlags = mergeFeatureFlagsFromContent(siteContentMap);
   const initialUser = await getCurrentCustomer();
   const selectedArea = await getSelectedArea();
   const areaLabel = selectedArea
@@ -141,6 +145,7 @@ fbq('track', 'PageView');`}
           initialLocale={locale}
           siteContentOverrides={siteContentMap}
           socialUrls={socialUrls}
+          featureFlags={featureFlags}
           initialUser={initialUser}
         >
           <HeaderOffersProvider offers={headerOffers}>

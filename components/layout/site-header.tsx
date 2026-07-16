@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { useI18n } from "@/components/i18n/i18n-provider";
+import { useFeatureFlags } from "@/components/site-extras-provider";
 import { useCustomerAuth } from "@/components/auth/customer-auth-provider";
 import {
   StorefrontAreaPicker,
@@ -42,6 +43,12 @@ export function SiteHeader({
   promptAreaOnMount = false,
 }: SiteHeaderProps) {
   const { t } = useI18n();
+  const flags = useFeatureFlags();
+  const navLinks = NAV_LINKS.filter((l) => {
+    if (l.href === "/promotions") return flags.promotions;
+    if (l.href === "/gifts") return flags.giftCards || flags.giftBaskets;
+    return true;
+  });
   const { user, ready } = useCustomerAuth();
   const pathname = usePathname();
   // On the homepage the header floats transparently over the hero (not sticky,
@@ -147,7 +154,7 @@ export function SiteHeader({
       {/* Bottom row: centered nav (desktop only — mobile uses the drawer) */}
       <div className={cn("hidden lg:block", overlay ? "" : "border-t border-border/40")}>
         <nav className="scrollbar-none mx-auto flex max-w-6xl snap-x snap-mandatory items-center justify-start gap-0.5 overflow-x-auto px-3 py-2 sm:justify-center sm:gap-1.5 sm:px-4 md:px-6">
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}

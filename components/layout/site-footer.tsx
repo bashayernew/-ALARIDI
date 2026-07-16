@@ -5,7 +5,10 @@ import Image from "next/image";
 import { MapPin, Phone } from "lucide-react";
 import { BRAND_PATHS } from "@/components/FloatingSocials";
 import { useI18n } from "@/components/i18n/i18n-provider";
-import { useSocialUrls } from "@/components/site-extras-provider";
+import {
+  useFeatureFlags,
+  useSocialUrls,
+} from "@/components/site-extras-provider";
 import { DEFAULT_SOCIAL_URLS } from "@/lib/site-content-types";
 import type { TranslationKey } from "@/lib/dictionary";
 
@@ -26,6 +29,12 @@ const ACCOUNT: { href: string; key: TranslationKey }[] = [
 
 export function SiteFooter() {
   const { t } = useI18n();
+  const flags = useFeatureFlags();
+  const explore = EXPLORE.filter((l) => {
+    if (l.href === "/promotions") return flags.promotions;
+    if (l.href === "/gifts") return flags.giftCards || flags.giftBaskets;
+    return true;
+  });
   const urls = useSocialUrls() ?? DEFAULT_SOCIAL_URLS;
 
   const socials = [
@@ -86,7 +95,7 @@ export function SiteFooter() {
               {t("footer.explore")}
             </p>
             <ul className="space-y-2.5 text-sm text-muted-foreground">
-              {EXPLORE.map((l) => (
+              {explore.map((l) => (
                 <li key={l.href}>
                   <Link
                     href={l.href}
@@ -153,7 +162,7 @@ export function SiteFooter() {
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-primary/70" />
-                Agaila
+                Agaila — Gate Mall
               </li>
             </ul>
           </div>

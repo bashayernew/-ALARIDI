@@ -12,7 +12,7 @@ import {
   updateBranchWhatsapp,
   type BranchWhatsappRow,
 } from "@/actions/branch-whatsapp-admin";
-
+  
 function BranchRow({ row }: { row: BranchWhatsappRow }) {
   const { t } = useI18n();
   const router = useRouter();

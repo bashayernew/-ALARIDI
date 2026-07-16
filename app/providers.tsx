@@ -6,6 +6,7 @@ import { CustomerAuthProvider } from "@/components/auth/customer-auth-provider";
 import { SiteExtrasProvider } from "@/components/site-extras-provider";
 import type { Locale } from "@/lib/i18n";
 import type {
+  FeatureFlagKey,
   SiteContentOverrideMap,
   SocialUrlKey,
 } from "@/lib/site-content-types";
@@ -16,12 +17,14 @@ export function Providers({
   initialLocale,
   siteContentOverrides,
   socialUrls,
+  featureFlags,
   initialUser = null,
 }: {
   children: React.ReactNode;
   initialLocale: Locale;
   siteContentOverrides?: SiteContentOverrideMap;
   socialUrls: Record<SocialUrlKey, string>;
+  featureFlags?: Record<FeatureFlagKey, boolean>;
   initialUser?: PublicCustomer | null;
 }) {
   return (
@@ -29,7 +32,7 @@ export function Providers({
       initialLocale={initialLocale}
       siteContentOverrides={siteContentOverrides}
     >
-      <SiteExtrasProvider socialUrls={socialUrls}>
+      <SiteExtrasProvider socialUrls={socialUrls} featureFlags={featureFlags}>
         <CustomerAuthProvider initialUser={initialUser}>
           {children}
           <Toaster position="top-center" richColors closeButton />

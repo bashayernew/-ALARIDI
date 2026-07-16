@@ -15,6 +15,7 @@ import { BuyGiftCardForm } from "@/components/gifts/buy-gift-card-form";
 import { GiftBundleBuilder } from "@/components/gifts/gift-bundle-builder";
 
 type Props = {
+  showBuilder?: boolean;
   occasions: GiftOccasionDTO[];
   giftBaskets: GiftBasketDTO[];
   giftCardProducts: GiftCardProductDTO[];
@@ -23,6 +24,7 @@ type Props = {
 };
 
 export function GiftsPageInner({
+  showBuilder = true,
   occasions,
   giftBaskets,
   giftCardProducts,
@@ -86,6 +88,7 @@ export function GiftsPageInner({
         </div>
       </header>
 
+      {showBuilder ? (
       <section>
         <h2 className="font-heading text-2xl">{t("gifts.builder.title")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -98,6 +101,7 @@ export function GiftsPageInner({
           />
         </div>
       </section>
+      ) : null}
 
       {featuredBaskets.length > 0 && (
         <section>

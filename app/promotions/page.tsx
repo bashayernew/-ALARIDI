@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { fetchSiteContentMap } from "@/lib/site-content";
+import { mergeFeatureFlagsFromContent } from "@/lib/site-content-types";
 import Image from "next/image";
 import Link from "next/link";
 import { getLocale } from "@/lib/i18n-server";
@@ -43,6 +46,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PromotionsPage() {
+  const featureFlags = mergeFeatureFlagsFromContent(await fetchSiteContentMap());
+  if (!featureFlags.promotions) notFound();
+
   const locale = await getLocale();
   const t = (key: TranslationKey) => translate(locale, key);
   const now = new Date();

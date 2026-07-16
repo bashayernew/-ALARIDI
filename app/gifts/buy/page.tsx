@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { fetchSiteContentMap } from "@/lib/site-content";
+import { mergeFeatureFlagsFromContent } from "@/lib/site-content-types";
 import { getLocale } from "@/lib/i18n-server";
 import { translate, type TranslationKey } from "@/lib/dictionary";
 import { getEnabledGiftCardProducts } from "@/lib/gift-card-products";
@@ -17,6 +20,9 @@ export default async function BuyGiftCardPage({
 }: {
   searchParams: Promise<{ id?: string }>;
 }) {
+  const featureFlags = mergeFeatureFlagsFromContent(await fetchSiteContentMap());
+  if (!featureFlags.giftCards) notFound();
+
   const locale = await getLocale();
   const t = (k: TranslationKey) => translate(locale, k);
   const { id } = await searchParams;
