@@ -22,7 +22,18 @@ async function main() {
     });
     console.log(`OK "${o.titleEn}" -> "Gift Bundles Available"`);
   }
-  console.log(`Done: ${offers.length} offer(s) updated.`);
+  const fresh = await prisma.headerOffer.findMany({
+    where: { titleEn: { contains: "freshly made daily", mode: "insensitive" } },
+  });
+  for (const o of fresh) {
+    await prisma.headerOffer.update({
+      where: { id: o.id },
+      data: { titleEn: "Daily Fresh Made", titleAr: "طازج يومياً" },
+    });
+    console.log(`OK "${o.titleEn}" -> "Daily Fresh Made"`);
+  }
+
+  console.log(`Done: ${offers.length + fresh.length} offer(s) updated.`);
 }
 
 main()

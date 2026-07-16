@@ -151,6 +151,10 @@ export function SiteFooter() {
                 <MapPin className="mt-0.5 size-4 shrink-0 text-primary/70" />
                 Jahra Sahari Mall
               </li>
+              <li className="flex items-start gap-2">
+                <MapPin className="mt-0.5 size-4 shrink-0 text-primary/70" />
+                Agaila
+              </li>
             </ul>
           </div>
         </div>

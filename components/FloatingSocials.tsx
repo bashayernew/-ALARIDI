@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { Share2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/components/i18n/i18n-provider";
 import { useSocialUrls } from "@/components/site-extras-provider";
@@ -62,6 +63,7 @@ function SocialCircle({ entry, className }: { entry: Entry; className?: string }
 export function FloatingSocials() {
   const { t } = useI18n();
   const socialUrls = useSocialUrls();
+  const [open, setOpen] = React.useState(false);
   const items = React.useMemo(
     () => buildEntries(socialUrls ?? DEFAULT_SOCIAL_URLS),
     [socialUrls]
@@ -72,16 +74,35 @@ export function FloatingSocials() {
       aria-label={t("social.nav.label")}
       className="fixed start-2 top-1/2 z-[35] -translate-y-1/2 sm:start-4"
     >
-      <div className="flex flex-col gap-1.5 rounded-2xl border border-border bg-card/70 p-1.5 shadow-xl backdrop-blur-xl">
-        {items.map((entry) => (
-          <motion.div
-            key={entry.id}
-            whileHover={{ scale: 1.06 }}
-            transition={{ type: "spring", stiffness: 420, damping: 24 }}
-          >
-            <SocialCircle entry={entry} />
-          </motion.div>
-        ))}
+      <div className="flex flex-col items-center gap-1.5">
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, y: 8, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.9 }}
+              transition={{ duration: 0.18 }}
+              className="flex flex-col gap-1.5 rounded-2xl border border-border bg-card/80 p-1.5 shadow-xl backdrop-blur-xl"
+            >
+              {items.map((entry) => (
+                <SocialCircle key={entry.id} entry={entry} />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-label={open ? "Hide social links" : "Show social links"}
+          onClick={() => setOpen((o) => !o)}
+          className={cn(
+            "flex size-9 items-center justify-center rounded-full border border-primary/40 bg-card/85 text-primary shadow-lg backdrop-blur-md transition",
+            "hover:scale-105 hover:border-primary/60 hover:gold-glow",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+          )}
+        >
+          {open ? <X className="size-4" /> : <Share2 className="size-4" />}
+        </button>
       </div>
     </nav>
   );
