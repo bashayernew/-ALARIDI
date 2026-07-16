@@ -134,7 +134,7 @@ export default async function AdminDeliveryAreasPage() {
           <BranchDeliveryAreasAdmin
             branchId={activeBranchId}
             initialRows={initialRows}
-            readOnly
+            ownAreasOnly
           />
         </div>
       )}

@@ -116,3 +116,48 @@ export async function saveDeliveryAreaAssignments(input: {
   revalidatePath("/admin/delivery-areas");
   revalidatePath("/", "layout");
 }
+
+export type OwnDeliveryAreaUpdate = {
+  area: string;
+  enabled: boolean;
+  deliveryFeeKwd: number;
+};
+
+/**
+ * Branch admins can adjust the delivery fee and enable/disable delivery for
+ * the areas the super admin assigned to their branch. They cannot add or
+ * remove areas — only the super admin assigns areas to branches.
+ */
+export async function updateOwnBranchDeliveryAreas(input: {
+  rows: OwnDeliveryAreaUpdate[];
+}): Promise<void> {
+  const session = await getAdminSession();
+  if (!session) throw new Error("Unauthorized");
+  const branchId =
+    session.role === "BRANCH_ADMIN" ? session.branchId : null;
+  if (!branchId) {
+    throw new Error("Forbidden: only branch admins can use this action.");
+  }
+
+  const assigned = await prisma.branchDeliveryArea.findMany({
+    where: { branchId },
+    select: { area: true },
+  });
+  const allowed = new Set(assigned.map((a) => a.area));
+  const updates = input.rows.filter((r) => allowed.has(r.area));
+
+  await prisma.$transaction(
+    updates.map((r) =>
+      prisma.branchDeliveryArea.update({
+        where: { branchId_area: { branchId, area: r.area } },
+        data: {
+          enabled: r.enabled,
+          deliveryFeeKwd: Math.max(0, r.deliveryFeeKwd),
+        },
+      })
+    )
+  );
+
+  revalidatePath("/admin/delivery-areas");
+  revalidatePath("/", "layout");
+}
