@@ -161,3 +161,63 @@ export async function updateOwnBranchDeliveryAreas(input: {
   revalidatePath("/admin/delivery-areas");
   revalidatePath("/", "layout");
 }
+
+/**
+ * Super-admin: set the full list of areas a branch manages/delivers to.
+ * Selected areas are taken over from any other branch (one branch per area);
+ * areas no longer selected are removed from the branch. Existing fees are kept.
+ */
+export async function assignAreasToBranch(input: {
+  branchId: string;
+  areas: { governorate: string; area: string }[];
+}): Promise<void> {
+  const session = await getAdminSession();
+  if (!session) throw new Error("Unauthorized");
+  if (session.role !== "SUPER_ADMIN") {
+    throw new Error("Forbidden: only the super admin can assign areas.");
+  }
+
+  const existing = await prisma.branchDeliveryArea.findMany({
+    where: { branchId: input.branchId },
+  });
+  const feeByArea = new Map(
+    existing.map((r) => [r.area, Number(r.deliveryFeeKwd)])
+  );
+  const selectedAreas = new Set(input.areas.map((a) => a.area));
+
+  await prisma.$transaction(async (tx) => {
+    if (input.areas.length > 0) {
+      // Take the selected areas away from every branch (incl. this one).
+      await tx.branchDeliveryArea.deleteMany({
+        where: {
+          OR: input.areas.map((a) => ({
+            governorate: a.governorate,
+            area: a.area,
+          })),
+        },
+      });
+    }
+    // Drop areas that were unticked for this branch.
+    await tx.branchDeliveryArea.deleteMany({
+      where: {
+        branchId: input.branchId,
+        area: { notIn: [...selectedAreas] },
+      },
+    });
+    if (input.areas.length > 0) {
+      await tx.branchDeliveryArea.createMany({
+        data: input.areas.map((a) => ({
+          branchId: input.branchId,
+          governorate: a.governorate,
+          area: a.area,
+          enabled: true,
+          deliveryFeeKwd: feeByArea.get(a.area) ?? 0,
+        })),
+      });
+    }
+  });
+
+  revalidatePath("/admin/delivery-areas");
+  revalidatePath("/admin/accounts");
+  revalidatePath("/", "layout");
+}

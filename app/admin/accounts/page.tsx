@@ -16,6 +16,26 @@ export default async function AdminAccountsPage() {
 
   const branches = await listBranches();
 
+  // Current area -> branch assignments (drives the picker in the form).
+  let areaAssignments: {
+    governorate: string;
+    area: string;
+    branchId: string;
+  }[] = [];
+  try {
+    areaAssignments = (
+      await prisma.branchDeliveryArea.findMany({
+        select: { governorate: true, area: true, branchId: true },
+      })
+    ).map((r) => ({
+      governorate: r.governorate,
+      area: r.area,
+      branchId: r.branchId,
+    }));
+  } catch {
+    // areas table unavailable
+  }
+
   type AdminUserRow = {
     id: string;
     email: string;
@@ -70,6 +90,7 @@ export default async function AdminAccountsPage() {
           <AccountsAdmin
             rows={rows}
             branches={branches.map((b) => ({ id: b.id, name: b.name }))}
+            areaAssignments={areaAssignments}
             currentEmail={session.email}
           />
         </div>

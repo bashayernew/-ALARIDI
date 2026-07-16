@@ -13,6 +13,10 @@ import {
   resetAdminPassword,
   deleteAdminUser,
 } from "@/actions/admin-users";
+import { assignAreasToBranch } from "@/actions/branch-delivery-areas";
+import { KUWAIT_GOVERNORATES } from "@/lib/kuwait-areas";
+import { ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Role = "SUPER_ADMIN" | "BRANCH_ADMIN";
 
@@ -26,13 +30,16 @@ type Row = {
   active: boolean;
 };
 
+type AreaAssignment = { governorate: string; area: string; branchId: string };
+
 type Props = {
   rows: Row[];
   branches: { id: string; name: string }[];
+  areaAssignments: AreaAssignment[];
   currentEmail: string;
 };
 
-export function AccountsAdmin({ rows, branches, currentEmail }: Props) {
+export function AccountsAdmin({ rows, branches, areaAssignments, currentEmail }: Props) {
   const router = useRouter();
   const [email, setEmail] = React.useState("");
   const [name, setName] = React.useState("");
@@ -40,6 +47,42 @@ export function AccountsAdmin({ rows, branches, currentEmail }: Props) {
   const [role, setRole] = React.useState<Role>("BRANCH_ADMIN");
   const [branchId, setBranchId] = React.useState(branches[0]?.id ?? "");
   const [busy, setBusy] = React.useState(false);
+  const [openGov, setOpenGov] = React.useState<string | null>(null);
+
+  const branchNameById = React.useMemo(
+    () => new Map(branches.map((b) => [b.id, b.name])),
+    [branches]
+  );
+  const assignmentByArea = React.useMemo(
+    () => new Map(areaAssignments.map((a) => [a.area, a.branchId])),
+    [areaAssignments]
+  );
+
+  // Areas ticked for the branch currently selected in the form.
+  const [selectedAreas, setSelectedAreas] = React.useState<Set<string>>(
+    () =>
+      new Set(
+        areaAssignments
+          .filter((a) => a.branchId === (branches[0]?.id ?? ""))
+          .map((a) => a.area)
+      )
+  );
+  React.useEffect(() => {
+    setSelectedAreas(
+      new Set(
+        areaAssignments.filter((a) => a.branchId === branchId).map((a) => a.area)
+      )
+    );
+  }, [branchId, areaAssignments]);
+
+  function toggleArea(area: string) {
+    setSelectedAreas((cur) => {
+      const next = new Set(cur);
+      if (next.has(area)) next.delete(area);
+      else next.add(area);
+      return next;
+    });
+  }
 
   async function onCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -51,11 +94,27 @@ export function AccountsAdmin({ rows, branches, currentEmail }: Props) {
       role,
       branchId: role === "BRANCH_ADMIN" ? branchId || null : null,
     });
-    setBusy(false);
     if (!res.ok) {
+      setBusy(false);
       toast.error(res.error ?? "Could not create account.");
       return;
     }
+    if (role === "BRANCH_ADMIN" && branchId) {
+      try {
+        const areas: { governorate: string; area: string }[] = [];
+        for (const g of KUWAIT_GOVERNORATES) {
+          for (const a of g.areas) {
+            if (selectedAreas.has(a.key)) {
+              areas.push({ governorate: g.key, area: a.key });
+            }
+          }
+        }
+        await assignAreasToBranch({ branchId, areas });
+      } catch {
+        toast.error("Account created, but saving the delivery areas failed.");
+      }
+    }
+    setBusy(false);
     toast.success("Account created");
     setEmail("");
     setName("");
@@ -151,6 +210,79 @@ export function AccountsAdmin({ rows, branches, currentEmail }: Props) {
                 </option>
               ))}
             </select>
+            <div className="space-y-2 pt-2">
+              <Label>Delivery areas this account manages</Label>
+              <p className="text-xs text-muted-foreground">
+                Tick the governorates and areas this branch delivers to. The
+                admin will set the delivery price for each ticked area. Areas
+                marked with another branch will be moved to this branch.
+                Selected: {selectedAreas.size}
+              </p>
+              <div className="space-y-2">
+                {KUWAIT_GOVERNORATES.map((g) => {
+                  const ticked = g.areas.filter((a) =>
+                    selectedAreas.has(a.key)
+                  ).length;
+                  const open = openGov === g.key;
+                  return (
+                    <section
+                      key={g.key}
+                      className="rounded-xl border border-border bg-muted/10"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setOpenGov(open ? null : g.key)}
+                        className="flex w-full items-center justify-between px-3 py-2 text-start text-sm"
+                      >
+                        <span className="font-medium text-foreground">
+                          {g.nameEn}
+                          {ticked > 0 ? (
+                            <span className="ms-2 rounded-full bg-primary/15 px-2 py-0.5 text-[11px] text-primary">
+                              {ticked}
+                            </span>
+                          ) : null}
+                        </span>
+                        <ChevronDown
+                          className={cn(
+                            "size-4 text-muted-foreground transition",
+                            open && "rotate-180"
+                          )}
+                        />
+                      </button>
+                      {open ? (
+                        <ul className="grid gap-1 border-t border-border/60 p-2 sm:grid-cols-2">
+                          {g.areas.map((a) => {
+                            const owner = assignmentByArea.get(a.key);
+                            const otherBranch =
+                              owner && owner !== branchId
+                                ? branchNameById.get(owner)
+                                : null;
+                            return (
+                              <li key={a.key}>
+                                <label className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground hover:bg-muted/40">
+                                  <Checkbox
+                                    checked={selectedAreas.has(a.key)}
+                                    onCheckedChange={() => toggleArea(a.key)}
+                                  />
+                                  <span className="min-w-0 truncate">
+                                    {a.nameEn}
+                                    {otherBranch ? (
+                                      <span className="ms-1 text-[11px] text-amber-500">
+                                        ({otherBranch})
+                                      </span>
+                                    ) : null}
+                                  </span>
+                                </label>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      ) : null}
+                    </section>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         ) : null}
         <div className="sm:col-span-2">
