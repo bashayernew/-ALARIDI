@@ -77,6 +77,7 @@ export function AdminChrome({
   ];
   if (isSuper) {
     navItems.push({ href: "/admin/accounts", label: "Accounts" });
+    navItems.push({ href: "/admin/features", label: "Store features" });
   }
   navItems.sort((a, b) =>
     a.href === "/admin" ? -1 : b.href === "/admin" ? 1 : 0

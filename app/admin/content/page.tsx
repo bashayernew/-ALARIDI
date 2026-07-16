@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { isAdminSession } from "@/actions/admin-auth";
-import { getAdminSession } from "@/lib/admin-session";
-import { mergeFeatureFlagsFromContent } from "@/lib/site-content-types";
-import { FeatureFlagsAdmin } from "@/components/admin/feature-flags-admin";
 import { prisma } from "@/lib/prisma";
 import { dbQueryWithFlag } from "@/lib/db-safe";
 import { getLocale } from "@/lib/i18n-server";
@@ -20,8 +17,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AdminContentPage() {
   if (!(await isAdminSession())) redirect("/admin/login");
-  const session = await getAdminSession();
-  const isSuperAdmin = session?.role === "SUPER_ADMIN";
 
   const locale = await getLocale();
   const t = (k: Parameters<typeof translate>[1]) => translate(locale, k);
@@ -41,11 +36,6 @@ export default async function AdminContentPage() {
       <h1 className="font-heading text-3xl text-foreground">
         {t("admin.content.title")}
       </h1>
-      {isSuperAdmin ? (
-        <div className="mt-8">
-          <FeatureFlagsAdmin initial={mergeFeatureFlagsFromContent(initialMap)} />
-        </div>
-      ) : null}
       <div className="mt-8">
         <SiteContentAdmin initialMap={initialMap} dbOffline={dbOffline} />
       </div>

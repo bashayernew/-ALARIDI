@@ -100,14 +100,14 @@ export function HomeHouseFavorites({ items }: Props) {
                 )}
               </div>
               <div className="flex flex-1 flex-col items-center p-5">
-                <h3 className="font-heading text-xl leading-snug">
+                <h3 className="font-sans text-2xl font-semibold leading-snug tracking-tight">
                   {translatedCardTitle(cardTitle, t)}
                 </h3>
-                <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
+                <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
                   {d.name}
                 </p>
                 <div className="mt-3 flex items-baseline justify-center gap-2">
-                  <span className="font-heading text-xl text-primary tabular-nums">
+                  <span className="font-sans text-base font-semibold text-primary tabular-nums">
                     {formatKwd(product.price)}
                   </span>
                   {hasDiscount && (

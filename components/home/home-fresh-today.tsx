@@ -67,8 +67,8 @@ export function HomeFreshToday({ products }: Props) {
                   />
                 </div>
                 <div className="space-y-2 p-3">
-                  <p className="line-clamp-2 font-medium leading-snug">{d.name}</p>
-                  <p className="text-sm text-primary tabular-nums">{formatKwd(p.price)}</p>
+                  <p className="line-clamp-2 text-lg font-semibold leading-snug tracking-tight">{d.name}</p>
+                  <p className="text-sm font-medium text-primary tabular-nums">{formatKwd(p.price)}</p>
                   <HomeQuickAddButton
                     product={p}
                     size="sm"
