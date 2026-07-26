@@ -85,7 +85,6 @@ export default async function PromotionsPage() {
           {t("promotions.kicker")}
         </p>
         <h1 className="mt-2 font-heading text-4xl">{t("promotions.title")}</h1>
-        <p className="mt-3 text-muted-foreground">{t("promotions.subtitle")}</p>
       </header>
 
       {banners.length > 0 && (

@@ -141,9 +141,11 @@ export function MobileNav() {
                   <span className="block truncate text-sm font-semibold text-foreground">
                     {ready && user ? user.fullName || t("nav.account") : t("nav.auth.login")}
                   </span>
-                  <span className="block truncate text-xs text-muted-foreground">
-                    {ready && user ? t("nav.account") : t("nav.auth.login")}
-                  </span>
+                  {ready && user ? (
+                    <span className="block truncate text-xs text-muted-foreground">
+                      {t("nav.account")}
+                    </span>
+                  ) : null}
                 </span>
                 <ArrowRight
                   className={cn(

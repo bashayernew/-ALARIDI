@@ -25,6 +25,7 @@ import { HomeFadeUp } from "@/components/home/home-fade-up";
 import { useI18n } from "@/components/i18n/i18n-provider";
 import { displayDbProduct } from "@/lib/db-product-ar";
 import type { TranslationKey } from "@/lib/dictionary";
+import type { CategoryDTO } from "@/lib/categories";
 
 type HouseSlot = { product: ProductDTO; cardTitle: string };
 
@@ -34,6 +35,7 @@ type Props = {
   promoProducts: ProductDTO[];
   mooneProducts: ProductDTO[];
   offerBanners: OfferBannerDTO[];
+  categories?: CategoryDTO[];
 };
 
 export function HomeSections({
@@ -42,6 +44,7 @@ export function HomeSections({
   promoProducts,
   mooneProducts,
   offerBanners,
+  categories,
 }: Props) {
   const { t, locale } = useI18n();
 
@@ -66,7 +69,7 @@ export function HomeSections({
 
       <HomeFeatures />
 
-      <HomeCategoryRail />
+      <HomeCategoryRail categories={categories} />
 
       <HomeOffersGrid products={promoProducts} />
 

@@ -21,12 +21,6 @@ const EXPLORE: { href: string; key: TranslationKey }[] = [
   { href: "/contact", key: "nav.contact" },
 ];
 
-const ACCOUNT: { href: string; key: TranslationKey }[] = [
-  { href: "/account", key: "nav.account" },
-  { href: "/login", key: "nav.auth.login" },
-  { href: "/register", key: "nav.auth.register" },
-];
-
 export function SiteFooter() {
   const { t } = useI18n();
   const flags = useFeatureFlags();
@@ -133,17 +127,6 @@ export function SiteFooter() {
                 </a>
               </li>
             </ul>
-            <div className="mt-5 flex flex-wrap gap-x-4 gap-y-1.5">
-              {ACCOUNT.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className="text-xs text-muted-foreground transition hover:text-foreground"
-                >
-                  {t(l.key)}
-                </Link>
-              ))}
-            </div>
           </div>
 
           {/* Locations */}
@@ -154,15 +137,19 @@ export function SiteFooter() {
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-primary/70" />
-                Assima Mall, Salmiya — Qatar Street
+                Salmiya — Qatar Street
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-primary/70" />
-                Jahra Sahari Mall
+                Jahra — Sahari Mall
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-primary/70" />
-                Agaila — Gate Mall
+                Agaila — The Gate Mall
+              </li>
+              <li className="flex items-start gap-2">
+                <MapPin className="mt-0.5 size-4 shrink-0 text-primary/70" />
+                Assima Mall — Monoprix
               </li>
             </ul>
           </div>

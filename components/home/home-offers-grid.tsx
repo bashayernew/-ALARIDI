@@ -9,6 +9,7 @@ import type { ProductDTO } from "@/types";
 import { formatKwd, discountPercent } from "@/lib/format";
 import { HomeFadeUp } from "@/components/home/home-fade-up";
 import { useI18n } from "@/components/i18n/i18n-provider";
+import { useFeatureFlags } from "@/components/site-extras-provider";
 import { displayDbProduct } from "@/lib/db-product-ar";
 import { cn } from "@/lib/utils";
 
@@ -18,22 +19,21 @@ type Props = {
 
 export function HomeOffersGrid({ products }: Props) {
   const { t, locale, dir } = useI18n();
+  const flags = useFeatureFlags();
   const list = products.filter(
     (p) => p.oldPrice != null && p.oldPrice > p.price
   );
+
+  // No promos to show (or promotions disabled) -> no section at all.
+  if (!flags.promotions || list.length === 0) return null;
 
   return (
     <section className="mx-auto max-w-6xl overflow-x-clip px-4 py-12 sm:px-6 sm:py-16 md:py-24">
       <HomeFadeUp>
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex flex-wrap items-center gap-3">
-            <Badge className="border border-red-500/35 bg-red-500/15 text-red-400">
-              {t("home.promos.badge")}
-            </Badge>
-            <h2 className="font-heading text-3xl leading-[1.08] sm:text-4xl lg:text-5xl">
-              {t("home.promos.title")}
-            </h2>
-          </div>
+          <h2 className="font-heading text-3xl leading-[1.08] sm:text-4xl lg:text-5xl">
+            {t("home.promos.title")}
+          </h2>
           <Link
             href="/menu#cat-PROMO"
             className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"

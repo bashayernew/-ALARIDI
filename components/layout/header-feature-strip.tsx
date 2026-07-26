@@ -12,7 +12,7 @@ export function HeaderFeatureStrip() {
   return (
     <div className="border-b border-border/40 bg-background/60">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <ul className="scrollbar-none flex items-stretch gap-2 overflow-x-auto py-2.5 sm:justify-center sm:gap-3">
+        <ul className="scrollbar-none flex items-stretch gap-2 py-2 sm:justify-center sm:gap-3">
           {offers.map((offer) => {
             const inner = (
               <>
@@ -21,18 +21,18 @@ export function HeaderFeatureStrip() {
                   <img
                     src={offer.image}
                     alt=""
-                    className="size-7 shrink-0 rounded-full border border-primary/25 object-cover"
+                    className="size-5 shrink-0 rounded-full border border-primary/25 object-cover"
                   />
                 ) : (
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-primary/25 bg-primary/5">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-primary/25 bg-primary/5">
                     <HeaderOfferIcon
                       name={offer.icon}
-                      className="size-3.5 text-primary"
+                      className="size-3 text-primary"
                     />
                   </span>
                 )}
                 <span className="min-w-0 text-start">
-                  <span className="block truncate text-xs font-medium text-foreground/95">
+                  <span className="block truncate text-[11px] font-medium text-foreground/95">
                     {offer.title}
                   </span>
                 </span>
@@ -40,13 +40,13 @@ export function HeaderFeatureStrip() {
             );
 
             const className = cn(
-              "flex min-h-11 min-w-[9rem] max-w-[14rem] shrink-0 items-center gap-2.5 rounded-xl border border-border/50 bg-card/30 px-3 py-2.5 transition",
-              "hover:border-primary/25 hover:bg-card/50 sm:min-w-[10.5rem]"
+              "flex min-h-9 w-full items-center gap-2 rounded-xl border border-border/50 bg-card/30 px-2.5 py-1.5 transition",
+              "hover:border-primary/25 hover:bg-card/50"
             );
 
             if (offer.ctaLink?.trim()) {
               return (
-                <li key={offer.id}>
+                <li key={offer.id} className="min-w-0 flex-1 sm:max-w-[14rem]">
                   <Link href={offer.ctaLink} className={className}>
                     {inner}
                   </Link>
@@ -55,7 +55,7 @@ export function HeaderFeatureStrip() {
             }
 
             return (
-              <li key={offer.id}>
+              <li key={offer.id} className="min-w-0 flex-1 sm:max-w-[14rem]">
                 <div className={className}>{inner}</div>
               </li>
             );

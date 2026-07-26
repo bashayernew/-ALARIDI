@@ -61,6 +61,11 @@ export function StorefrontAreaPicker({
   const [govKey, setGovKey] = React.useState(
     selected?.governorateKey ?? governorates[0]?.key ?? KUWAIT_GOVERNORATES[0]!.key
   );
+  const [areaKey, setAreaKey] = React.useState(selected?.areaKey ?? "");
+
+  React.useEffect(() => {
+    if (selected?.areaKey) setAreaKey(selected.areaKey);
+  }, [selected?.areaKey]);
 
   React.useEffect(() => {
     if (promptOnMount && !selected) setOpen(true);
@@ -132,23 +137,20 @@ export function StorefrontAreaPicker({
               <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("area.picker.governorate")}
               </p>
-              <div className="flex flex-wrap gap-2">
+              <select
+                value={govKey}
+                onChange={(e) => {
+                  setGovKey(e.target.value);
+                  setAreaKey("");
+                }}
+                className="h-11 w-full rounded-lg border border-border/60 bg-background px-3 text-sm text-foreground"
+              >
                 {governorates.map((g) => (
-                  <button
-                    key={g.key}
-                    type="button"
-                    onClick={() => setGovKey(g.key)}
-                    className={cn(
-                      "rounded-lg border px-3 py-1.5 text-sm transition",
-                      govKey === g.key
-                        ? "border-primary bg-primary/10 text-foreground"
-                        : "border-border text-muted-foreground hover:border-primary/40"
-                    )}
-                  >
+                  <option key={g.key} value={g.key}>
                     {locale === "ar" ? g.nameAr : g.nameEn}
-                  </button>
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
 
             {governorate ? (
@@ -156,27 +158,31 @@ export function StorefrontAreaPicker({
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t("area.picker.area")}
                 </p>
-                <ul className="grid gap-1 sm:grid-cols-2">
+                <select
+                  value={areaKey}
+                  onChange={(e) => setAreaKey(e.target.value)}
+                  className="h-11 w-full rounded-lg border border-border/60 bg-background px-3 text-sm text-foreground"
+                >
+                  <option value="" disabled>
+                    {t("area.picker.area")}…
+                  </option>
                   {governorate.areas.map((a) => (
-                    <li key={a.key}>
-                      <button
-                        type="button"
-                        disabled={saving}
-                        onClick={() => void onSelectArea(a.key)}
-                        className={cn(
-                          "w-full rounded-lg border px-3 py-2 text-start text-sm transition hover:border-primary/50 hover:bg-muted/50",
-                          selected?.governorateKey === govKey &&
-                            selected?.areaKey === a.key &&
-                            "border-primary bg-primary/5"
-                        )}
-                      >
-                        {locale === "ar" ? a.nameAr : a.nameEn}
-                      </button>
-                    </li>
+                    <option key={a.key} value={a.key}>
+                      {locale === "ar" ? a.nameAr : a.nameEn}
+                    </option>
                   ))}
-                </ul>
+                </select>
               </div>
             ) : null}
+
+            <Button
+              type="button"
+              className="w-full rounded-xl"
+              disabled={saving || !areaKey}
+              onClick={() => void onSelectArea(areaKey)}
+            >
+              {saving ? "…" : t("area.picker.deliverTo")}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

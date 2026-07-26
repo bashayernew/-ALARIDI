@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label } from "@/ components/ui/label";
 import { useI18n } from "@/components/i18n/i18n-provider";
 import {
   updateBranchWhatsapp,
