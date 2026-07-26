@@ -167,7 +167,6 @@ export function BuyGiftCardForm({
 
   return (
     <div className={cn("space-y-3", compact && "space-y-3")}>
-      <Label>{t("giftCard.buy.chooseDesign")}</Label>
       <div
         className={cn(
           "grid gap-3",

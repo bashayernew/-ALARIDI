@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useCartStore, cartLineKey, isCheckoutLine } from "@/store/cart-store";
+import { useCartStore, cartLineKey, isCheckoutLine, isGiftCardLine } from "@/store/cart-store";
 import { cartSubtotal } from "@/lib/cart-totals";
 import { lineExtrasTotalKwd } from "@/lib/pricing";
 import {
@@ -83,6 +83,9 @@ export function CheckoutForm({
   const { user, ready, refreshUser } = useCustomerAuth();
   const lines = useCartStore((s) => s.lines);
   const checkoutLines = lines.filter(isCheckoutLine);
+  // Gift cards are delivered by email — no fulfillment or address needed.
+  const giftCardsOnly =
+    checkoutLines.length > 0 && checkoutLines.every(isGiftCardLine);
   const clear = useCartStore((s) => s.clear);
   const [pending, setPending] = React.useState(false);
 
@@ -108,6 +111,10 @@ export function CheckoutForm({
   const [fulfillment, setFulfillment] = React.useState<
     "DELIVERY" | "PICKUP" | "SCHEDULED"
   >("DELIVERY");
+
+  React.useEffect(() => {
+    if (giftCardsOnly && fulfillment !== "PICKUP") setFulfillment("PICKUP");
+  }, [giftCardsOnly, fulfillment]);
   const defaultPickupBranchId =
     initialPickupBranchId ?? pickupBranches[0]?.id ?? "";
   const [pickupBranchId, setPickupBranchId] = React.useState(
@@ -551,8 +558,14 @@ export function CheckoutForm({
           </div>
         </div>
 
+        {giftCardsOnly ? (
+          <p className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
+            {t("checkout.giftCardOnly")}
+          </p>
+        ) : null}
+
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
+          <div className={giftCardsOnly ? "hidden" : "space-y-2"}>
             <Label>{t("checkout.fulfillment")}</Label>
             <Select
               value={fulfillment}
@@ -617,7 +630,7 @@ export function CheckoutForm({
           </div>
         )}
 
-        {fulfillment === "PICKUP" && pickupBranches.length > 0 && (
+        {fulfillment === "PICKUP" && !giftCardsOnly && pickupBranches.length > 0 && (
           <div className="space-y-2">
             <Label>{t("checkout.pickup.branch")}</Label>
             <p className="text-xs text-muted-foreground">

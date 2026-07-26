@@ -9,7 +9,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const NAMES = ["test", "test2", "Bashayer"];
+const NAMES = ["test", "test2", "Bashayer", "ssd"];
 
 async function main() {
   for (const name of NAMES) {

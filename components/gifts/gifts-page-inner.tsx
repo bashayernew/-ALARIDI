@@ -127,12 +127,6 @@ export function GiftsPageInner({
                 {t("giftCard.buy.subtitle")}
               </p>
             </div>
-            <Link
-              href="/gifts/buy"
-              className={cn(buttonVariants({ variant: "outline" }), "rounded-xl")}
-            >
-              {t("giftCard.buy.viewAll")}
-            </Link>
           </div>
           <div className="mt-4">
             <BuyGiftCardForm products={giftCardProducts} compact />

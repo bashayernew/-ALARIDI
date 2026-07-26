@@ -129,7 +129,7 @@ export function HomeSections({
               </h2>
             </div>
             <Link
-              href="/menu#cat-LEBANESE_MOONE"
+              href="/menu#menu-cat-lebanese-moone"
               className={cn(
                 buttonVariants({ variant: "outline" }),
                 "rounded-xl border-primary/30"

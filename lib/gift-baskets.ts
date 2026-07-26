@@ -225,7 +225,13 @@ export async function getBuilderCatalogProducts(
   );
   // Only offer products from active categories (hides seasonal ones, e.g. Ramadan).
   const activeKeys = new Set((await getActiveCategories()).map((c) => c.key));
-  return rows.filter((p) => activeKeys.has(p.category)).map((p) => ({
+  // Products hidden from the basket builder specifically (still sold on the menu).
+  const HIDDEN_FROM_BUILDER = new Set(["ks-warbat-kashta"]);
+  return rows
+    .filter(
+      (p) => activeKeys.has(p.category) && !HIDDEN_FROM_BUILDER.has(p.slug)
+    )
+    .map((p) => ({
     id: p.id,
     slug: p.slug,
     name: locale === "ar" && p.nameAr.trim() ? p.nameAr : p.name,

@@ -52,7 +52,7 @@ export const EN_DICT = {
     "Small luxuries — maamoul, ghraybe, and moone jars.",
   "home.moone.kicker": "Lebanese Moone",
   "home.moone.title": "Beyond the pastry case",
-  "home.moone.cta": "Shop moone",
+  "home.moone.cta": "Shop Moone",
   "home.about.kicker": "About",
   "home.about.title": "Heritage recipes, Kuwait hospitality",
   "home.about.body":
@@ -246,6 +246,8 @@ export const EN_DICT = {
   "checkout.fulfillment": "Fulfillment",
   "checkout.fulfillment.delivery": "Delivery",
   "checkout.fulfillment.sameDay": "Same-day delivery",
+  "checkout.giftCardOnly":
+    "Gift cards are sent by email after purchase — no delivery details needed.",
   "checkout.fulfillment.scheduled": "Scheduled delivery",
   "checkout.fulfillment.pickup": "Pickup",
   "checkout.payment": "Payment option",
@@ -1070,7 +1072,7 @@ export const EN_DICT = {
   "giftCard.buy.kicker": "Send sweetness",
   "giftCard.buy.title": "Buy a gift card",
   "giftCard.buy.subtitle":
-    "Choose a design, add to cart, and checkout — codes are issued after purchase.",
+    "Choose the gift card, enter the recipient's name, email & phone number, write your personal message and specify the delivery date, then checkout — the code is sent after purchase.",
   "giftCard.buy.chooseDesign": "Choose a design",
   "giftCard.buy.noProducts":
     "No gift cards are available right now. Check back soon or contact us.",
@@ -1764,6 +1766,7 @@ export const AR_DICT: Record<TranslationKey, string> = {
   "checkout.fulfillment": "طريقة الاستلام",
   "checkout.fulfillment.delivery": "توصيل",
   "checkout.fulfillment.sameDay": "توصيل اليوم",
+  "checkout.giftCardOnly": "تُرسل بطاقات الهدايا بالبريد الإلكتروني بعد الشراء — لا حاجة لتفاصيل التوصيل.",
   "checkout.fulfillment.scheduled": "توصيل مجدول",
   "checkout.fulfillment.pickup": "استلام من الفرع",
   "checkout.payment": "خيار الدفع",
