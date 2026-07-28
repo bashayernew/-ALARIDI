@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogOut, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { KUWAIT_GOVERNORATES } from "@/lib/kuwait-areas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -326,11 +327,14 @@ function AddAddressForm({
 }) {
   const [open, setOpen] = React.useState(false);
   const [label, setLabel] = React.useState("");
-  const [area, setArea] = React.useState(DELIVERY_AREAS[0]!.id);
+  const [govKey, setGovKey] = React.useState(KUWAIT_GOVERNORATES[0]!.key);
+  const governorate = KUWAIT_GOVERNORATES.find((g) => g.key === govKey);
+  const [area, setArea] = React.useState(
+    KUWAIT_GOVERNORATES[0]!.areas[0]!.key
+  );
   const [street, setStreet] = React.useState("");
-  const [building, setBuilding] = React.useState("");
+  const [avenue, setAvenue] = React.useState("");
   const [block, setBlock] = React.useState("");
-  const [city, setCity] = React.useState("");
   const [houseNumber, setHouseNumber] = React.useState("");
   const [floor, setFloor] = React.useState("");
   const [doorNumber, setDoorNumber] = React.useState("");
@@ -348,9 +352,9 @@ function AddAddressForm({
     const res = await addCustomerAddress({
       label: label.trim() || undefined,
       street: street.trim(),
-      building: building.trim() || undefined,
       block: block.trim() || undefined,
-      city: city.trim() || undefined,
+      // Avenue is stored in the legacy "city" column.
+      city: avenue.trim() || undefined,
       houseNumber: houseNumber.trim() || undefined,
       floor: floor.trim() || undefined,
       doorNumber: doorNumber.trim() || undefined,
@@ -363,9 +367,8 @@ function AddAddressForm({
       toast.success(t("account.addresses.added"));
       setLabel("");
       setStreet("");
-      setBuilding("");
+      setAvenue("");
       setBlock("");
-      setCity("");
       setHouseNumber("");
       setFloor("");
       setDoorNumber("");
@@ -407,6 +410,27 @@ function AddAddressForm({
           />
         </div>
         <div className="space-y-1.5">
+          <Label htmlFor="addr-gov">{t("checkout.address.governorate")}</Label>
+          <select
+            id="addr-gov"
+            value={govKey}
+            onChange={(e) => {
+              setGovKey(e.target.value);
+              const g = KUWAIT_GOVERNORATES.find(
+                (x) => x.key === e.target.value
+              );
+              setArea(g?.areas[0]?.key ?? "");
+            }}
+            className="h-9 w-full rounded-lg border border-border/60 bg-card px-2 text-sm"
+          >
+            {KUWAIT_GOVERNORATES.map((g) => (
+              <option key={g.key} value={g.key}>
+                {g.nameEn}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-1.5">
           <Label htmlFor="addr-area">{t("account.address.area")}</Label>
           <select
             id="addr-area"
@@ -414,22 +438,13 @@ function AddAddressForm({
             onChange={(e) => setArea(e.target.value)}
             className="h-9 w-full rounded-lg border border-border/60 bg-card px-2 text-sm"
           >
-            {DELIVERY_AREAS.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.label}
+            {(governorate?.areas ?? []).map((a) => (
+              <option key={a.key} value={a.key}>
+                {a.nameEn}
               </option>
             ))}
           </select>
         </div>
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="addr-street">{t("account.address.street")}</Label>
-        <Input
-          id="addr-street"
-          value={street}
-          onChange={(e) => setStreet(e.target.value)}
-          placeholder={t("account.address.street.placeholder")}
-        />
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
@@ -441,11 +456,22 @@ function AddAddressForm({
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="addr-city">{t("checkout.address.city")}</Label>
+          <Label htmlFor="addr-street">{t("account.address.street")}</Label>
           <Input
-            id="addr-city"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
+            id="addr-street"
+            value={street}
+            onChange={(e) => setStreet(e.target.value)}
+            placeholder={t("account.address.street.placeholder")}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="addr-avenue">
+            {t("checkout.address.avenue")} ({t("checkout.optional")})
+          </Label>
+          <Input
+            id="addr-avenue"
+            value={avenue}
+            onChange={(e) => setAvenue(e.target.value)}
           />
         </div>
         <div className="space-y-1.5">
@@ -454,15 +480,6 @@ function AddAddressForm({
             id="addr-house"
             value={houseNumber}
             onChange={(e) => setHouseNumber(e.target.value)}
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="addr-building">{t("account.address.building")}</Label>
-          <Input
-            id="addr-building"
-            value={building}
-            onChange={(e) => setBuilding(e.target.value)}
-            placeholder={t("account.address.building.placeholder")}
           />
         </div>
         <div className="space-y-1.5">

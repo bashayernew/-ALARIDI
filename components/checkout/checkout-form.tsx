@@ -251,10 +251,6 @@ export function CheckoutForm({
         toast.error(t("checkout.validation.block"));
         return false;
       }
-      if (!city.trim()) {
-        toast.error(t("checkout.validation.city"));
-        return false;
-      }
       if (!houseNumber.trim()) {
         toast.error(t("checkout.validation.houseNumber"));
         return false;
@@ -778,6 +774,17 @@ export function CheckoutForm({
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
+                    <Label htmlFor="block">
+                      {t("checkout.address.block")}
+                      <span className="ms-1 text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="block"
+                      value={block}
+                      onChange={(e) => setBlock(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="street">
                       {t("checkout.address.street")}
                       <span className="ms-1 text-destructive">*</span>
@@ -790,29 +797,16 @@ export function CheckoutForm({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="block">
-                      {t("checkout.address.block")}
-                      <span className="ms-1 text-destructive">*</span>
-                    </Label>
-                    <Input
-                      id="block"
-                      value={block}
-                      onChange={(e) => setBlock(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
                     <Label htmlFor="city">
-                      {t("checkout.address.city")}
-                      <span className="ms-1 text-destructive">*</span>
+                      {t("checkout.address.avenue")}{" "}
+                      <span className="text-xs text-muted-foreground">
+                        ({t("checkout.optional")})
+                      </span>
                     </Label>
                     <Input
                       id="city"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      placeholder={
-                        storefrontAreaLabel ??
-                        t("checkout.address.city.placeholder")
-                      }
                     />
                   </div>
                   <div className="space-y-2">
