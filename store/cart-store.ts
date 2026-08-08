@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { giftDeliveryKey, type GiftLineDelivery } from "@/lib/gift-delivery";
@@ -123,6 +124,32 @@ export const useCartStore = create<CartState>()(
       addLine: (line) => {
         const qty = line.quantity ?? 1;
         const next = normalizeLine({ ...line, quantity: qty });
+
+        // Gift cards are emailed (no delivery), so they must be checked out
+        // on their own — never mixed with products or baskets.
+        const ar =
+          typeof document !== "undefined" &&
+          document.documentElement.lang === "ar";
+        const existing = get().lines;
+        const addingGiftCard = (next.kind ?? "product") === "gift_card";
+        const hasGiftCard = existing.some((l) => (l.kind ?? "product") === "gift_card");
+        const hasOther = existing.some((l) => (l.kind ?? "product") !== "gift_card");
+        if (addingGiftCard && hasOther) {
+          toast.error(
+            ar
+              ? "بطاقات الهدايا تُشترى بشكل منفصل — أكمل طلب المنتجات أولاً ثم اشترِ البطاقة."
+              : "Gift cards are checked out separately — complete your product order first, then buy the gift card."
+          );
+          return;
+        }
+        if (!addingGiftCard && hasGiftCard) {
+          toast.error(
+            ar
+              ? "سلتك تحتوي على بطاقة هدية — أكمل شراء البطاقة أولاً ثم اطلب المنتجات."
+              : "Your cart has a gift card — checkout the gift card first, then order products."
+          );
+          return;
+        }
         const key = lineKey(next);
         const lines = get().lines.map(normalizeLine);
         const idx = lines.findIndex((l) => lineKey(l) === key);

@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { KUWAIT_GOVERNORATES } from "@/lib/kuwait-areas";
+import { setStorefrontArea } from "@/actions/storefront-area";
 import { toast } from "sonner";
 import { Loader2, MapPin, Plus, TicketPercent, Gift } from "lucide-react";
 import Link from "next/link";
@@ -64,6 +66,8 @@ type AppliedDiscount =
 type CheckoutFormProps = {
   storefrontAreaId: string | null;
   storefrontAreaLabel: string | null;
+  selectedGovernorateKey: string | null;
+  selectedAreaKey: string | null;
   deliveryAvailable: boolean;
   branchDeliveryFeeKwd: number | null;
   pickupBranches: PickupBranchOption[];
@@ -73,6 +77,8 @@ type CheckoutFormProps = {
 export function CheckoutForm({
   storefrontAreaId,
   storefrontAreaLabel,
+  selectedGovernorateKey,
+  selectedAreaKey,
   deliveryAvailable,
   branchDeliveryFeeKwd,
   pickupBranches,
@@ -80,6 +86,23 @@ export function CheckoutForm({
 }: CheckoutFormProps) {
   const { t, locale } = useI18n();
   const router = useRouter();
+
+  // Governorate + area shown at the top of the address form. Changing them
+  // updates the storefront-wide selection (menu, fees) as well.
+  const [addrGovKey, setAddrGovKey] = React.useState(
+    selectedGovernorateKey ?? KUWAIT_GOVERNORATES[0]!.key
+  );
+  const addrGovernorate = KUWAIT_GOVERNORATES.find((g) => g.key === addrGovKey);
+  const [addrAreaKey, setAddrAreaKey] = React.useState(
+    selectedAreaKey ?? ""
+  );
+
+  async function onAddrAreaChange(areaKey: string) {
+    setAddrAreaKey(areaKey);
+    if (!areaKey) return;
+    const res = await setStorefrontArea(addrGovKey, areaKey);
+    if (res.ok) router.refresh();
+  }
   const { user, ready, refreshUser } = useCustomerAuth();
   const lines = useCartStore((s) => s.lines);
   const checkoutLines = lines.filter(isCheckoutLine);
@@ -521,13 +544,15 @@ export function CheckoutForm({
   return (
     <form onSubmit={onSubmit} className="grid gap-10 lg:grid-cols-[1fr_380px]">
       <div className="space-y-6">
-        <div className="rounded-2xl border border-border/50 bg-card/30 px-4 py-3 text-sm text-muted-foreground">
-          {!ready ? null : user ? (
-            <span>{t("checkout.account.loggedInHint")}</span>
-          ) : (
-            <span>{t("checkout.account.guestHint")}</span>
-          )}
-        </div>
+        {giftCardsOnly ? null : (
+          <div className="rounded-2xl border border-border/50 bg-card/30 px-4 py-3 text-sm text-muted-foreground">
+            {!ready ? null : user ? (
+              <span>{t("checkout.account.loggedInHint")}</span>
+            ) : (
+              <span>{t("checkout.account.guestHint")}</span>
+            )}
+          </div>
+        )}
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -773,6 +798,48 @@ export function CheckoutForm({
                 )}
 
                 <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="addr-gov">
+                      {t("checkout.address.governorate")}
+                      <span className="ms-1 text-destructive">*</span>
+                    </Label>
+                    <select
+                      id="addr-gov"
+                      value={addrGovKey}
+                      onChange={(e) => {
+                        setAddrGovKey(e.target.value);
+                        setAddrAreaKey("");
+                      }}
+                      className="h-9 w-full rounded-lg border border-border/60 bg-card px-2 text-sm"
+                    >
+                      {KUWAIT_GOVERNORATES.map((g) => (
+                        <option key={g.key} value={g.key}>
+                          {locale === "ar" ? g.nameAr : g.nameEn}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="addr-area-sel">
+                      {t("account.address.area")}
+                      <span className="ms-1 text-destructive">*</span>
+                    </Label>
+                    <select
+                      id="addr-area-sel"
+                      value={addrAreaKey}
+                      onChange={(e) => void onAddrAreaChange(e.target.value)}
+                      className="h-9 w-full rounded-lg border border-border/60 bg-card px-2 text-sm"
+                    >
+                      <option value="" disabled>
+                        {t("account.address.area")}…
+                      </option>
+                      {(addrGovernorate?.areas ?? []).map((a) => (
+                        <option key={a.key} value={a.key}>
+                          {locale === "ar" ? a.nameAr : a.nameEn}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="block">
                       {t("checkout.address.block")}

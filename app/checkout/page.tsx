@@ -58,17 +58,12 @@ export default async function CheckoutPage() {
         <h1 className="mt-2 font-heading text-3xl sm:text-4xl">
           {translate(locale, "checkout.page.title")}
         </h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          {translate(locale, "checkout.page.note")}{" "}
-          <code className="rounded bg-muted px-1 py-0.5 text-xs">
-            lib/payment.ts
-          </code>
-          .
-        </p>
       </div>
       <CheckoutForm
         storefrontAreaId={storefrontAreaId}
         storefrontAreaLabel={storefrontAreaLabel}
+        selectedGovernorateKey={selectedArea?.governorateKey ?? null}
+        selectedAreaKey={selectedArea?.areaKey ?? null}
         deliveryAvailable={deliveryAvailable}
         branchDeliveryFeeKwd={branchDeliveryFeeKwd}
         pickupBranches={pickupBranches}

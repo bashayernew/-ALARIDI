@@ -18,28 +18,6 @@ import { PromoCoupon } from "@/components/promotions/promo-coupon";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Display-only sample coupons appended when there are few real ones, so the
- * page still looks full. These are illustrative and are not applied at
- * checkout unless matching codes also exist in the database.
- */
-const SAMPLE_COUPONS = [
-  {
-    code: "RAMADAN15",
-    bigValue: "15%",
-    labelKey: "promotions.sample.ramadan" as TranslationKey,
-    percent: 15,
-    min: 10,
-  },
-  {
-    code: "GIFT20",
-    bigValue: "20%",
-    labelKey: "promotions.sample.gift" as TranslationKey,
-    percent: 20,
-    min: 15,
-  },
-];
-
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   return { title: translate(locale, "promotions.meta.title") };
@@ -187,20 +165,6 @@ export default async function PromotionsPage() {
               />
             );
           })}
-          {SAMPLE_COUPONS.map((s) => (
-            <PromoCoupon
-              key={s.code}
-              code={s.code}
-              bigValue={s.bigValue}
-              discountLabel={`${s.percent}% off`}
-              description={t(s.labelKey)}
-              minOrder={`${t("promotions.codes.minOrder")}: ${formatKwd(s.min)}`}
-              checkoutNote={t("promotions.codes.checkoutOnly")}
-              labelDiscount={t("promotions.codes.discountLabel")}
-              copyLabel={t("promotions.codes.copy")}
-              copiedLabel={t("promotions.codes.copied")}
-            />
-          ))}
         </div>
       </section>
     </div>
