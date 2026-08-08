@@ -16,6 +16,11 @@ import type { ProductDTO } from "@/types";
 import { formatKwd } from "@/lib/format";
 import { useCartStore } from "@/store/cart-store";
 import {
+  WEIGHT_SIZES,
+  hasWeightSizes,
+  weightSizeMultiplier,
+} from "@/lib/product-sizes";
+import {
   EXTRA_TOPPINGS_FEE_KWD,
   GIFT_WRAP_FEE_KWD,
 } from "@/lib/pricing";
@@ -57,18 +62,21 @@ export function ProductDetail({
   const [giftWrap, setGiftWrap] = React.useState(false);
   const [cardMessage, setCardMessage] = React.useState("");
   const [extraToppings, setExtraToppings] = React.useState(false);
-  const [size, setSize] = React.useState("Regular");
-  const [flavor, setFlavor] = React.useState("Classic");
-  const [packaging, setPackaging] = React.useState("Standard box");
+  const weightSized = hasWeightSizes(product);
+  const [size, setSize] = React.useState(weightSized ? "250g" : "");
   const [inWishlist, setInWishlist] = React.useState(initialInWishlist);
   const [wishlistPending, setWishlistPending] = React.useState(false);
 
   const ox = (en: string, ar: string) => (locale === "ar" ? ar : en);
 
+  const sizeMultiplier = weightSized ? weightSizeMultiplier(size) : 1;
+  const unitPrice = product.price * sizeMultiplier;
+  const unitOldPrice =
+    product.oldPrice != null ? product.oldPrice * sizeMultiplier : null;
   const extrasPerUnit =
     (giftWrap ? GIFT_WRAP_FEE_KWD : 0) +
     (extraToppings ? EXTRA_TOPPINGS_FEE_KWD : 0);
-  const lineTotal = product.price * qty + extrasPerUnit * qty;
+  const lineTotal = unitPrice * qty + extrasPerUnit * qty;
   const tier = user?.tier ?? "SILVER";
   const loyaltyPoints = pointsEarnedFor(lineTotal, tier);
 
@@ -84,16 +92,20 @@ export function ProductDetail({
       productId: product.id,
       name,
       image: product.image,
-      price: product.price,
+      price: unitPrice,
       quantity: qty,
       giftWrap,
       cardMessage: cardMessage.trim() || undefined,
       extraToppings,
       note: [
         note.trim(),
-        `${ox("Size", "الحجم")}: ${size}`,
-        `${ox("Flavor", "النكهة")}: ${flavor}`,
-        `${ox("Packaging", "التغليف")}: ${packaging}`,
+        weightSized
+          ? `${ox("Size", "الحجم")}: ${
+              WEIGHT_SIZES.find((w) => w.key === size)?.[
+                locale === "ar" ? "labelAr" : "labelEn"
+              ] ?? size
+            }`
+          : "",
       ]
         .filter(Boolean)
         .join(" | "),
@@ -183,11 +195,11 @@ export function ProductDetail({
 
           <div className="flex items-baseline gap-3">
             <span className="font-heading text-3xl text-primary tabular-nums">
-              {formatKwd(product.price)}
+              {formatKwd(unitPrice)}
             </span>
-            {product.oldPrice != null && product.oldPrice > product.price && (
+            {unitOldPrice != null && unitOldPrice > unitPrice && (
               <span className="text-muted-foreground line-through tabular-nums">
-                {formatKwd(product.oldPrice)}
+                {formatKwd(unitOldPrice)}
               </span>
             )}
             {!inStock ? (
@@ -209,44 +221,32 @@ export function ProductDetail({
             {description}
           </p>
 
-          <div className="grid gap-3 sm:grid-cols-3">
+          {weightSized ? (
             <div className="space-y-1.5">
               <Label>{t("product.size")}</Label>
-              <select
-                value={size}
-                onChange={(e) => setSize(e.target.value)}
-                className="h-10 w-full rounded-lg border border-border/60 bg-muted/20 px-2 text-sm"
-              >
-                <option value="Regular">{ox("Regular", "عادي")}</option>
-                <option value="Large">{ox("Large", "كبير")}</option>
-                <option value="Family tray">{ox("Family tray", "صينية عائلية")}</option>
-              </select>
+              <div className="flex gap-2">
+                {WEIGHT_SIZES.map((w) => (
+                  <button
+                    key={w.key}
+                    type="button"
+                    onClick={() => setSize(w.key)}
+                    className={
+                      size === w.key
+                        ? "flex-1 rounded-lg border border-primary bg-primary/10 px-2 py-2.5 text-sm font-semibold text-primary"
+                        : "flex-1 rounded-lg border border-border/60 bg-muted/20 px-2 py-2.5 text-sm text-muted-foreground hover:border-primary/40"
+                    }
+                  >
+                    <span className="block">
+                      {locale === "ar" ? w.labelAr : w.labelEn}
+                    </span>
+                    <span className="block text-xs tabular-nums opacity-80">
+                      {formatKwd(product.price * w.multiplier)}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>{t("product.flavor")}</Label>
-              <select
-                value={flavor}
-                onChange={(e) => setFlavor(e.target.value)}
-                className="h-10 w-full rounded-lg border border-border/60 bg-muted/20 px-2 text-sm"
-              >
-                <option value="Classic">{ox("Classic", "كلاسيك")}</option>
-                <option value="Pistachio">{ox("Pistachio", "فستق")}</option>
-                <option value="Chocolate">{ox("Chocolate", "شوكولاتة")}</option>
-              </select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t("product.packaging")}</Label>
-              <select
-                value={packaging}
-                onChange={(e) => setPackaging(e.target.value)}
-                className="h-10 w-full rounded-lg border border-border/60 bg-muted/20 px-2 text-sm"
-              >
-                <option value="Standard box">{ox("Standard box", "علبة قياسية")}</option>
-                <option value="Gift wrap">{ox("Gift wrap", "تغليف هدية")}</option>
-                <option value="Premium tray">{ox("Premium tray", "صينية فاخرة")}</option>
-              </select>
-            </div>
-          </div>
+          ) : null}
 
           <div className="flex items-center justify-between gap-3">
             <Label htmlFor="qty">{t("product.qty")}</Label>
