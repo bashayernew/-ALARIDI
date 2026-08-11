@@ -4,7 +4,9 @@ import * as React from "react";
 import { Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cart-store";
+import { hasWeightSizes } from "@/lib/product-sizes";
 import type { ProductDTO } from "@/types";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/components/i18n/i18n-provider";
@@ -24,12 +26,18 @@ export function HomeQuickAddButton({
   label,
 }: Props) {
   const { locale, t } = useI18n();
+  const router = useRouter();
   const addLine = useCartStore((s) => s.addLine);
   const [busy, setBusy] = React.useState(false);
   const d = displayDbProduct(product, locale);
   const btnLabel = label ?? t("menu.cta.add");
 
   function handleClick() {
+    // Weight-priced sweets need a size choice first — go to the product page.
+    if (hasWeightSizes(product)) {
+      router.push(`/product/${product.slug}`);
+      return;
+    }
     setBusy(true);
     addLine({
       productId: product.id,

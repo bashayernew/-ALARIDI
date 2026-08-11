@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import type { MenuProduct } from "@/lib/menu-data";
 import { formatKwd, discountPercent } from "@/lib/format";
 import { useCartStore } from "@/store/cart-store";
+import { hasWeightSizes } from "@/lib/product-sizes";
 import { cn } from "@/lib/utils";
 import { displayMenuProduct } from "@/lib/menu-display";
 import { useI18n } from "@/components/i18n/i18n-provider";
@@ -43,6 +44,11 @@ export function MenuProductCard({ product, onCustomize, onOpen }: Props) {
   function quickAdd() {
     if (product.customizable && onCustomize) {
       onCustomize(product);
+      return;
+    }
+    // Weight-priced sweets need a size choice first — open the product card.
+    if (hasWeightSizes(product) && (onOpen || onCustomize)) {
+      (onOpen ?? onCustomize)!(product);
       return;
     }
     setBusy(true);

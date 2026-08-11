@@ -4,7 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Trash2 } from "lucide-react";
+import { LogOut, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { KUWAIT_GOVERNORATES } from "@/lib/kuwait-areas";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ import type {
 import {
   addCustomerAddress,
   deleteCustomerAddress,
+  updateCustomerAddress,
 } from "@/actions/customer-auth";
 import { GiftCardRedeemPanel } from "@/components/account/gift-card-redeem-panel";
 import { LoyaltyPanel } from "@/components/account/loyalty-panel";
@@ -145,6 +146,7 @@ export function AccountDashboard() {
           <AddressesList
             addresses={user.addresses}
             t={t}
+            onChanged={refreshUser}
             onRemove={async (id) => {
               const res = await deleteCustomerAddress(id);
               if (res.ok) {
@@ -251,27 +253,26 @@ function OrdersList({
           </h3>
           <ul className="space-y-3">
             {activeOrders.map((o) => (
-              <li
-                key={o.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm"
-              >
-                <span className="font-mono text-xs text-muted-foreground">
-                  {o.id.slice(0, 8)}…
-                </span>
-                <span className="text-muted-foreground">
-                  {new Date(o.dateIso).toLocaleDateString()}
-                </span>
-                <span className="font-medium tabular-nums">
-                  {formatKwd(o.totalKwd)}
-                </span>
-                <span className="text-xs font-medium text-primary">
-                  {orderStatusLabel(o.status, o.fulfillmentType, t)}
-                </span>
+              <li key={o.id}>
                 <Link
                   href={`/orders/${o.id}`}
-                  className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm transition hover:border-primary/60 hover:bg-primary/10"
                 >
-                  {t("account.orders.track")}
+                  <span className="font-mono text-xs text-muted-foreground">
+                    {o.id.slice(0, 8)}…
+                  </span>
+                  <span className="text-muted-foreground">
+                    {new Date(o.dateIso).toLocaleDateString()}
+                  </span>
+                  <span className="font-medium tabular-nums">
+                    {formatKwd(o.totalKwd)}
+                  </span>
+                  <span className="text-xs font-medium text-primary">
+                    {orderStatusLabel(o.status, o.fulfillmentType, t)}
+                  </span>
+                  <span className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground">
+                    {t("account.orders.track")}
+                  </span>
                 </Link>
               </li>
             ))}
@@ -290,25 +291,24 @@ function OrdersList({
         ) : (
           <ul className="space-y-3">
             {previousOrders.map((o) => (
-              <li
-                key={o.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/40 bg-background/30 px-4 py-3 text-sm"
-              >
+              <li key={o.id}>
                 <Link
                   href={`/orders/${o.id}`}
-                  className="font-mono text-xs text-muted-foreground hover:text-primary"
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/40 bg-background/30 px-4 py-3 text-sm transition hover:border-primary/40"
                 >
-                  {o.id.slice(0, 8)}…
+                  <span className="font-mono text-xs text-muted-foreground">
+                    {o.id.slice(0, 8)}…
+                  </span>
+                  <span className="text-muted-foreground">
+                    {new Date(o.dateIso).toLocaleDateString()}
+                  </span>
+                  <span className="font-medium tabular-nums">
+                    {formatKwd(o.totalKwd)}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {orderStatusLabel(o.status, o.fulfillmentType, t)}
+                  </span>
                 </Link>
-                <span className="text-muted-foreground">
-                  {new Date(o.dateIso).toLocaleDateString()}
-                </span>
-                <span className="font-medium tabular-nums">
-                  {formatKwd(o.totalKwd)}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {orderStatusLabel(o.status, o.fulfillmentType, t)}
-                </span>
               </li>
             ))}
           </ul>
@@ -321,24 +321,46 @@ function OrdersList({
 function AddAddressForm({
   t,
   onAdded,
+  initial,
+  onCancel,
 }: {
   t: (key: TranslationKey, vars?: Record<string, string | number>) => string;
   onAdded: () => Promise<void> | void;
+  /** When set, the form edits this saved address instead of adding a new one. */
+  initial?: CustomerAddress;
+  onCancel?: () => void;
 }) {
-  const [open, setOpen] = React.useState(false);
-  const [label, setLabel] = React.useState("");
-  const [govKey, setGovKey] = React.useState(KUWAIT_GOVERNORATES[0]!.key);
+  const isEdit = Boolean(initial);
+  // Saved areas may look like "hawalli:salmiya" (governorate:area) or "salmiya".
+  const initialAreaKey = initial
+    ? (initial.deliveryAreaId.includes(":")
+        ? initial.deliveryAreaId.split(":").pop()!
+        : initial.deliveryAreaId)
+    : null;
+  const initialGov = initialAreaKey
+    ? KUWAIT_GOVERNORATES.find((g) =>
+        g.areas.some((a) => a.key === initialAreaKey)
+      )
+    : null;
+
+  const [open, setOpen] = React.useState(isEdit);
+  const [label, setLabel] = React.useState(initial?.label ?? "");
+  const [govKey, setGovKey] = React.useState(
+    initialGov?.key ?? KUWAIT_GOVERNORATES[0]!.key
+  );
   const governorate = KUWAIT_GOVERNORATES.find((g) => g.key === govKey);
   const [area, setArea] = React.useState(
-    KUWAIT_GOVERNORATES[0]!.areas[0]!.key
+    initialAreaKey ?? KUWAIT_GOVERNORATES[0]!.areas[0]!.key
   );
-  const [street, setStreet] = React.useState("");
-  const [avenue, setAvenue] = React.useState("");
-  const [block, setBlock] = React.useState("");
-  const [houseNumber, setHouseNumber] = React.useState("");
-  const [floor, setFloor] = React.useState("");
-  const [doorNumber, setDoorNumber] = React.useState("");
-  const [notes, setNotes] = React.useState("");
+  const [street, setStreet] = React.useState(initial?.street ?? "");
+  const [avenue, setAvenue] = React.useState(initial?.city ?? "");
+  const [block, setBlock] = React.useState(initial?.block ?? "");
+  const [houseNumber, setHouseNumber] = React.useState(
+    initial?.houseNumber ?? ""
+  );
+  const [floor, setFloor] = React.useState(initial?.floor ?? "");
+  const [doorNumber, setDoorNumber] = React.useState(initial?.doorNumber ?? "");
+  const [notes, setNotes] = React.useState(initial?.additionalNotes ?? "");
   const [makeDefault, setMakeDefault] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
 
@@ -349,7 +371,7 @@ function AddAddressForm({
       return;
     }
     setBusy(true);
-    const res = await addCustomerAddress({
+    const payload = {
       label: label.trim() || undefined,
       street: street.trim(),
       block: block.trim() || undefined,
@@ -361,10 +383,15 @@ function AddAddressForm({
       area,
       notes: notes.trim() || undefined,
       setDefault: makeDefault,
-    });
+    };
+    const res = isEdit
+      ? await updateCustomerAddress(initial!.id, payload)
+      : await addCustomerAddress(payload);
     setBusy(false);
     if (res.ok) {
-      toast.success(t("account.addresses.added"));
+      toast.success(
+        isEdit ? t("account.addresses.updated") : t("account.addresses.added")
+      );
       setLabel("");
       setStreet("");
       setAvenue("");
@@ -374,7 +401,7 @@ function AddAddressForm({
       setDoorNumber("");
       setNotes("");
       setMakeDefault(false);
-      setOpen(false);
+      if (!isEdit) setOpen(false);
       await onAdded();
     } else {
       toast.error(t("account.address.saveFailed"));
@@ -527,7 +554,7 @@ function AddAddressForm({
           type="button"
           variant="ghost"
           className="flex-1"
-          onClick={() => setOpen(false)}
+          onClick={() => (onCancel ? onCancel() : setOpen(false))}
           disabled={busy}
         >
           {t("account.address.cancel")}
@@ -540,15 +567,32 @@ function AddAddressForm({
   );
 }
 
+
+function prettyAreaLabel(deliveryAreaId: string): string {
+  const legacy = DELIVERY_AREAS.find((x) => x.id === deliveryAreaId)?.label;
+  if (legacy) return legacy;
+  const raw = deliveryAreaId.includes(":")
+    ? deliveryAreaId.split(":").pop()!
+    : deliveryAreaId;
+  return raw
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
 function AddressesList({
   addresses,
   t,
   onRemove,
+  onChanged,
 }: {
   addresses: CustomerAddress[];
   t: (key: TranslationKey, vars?: Record<string, string | number>) => string;
   onRemove: (id: string) => Promise<void>;
+  onChanged: () => Promise<void> | void;
 }) {
+  const [editingId, setEditingId] = React.useState<string | null>(null);
+
   if (addresses.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
@@ -561,31 +605,61 @@ function AddressesList({
       {addresses.map((a) => (
         <li
           key={a.id}
-          className="flex items-start justify-between gap-3 rounded-xl border border-border/40 bg-background/30 px-4 py-3 text-sm"
+          className="rounded-xl border border-border/40 bg-background/30 px-4 py-3 text-sm"
         >
-          <div>
-            <p className="font-medium">{a.label}</p>
-            <p className="text-muted-foreground">{a.street}</p>
-            {a.building ? (
-              <p className="text-muted-foreground">{a.building}</p>
-            ) : null}
-            <p className="text-xs text-muted-foreground">
-              {DELIVERY_AREAS.find((x) => x.id === a.deliveryAreaId)?.label ??
-                a.deliveryAreaId}
-            </p>
-            {a.additionalNotes ? (
-              <p className="mt-1 text-xs text-muted-foreground">{a.additionalNotes}</p>
-            ) : null}
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-medium">{a.label}</p>
+              <p className="text-muted-foreground">
+                {[
+                  a.block && `${t("checkout.address.block")} ${a.block}`,
+                  a.street,
+                  a.houseNumber,
+                ]
+                  .filter(Boolean)
+                  .join(", ")}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {prettyAreaLabel(a.deliveryAreaId)}
+              </p>
+              {a.additionalNotes ? (
+                <p className="mt-1 text-xs text-muted-foreground">{a.additionalNotes}</p>
+              ) : null}
+            </div>
+            <div className="flex shrink-0 gap-1">
+              <button
+                type="button"
+                onClick={() =>
+                  setEditingId((cur) => (cur === a.id ? null : a.id))
+                }
+                className="rounded-md p-1 text-muted-foreground transition hover:bg-primary/10 hover:text-primary"
+                aria-label={t("account.addresses.edit")}
+                title={t("account.addresses.edit")}
+              >
+                <Pencil className="size-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => onRemove(a.id)}
+                className="rounded-md p-1 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                aria-label={t("account.addresses.remove")}
+                title={t("account.addresses.remove")}
+              >
+                <Trash2 className="size-4" />
+              </button>
+            </div>
           </div>
-          <button
-            type="button"
-            onClick={() => onRemove(a.id)}
-            className="shrink-0 rounded-md p-1 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
-            aria-label={t("account.addresses.remove")}
-            title={t("account.addresses.remove")}
-          >
-            <Trash2 className="size-4" />
-          </button>
+          {editingId === a.id ? (
+            <AddAddressForm
+              t={t}
+              initial={a}
+              onCancel={() => setEditingId(null)}
+              onAdded={async () => {
+                setEditingId(null);
+                await onChanged();
+              }}
+            />
+          ) : null}
         </li>
       ))}
     </ul>

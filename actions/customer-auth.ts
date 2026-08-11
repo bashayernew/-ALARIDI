@@ -248,6 +248,63 @@ export async function addCustomerAddress(input: {
   return { ok: true, customer };
 }
 
+export async function updateCustomerAddress(
+  addressId: string,
+  input: {
+    label?: string;
+    street: string;
+    building?: string;
+    block?: string;
+    city?: string;
+    houseNumber?: string;
+    floor?: string;
+    doorNumber?: string;
+    area: string;
+    notes?: string;
+    setDefault?: boolean;
+  }
+): Promise<AuthResult> {
+  const token = await readSessionToken();
+  if (!token) return { ok: false, code: "invalid" };
+  const session = await prisma.customerSession.findUnique({
+    where: { token },
+    select: { customerId: true, expiresAt: true },
+  });
+  if (!session || session.expiresAt < new Date()) {
+    return { ok: false, code: "invalid" };
+  }
+
+  await prisma.$transaction(async (tx) => {
+    if (input.setDefault) {
+      await tx.customerAddress.updateMany({
+        where: { customerId: session.customerId },
+        data: { isDefault: false },
+      });
+    }
+    await tx.customerAddress.updateMany({
+      where: { id: addressId, customerId: session.customerId },
+      data: {
+        label: input.label?.trim() || "Home",
+        street: input.street.trim(),
+        building: (input.building ?? "").trim(),
+        block: (input.block ?? "").trim(),
+        houseNumber: (input.houseNumber ?? "").trim(),
+        floor: (input.floor ?? "").trim(),
+        doorNumber: (input.doorNumber ?? "").trim(),
+        city: (input.city ?? "").trim(),
+        area: input.area,
+        notes: input.notes?.trim() || null,
+        ...(input.setDefault ? { isDefault: true } : {}),
+      },
+    });
+  });
+
+  revalidatePath("/account");
+  const customer = await getCurrentCustomer();
+  if (!customer) return { ok: false, code: "service_unavailable" };
+  return { ok: true, customer };
+}
+
 export async function deleteCustomerAddress(addressId: string): Promise<AuthResult> {
   const token = await readSessionToken();
   if (!token) return { ok: false, code: "invalid" };
