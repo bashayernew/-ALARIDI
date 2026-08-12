@@ -141,11 +141,39 @@ export async function updateProduct(
   revalidatePath("/admin/products");
 }
 
-export async function deleteProduct(id: string) {
+export async function deleteProduct(
+  id: string
+): Promise<{ ok: boolean; error?: string }> {
   await requireAdmin();
-  await prisma.product.delete({ where: { id } });
+
+  // A product referenced only by FINISHED orders (delivered/picked up or
+  // cancelled) can still be deleted: we detach it from those order lines
+  // first. Orders keep their totals and history. Active orders block deletion.
+  const activeCount = await prisma.orderItem.count({
+    where: {
+      productId: id,
+      order: {
+        status: { notIn: ["DELIVERED", "CANCELLED"] },
+      },
+    },
+  });
+  if (activeCount > 0) {
+    return {
+      ok: false,
+      error:
+        "This product is on an active order. Finish or cancel those orders first.",
+    };
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.orderItem.deleteMany({ where: { productId: id } });
+    await tx.branchProductAvailability.deleteMany({ where: { productId: id } });
+    await tx.product.delete({ where: { id } });
+  });
+
   revalidatePath("/menu");
   revalidatePath("/search");
   revalidatePath("/");
   revalidatePath("/admin/products");
+  return { ok: true };
 }

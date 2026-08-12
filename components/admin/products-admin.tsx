@@ -598,7 +598,11 @@ export function ProductsAdmin({ products, categories, dbOffline }: Props) {
   async function onDelete(id: string) {
     if (!confirm(t("admin.products.confirm.delete"))) return;
     try {
-      await deleteProduct(id);
+      const res = await deleteProduct(id);
+      if (!res.ok) {
+        toast.error(res.error ?? t("admin.products.error.delete"));
+        return;
+      }
       toast.success(t("admin.products.toast.deleted"));
       router.refresh();
     } catch {
