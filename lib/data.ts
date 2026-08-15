@@ -3,6 +3,15 @@ import { dbQuery } from "@/lib/db-safe";
 import { HOUSE_FAVORITE_SLOTS } from "@/lib/home-catalog";
 import { productToDTO, type ProductDTO } from "@/types";
 
+/** Category keys that are currently active (hides seasonal ones, e.g. Ramadan). */
+async function activeCategoryKeys(): Promise<string[]> {
+  const cats = await prisma.category.findMany({
+    where: { isActive: true },
+    select: { key: true },
+  });
+  return cats.map((c) => c.key);
+}
+
 export async function getProductBySlug(slug: string): Promise<ProductDTO | null> {
   return dbQuery(null, async () => {
     const row = await prisma.product.findUnique({ where: { slug } });
@@ -42,7 +51,11 @@ export async function getAllProducts(): Promise<ProductDTO[]> {
 export async function getBestSellers(limit = 6): Promise<ProductDTO[]> {
   return dbQuery([], async () => {
     const list = await prisma.product.findMany({
-      where: { isBestSeller: true, isAvailable: true },
+      where: {
+        isBestSeller: true,
+        isAvailable: true,
+        category: { in: await activeCategoryKeys() },
+      },
       take: limit,
       orderBy: { name: "asc" },
     });
@@ -53,7 +66,11 @@ export async function getBestSellers(limit = 6): Promise<ProductDTO[]> {
 export async function getPromoProducts(): Promise<ProductDTO[]> {
   return dbQuery([], async () => {
     const list = await prisma.product.findMany({
-      where: { isPromo: true, isAvailable: true },
+      where: {
+        isPromo: true,
+        isAvailable: true,
+        category: { in: await activeCategoryKeys() },
+      },
       orderBy: { name: "asc" },
     });
     return list.map(productToDTO);
@@ -83,6 +100,7 @@ export async function getHouseFavoriteProducts(): Promise<
           where: {
             name: { contains: pat, mode: "insensitive" },
             isAvailable: true,
+            category: { in: await activeCategoryKeys() },
           },
         });
         if (row) break;
@@ -105,7 +123,11 @@ export async function getFreshTodayProducts(limit = 6): Promise<ProductDTO[]> {
       const ids = rows.map((r) => r.id);
       if (!ids.length) return [];
       const products = await prisma.product.findMany({
-        where: { id: { in: ids }, isAvailable: true },
+        where: {
+          id: { in: ids },
+          isAvailable: true,
+          category: { in: await activeCategoryKeys() },
+        },
       });
       const order = new Map(ids.map((id, i) => [id, i]));
       return products

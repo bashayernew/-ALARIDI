@@ -30,3 +30,10 @@ export async function setStorefrontPickupBranch(
   revalidatePath("/", "layout");
   return { ok: true };
 }
+
+export async function clearStorefrontPickupBranch(): Promise<{ ok: true }> {
+  const jar = await cookies();
+  jar.delete(STOREFRONT_PICKUP_BRANCH_COOKIE);
+  revalidatePath("/", "layout");
+  return { ok: true };
+}

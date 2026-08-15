@@ -17,6 +17,11 @@ import {
   type SelectedKuwaitArea,
 } from "@/lib/kuwait-areas";
 import { setStorefrontArea } from "@/actions/storefront-area";
+import {
+  clearStorefrontPickupBranch,
+  setStorefrontPickupBranch,
+} from "@/actions/storefront-pickup-branch";
+import type { PickupBranchOption } from "@/lib/pickup-branch";
 import { cn } from "@/lib/utils";
 
 export type ServedArea = { governorateKey: string; areaKey: string };
@@ -26,7 +31,9 @@ type Props = {
   areaLabel: string | null;
   /** Areas at least one branch delivers to. Empty = show the full list. */
   servedAreas?: ServedArea[];
-  /** Open picker on mount when no area is saved. */
+  /** Branches offered for pickup. */
+  pickupBranches?: PickupBranchOption[];
+  /** Open the picker automatically once per visit. */
   promptOnMount?: boolean;
   className?: string;
 };
@@ -35,6 +42,7 @@ export function StorefrontAreaPicker({
   selected,
   areaLabel,
   servedAreas = [],
+  pickupBranches = [],
   promptOnMount = false,
   className,
 }: Props) {
@@ -67,9 +75,22 @@ export function StorefrontAreaPicker({
     if (selected?.areaKey) setAreaKey(selected.areaKey);
   }, [selected?.areaKey]);
 
+  const [mode, setMode] = React.useState<"delivery" | "pickup">("delivery");
+  const [pickupBranchId, setPickupBranchId] = React.useState(
+    pickupBranches[0]?.id ?? ""
+  );
+
+  // Ask once per visit (per browser session), even for returning customers.
   React.useEffect(() => {
-    if (promptOnMount && !selected) setOpen(true);
-  }, [promptOnMount, selected]);
+    if (!promptOnMount) return;
+    try {
+      if (sessionStorage.getItem("aa-area-prompted")) return;
+      sessionStorage.setItem("aa-area-prompted", "1");
+    } catch {
+      // sessionStorage unavailable — still prompt
+    }
+    setOpen(true);
+  }, [promptOnMount]);
 
   React.useEffect(() => {
     if (selected?.governorateKey) setGovKey(selected.governorateKey);
@@ -87,6 +108,21 @@ export function StorefrontAreaPicker({
   async function onSelectArea(areaKey: string) {
     setSaving(true);
     const res = await setStorefrontArea(govKey, areaKey);
+    if (res.ok) {
+      // Delivery chosen — drop any previous pickup branch so the menu
+      // follows the branch that serves this area.
+      await clearStorefrontPickupBranch();
+    }
+    setSaving(false);
+    if (!res.ok) return;
+    setOpen(false);
+    router.refresh();
+  }
+
+  async function onSelectPickup() {
+    if (!pickupBranchId) return;
+    setSaving(true);
+    const res = await setStorefrontPickupBranch(pickupBranchId);
     setSaving(false);
     if (!res.ok) return;
     setOpen(false);
@@ -133,6 +169,62 @@ export function StorefrontAreaPicker({
           </DialogHeader>
 
           <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setMode("delivery")}
+                className={cn(
+                  "rounded-xl border px-3 py-2.5 text-sm font-medium transition",
+                  mode === "delivery"
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border text-muted-foreground hover:border-primary/40"
+                )}
+              >
+                {t("checkout.fulfillment.delivery")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("pickup")}
+                className={cn(
+                  "rounded-xl border px-3 py-2.5 text-sm font-medium transition",
+                  mode === "pickup"
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border text-muted-foreground hover:border-primary/40"
+                )}
+              >
+                {t("checkout.fulfillment.pickup")}
+              </button>
+            </div>
+
+            {mode === "pickup" ? (
+              <div className="space-y-4">
+                <div>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t("checkout.pickup.branch")}
+                  </p>
+                  <select
+                    value={pickupBranchId}
+                    onChange={(e) => setPickupBranchId(e.target.value)}
+                    className="h-11 w-full rounded-lg border border-border/60 bg-background px-3 text-sm text-foreground"
+                  >
+                    {pickupBranches.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {locale === "ar" ? b.nameAr : b.nameEn}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <Button
+                  type="button"
+                  className="w-full rounded-xl"
+                  disabled={saving || !pickupBranchId}
+                  onClick={() => void onSelectPickup()}
+                >
+                  {saving ? "…" : t("checkout.fulfillment.pickup")}
+                </Button>
+              </div>
+            ) : (
+            <>
             <div>
               <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("area.picker.governorate")}
@@ -183,6 +275,8 @@ export function StorefrontAreaPicker({
             >
               {saving ? "…" : t("area.picker.deliverTo")}
             </Button>
+            </>
+            )}
           </div>
         </DialogContent>
       </Dialog>

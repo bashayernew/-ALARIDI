@@ -97,12 +97,12 @@ export function OccasionsPageInner({
 
       {occasions.length > 0 && (
         <section>
-          <div className="flex flex-wrap justify-center gap-2.5 sm:justify-start">
+          <div className="scrollbar-none flex gap-2.5 overflow-x-auto pb-1 sm:justify-start">
             <button
               type="button"
               onClick={() => setOccasion(null)}
               className={cn(
-                "inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition-all duration-300",
+                "inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2.5 text-sm font-medium transition-all duration-300",
                 !selectedOccasion
                   ? "border-primary/55 bg-primary/15 text-primary gold-glow"
                   : "border-border/60 bg-card/40 text-muted-foreground hover:border-primary/40 hover:text-foreground"
@@ -120,7 +120,7 @@ export function OccasionsPageInner({
                   type="button"
                   onClick={() => setOccasion(occasion.slug)}
                   className={cn(
-                    "inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition-all duration-300",
+                    "inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2.5 text-sm font-medium transition-all duration-300",
                     active
                       ? "border-primary/55 bg-primary/15 text-primary gold-glow"
                       : "border-border/60 bg-card/40 text-muted-foreground hover:border-primary/40 hover:text-foreground"

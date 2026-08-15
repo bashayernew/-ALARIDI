@@ -1055,7 +1055,7 @@ export const EN_DICT = {
   "contact.contact.email": "Email",
   "contact.contact.location": "Locations",
   "contact.contact.location.body":
-    "Assima Mall, Salmiya Qatar Street · Jahra Sahari Mall",
+    "Salmiya — Qatar Street · Jahra — Sahari Mall · Agaila — The Gate Mall · Assima Mall — Monoprix",
   "contact.form.title": "Send us a message",
   "contact.form.subtitle":
     "Catering, bulk orders, partnerships — we’d love to hear from you.",
@@ -2557,7 +2557,7 @@ export const AR_DICT: Record<TranslationKey, string> = {
   "contact.contact.email": "البريد الإلكتروني",
   "contact.contact.location": "الفروع",
   "contact.contact.location.body":
-    "مجمع العاصمة، شارع قطر بالسالمية · مجمع الصحاري بالجهراء",
+    "السالمية — شارع قطر · الجهراء — مجمع الصحاري · العقيلة — ذا جيت مول · مجمع العاصمة — مونوبري",
   "contact.form.title": "أرسل لنا رسالة",
   "contact.form.subtitle":
     "تموين، طلبات بالجملة، شراكات — يسعدنا التواصل معك.",

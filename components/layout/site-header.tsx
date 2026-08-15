@@ -17,11 +17,13 @@ import {
   type ServedArea,
 } from "@/components/layout/storefront-area-picker";
 import type { SelectedKuwaitArea } from "@/lib/kuwait-areas";
+import type { PickupBranchOption } from "@/lib/pickup-branch";
 
 type SiteHeaderProps = {
   selectedArea?: SelectedKuwaitArea | null;
   areaLabel?: string | null;
   servedAreas?: ServedArea[];
+  pickupBranches?: PickupBranchOption[];
   promptAreaOnMount?: boolean;
 };
 
@@ -40,6 +42,7 @@ export function SiteHeader({
   selectedArea = null,
   areaLabel = null,
   servedAreas = [],
+  pickupBranches = [],
   promptAreaOnMount = false,
 }: SiteHeaderProps) {
   const { t } = useI18n();
@@ -76,6 +79,7 @@ export function SiteHeader({
             selected={selectedArea}
             areaLabel={areaLabel}
             servedAreas={servedAreas}
+            pickupBranches={pickupBranches}
             promptOnMount={promptAreaOnMount}
           />
           <Link

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Mail, MapPin, Phone, MessageCircle } from "lucide-react";
+import { MapPin, Mail, Phone, MessageCircle } from "lucide-react";
 import { getLocale } from "@/lib/i18n-server";
 import { translate, type TranslationKey } from "@/lib/dictionary";
 import { ContactForm } from "@/components/contact-form";
@@ -14,8 +14,32 @@ export const metadata: Metadata = {
     "Reach Al Aridi Sweets by phone, WhatsApp, email, or our online form. We deliver across Kuwait.",
 };
 
-const PHONE = process.env.NEXT_PUBLIC_PHONE || "+965 9999 9999";
-const EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "hello@alaridi.com";
+const PHONE = process.env.NEXT_PUBLIC_PHONE || "+965 9009 0892";
+const EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "Info@alaridisweets.com";
+
+/** Branch locations — each opens its pin on Google Maps. */
+const LOCATIONS: { nameEn: string; nameAr: string; mapsUrl: string }[] = [
+  {
+    nameEn: "Salmiya — Qatar Street",
+    nameAr: "السالمية — شارع قطر",
+    mapsUrl: "https://maps.app.goo.gl/J41GGNByBuYQvgks5",
+  },
+  {
+    nameEn: "Jahra — Sahari Mall",
+    nameAr: "الجهراء — مجمع الصحاري",
+    mapsUrl: "https://maps.app.goo.gl/Px3emWCFZEjUXseF8",
+  },
+  {
+    nameEn: "Agaila — The Gate Mall",
+    nameAr: "العقيلة — ذا جيت مول",
+    mapsUrl: "https://maps.app.goo.gl/8UHxgZJsh1DHwrCR9",
+  },
+  {
+    nameEn: "Assima Mall — Monoprix",
+    nameAr: "مجمع العاصمة — مونوبري",
+    mapsUrl: "https://maps.app.goo.gl/fDpjDtfHvETNdYfj9",
+  },
+];
 const MAP_EMBED_URL =
   process.env.NEXT_PUBLIC_MAP_EMBED_URL ||
   "https://www.google.com/maps?q=Kuwait+City&output=embed";
@@ -80,15 +104,38 @@ export default async function ContactPage() {
               <p className="text-sm text-muted-foreground">{EMAIL}</p>
             </div>
           </a>
-          <div className="flex items-start gap-3 rounded-2xl border border-border/60 bg-card/40 p-4">
-            <MapPin className="mt-0.5 size-5 text-primary" />
-            <div>
-              <p className="font-medium">{t("contact.contact.location")}</p>
-              <p className="text-sm text-muted-foreground">
-                {t("contact.contact.location.body")}
-              </p>
-            </div>
-          </div>
+          {LOCATIONS.map((loc) => {
+            const inner = (
+              <>
+                <MapPin className="mt-0.5 size-5 shrink-0 text-primary" />
+                <div>
+                  <p className="font-medium">
+                    {locale === "ar" ? loc.nameAr : loc.nameEn}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("contact.contact.location")}
+                  </p>
+                </div>
+              </>
+            );
+            const className =
+              "flex items-start gap-3 rounded-2xl border border-border/60 bg-card/40 p-4 transition hover:border-primary/40";
+            return loc.mapsUrl ? (
+              <a
+                key={loc.nameEn}
+                href={loc.mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={className}
+              >
+                {inner}
+              </a>
+            ) : (
+              <div key={loc.nameEn} className={className}>
+                {inner}
+              </div>
+            );
+          })}
         </div>
 
         <div className="rounded-3xl border border-border/60 bg-card/30 p-6">

@@ -25,6 +25,7 @@ import {
 } from "@/lib/header-offers";
 import { resolveStorefrontBranchId } from "@/lib/order-branch";
 import { getSelectedArea } from "@/lib/storefront-branch";
+import { getPickupBranches } from "@/lib/storefront-branch";
 import { resolveStorefrontWhatsappUrl } from "@/lib/branch-whatsapp";
 import { areaDisplayLabel } from "@/lib/kuwait-areas";
 import { getServedAreas } from "@/lib/served-areas";
@@ -88,6 +89,7 @@ export default async function RootLayout({
     ? areaDisplayLabel(selectedArea, locale)
     : null;
   const servedAreas = await getServedAreas();
+  const pickupBranches = await getPickupBranches();
   const storefrontBranchId = await resolveStorefrontBranchId();
   // Route WhatsApp links to the customer's branch number when that branch has one.
   socialUrls.whatsapp = await resolveStorefrontWhatsappUrl(
@@ -155,7 +157,9 @@ fbq('track', 'PageView');`}
                   selectedArea={selectedArea}
                   areaLabel={areaLabel}
                   servedAreas={servedAreas}
-                  promptAreaOnMount={!selectedArea}
+                  pickupBranches={pickupBranches}
+                  promptAreaOnMount
+
                 />
               </HeaderOverlay>
             </StorefrontOnly>
