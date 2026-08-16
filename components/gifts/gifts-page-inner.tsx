@@ -11,7 +11,6 @@ import type { GiftCardProductDTO } from "@/lib/gift-card-products";
 import type { BuilderProductDTO } from "@/lib/gift-baskets";
 import type { PickupBranchOption } from "@/lib/pickup-branch";
 import { GiftBasketsSection } from "@/components/gifts/gift-baskets-section";
-import { BuyGiftCardForm } from "@/components/gifts/buy-gift-card-form";
 import { GiftBundleBuilder } from "@/components/gifts/gift-bundle-builder";
 
 type Props = {
@@ -117,22 +116,6 @@ export function GiftsPageInner({
         </section>
       )}
 
-      {/* Gift cards live only here, at the end of the gifts page. */}
-      {giftCardProducts.length > 0 && (
-        <section>
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 className="font-heading text-2xl">{t("giftCard.buy.title")}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {t("giftCard.buy.subtitle")}
-              </p>
-            </div>
-          </div>
-          <div className="mt-4">
-            <BuyGiftCardForm products={giftCardProducts} compact />
-          </div>
-        </section>
-      )}
     </div>
   );
 }
