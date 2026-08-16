@@ -54,9 +54,6 @@ export function GiftBasketSummaryDialog({
         {summary ? (
           <>
             <DialogHeader>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
-                {t("gifts.basketSummary.kicker")}
-              </p>
               <DialogTitle className="font-heading text-2xl text-gradient-gold">
                 {t("gifts.basketSummary.title")}
               </DialogTitle>

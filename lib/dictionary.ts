@@ -1136,10 +1136,10 @@ export const EN_DICT = {
   "gifts.builder.card.placeholder": "Card message",
   "gifts.builder.addToCart": "Add gift basket to cart",
   "gifts.builder.reviewBasket": "Review gift basket",
-  "gifts.builder.customBasketTitle": "Custom gift basket",
+  "gifts.builder.customBasketTitle": "Basket includes",
 
   "gifts.basketSummary.kicker": "Ready to order",
-  "gifts.basketSummary.title": "Ready basket summary",
+  "gifts.basketSummary.title": "Basket Summary",
   "gifts.basketSummary.subtitle":
     "Confirm everything below, then send your order to us on WhatsApp.",
   "gifts.basketSummary.total": "Total",
@@ -2636,10 +2636,10 @@ export const AR_DICT: Record<TranslationKey, string> = {
   "gifts.builder.card.placeholder": "رسالة البطاقة",
   "gifts.builder.addToCart": "أضف سلة الهدايا للسلة",
   "gifts.builder.reviewBasket": "مراجعة سلة الهدايا",
-  "gifts.builder.customBasketTitle": "سلة هدايا مخصصة",
+  "gifts.builder.customBasketTitle": "السلة تحتوي على",
 
   "gifts.basketSummary.kicker": "جاهزة للطلب",
-  "gifts.basketSummary.title": "ملخص السلة الجاهزة",
+  "gifts.basketSummary.title": "ملخص السلة",
   "gifts.basketSummary.subtitle":
     "راجع التفاصيل أدناه ثم أرسل طلبك إلينا عبر واتساب.",
   "gifts.basketSummary.total": "الإجمالي",
