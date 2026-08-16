@@ -556,7 +556,7 @@ export function CheckoutForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="name">{t("checkout.fullName")}</Label>
+            <Label htmlFor="name">{t("checkout.fullName")}<span className="ms-1 text-destructive">*</span></Label>
             <Input
               id="name"
               required
@@ -566,7 +566,7 @@ export function CheckoutForm({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="phone">{t("checkout.phone")}</Label>
+            <Label htmlFor="phone">{t("checkout.phone")}<span className="ms-1 text-destructive">*</span></Label>
             <Input
               id="phone"
               required
@@ -640,7 +640,7 @@ export function CheckoutForm({
 
         {fulfillment === "SCHEDULED" && (
           <div className="space-y-2">
-            <Label htmlFor="scheduled-date">{t("checkout.scheduledDate")}</Label>
+            <Label htmlFor="scheduled-date">{t("checkout.scheduledDate")}<span className="ms-1 text-destructive">*</span></Label>
             <Input
               id="scheduled-date"
               type="date"

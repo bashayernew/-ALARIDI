@@ -80,7 +80,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
   function handleAdd() {
     const p = product;
     if (!p) return;
-    addLine({
+    const added = addLine({
       productId: p.id,
       name: dp.name,
       image: p.image,
@@ -102,6 +102,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
         .filter(Boolean)
         .join(" | "),
     });
+    if (!added) return;
     toast.success(t("product.toast.added"), { description: dp.name });
     onOpenChange(false);
   }

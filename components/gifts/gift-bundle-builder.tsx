@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formatKwd } from "@/lib/format";
-import { GIFT_WRAP_FEE_KWD, MIN_GIFT_BASKET_KWD } from "@/lib/pricing";
+import { MIN_GIFT_BASKET_KWD } from "@/lib/pricing";
 import { useI18n } from "@/components/i18n/i18n-provider";
 import { cn } from "@/lib/utils";
 import type { BuilderProductDTO } from "@/lib/gift-baskets";
@@ -50,9 +50,12 @@ function BuilderThumb({ src, name }: { src: string; name: string }) {
 export function GiftBundleBuilder({
   products,
   pickupBranches,
+  basketFeeKwd = 1,
 }: {
   products: BuilderProductDTO[];
   pickupBranches: PickupBranchOption[];
+  /** Flat fee per basket (basket + dedication card + wrap). */
+  basketFeeKwd?: number;
 }) {
   const { t } = useI18n();
   const defaultPickupBranchId = pickupBranches[0]?.id ?? "";
@@ -73,10 +76,8 @@ export function GiftBundleBuilder({
     (sum, s) => sum + s.product.priceKwd * s.quantity,
     0
   );
-  const wrapTotal = GIFT_WRAP_FEE_KWD * selections.reduce(
-    (n, s) => n + s.quantity,
-    0
-  );
+  // Flat fee once per basket (not per item).
+  const wrapTotal = selections.length > 0 ? basketFeeKwd : 0;
   const bundleTotal = itemsTotal + wrapTotal;
   const totalItems = selections.reduce((n, s) => n + s.quantity, 0);
   const remainingKwd = Math.max(0, MIN_GIFT_BASKET_KWD - itemsTotal);

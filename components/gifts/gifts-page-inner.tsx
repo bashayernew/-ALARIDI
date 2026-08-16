@@ -15,6 +15,7 @@ import { GiftBundleBuilder } from "@/components/gifts/gift-bundle-builder";
 
 type Props = {
   showBuilder?: boolean;
+  basketFeeKwd?: number;
   occasions: GiftOccasionDTO[];
   giftBaskets: GiftBasketDTO[];
   giftCardProducts: GiftCardProductDTO[];
@@ -24,6 +25,7 @@ type Props = {
 
 export function GiftsPageInner({
   showBuilder = true,
+  basketFeeKwd = 1,
   occasions,
   giftBaskets,
   giftCardProducts,
@@ -97,6 +99,7 @@ export function GiftsPageInner({
           <GiftBundleBuilder
             products={builderProducts}
             pickupBranches={pickupBranches}
+            basketFeeKwd={basketFeeKwd}
           />
         </div>
       </section>

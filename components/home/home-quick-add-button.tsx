@@ -39,7 +39,7 @@ export function HomeQuickAddButton({
       return;
     }
     setBusy(true);
-    addLine({
+    const added = addLine({
       productId: product.id,
       name: d.name,
       image: product.image,
@@ -48,7 +48,9 @@ export function HomeQuickAddButton({
       giftWrap: false,
       extraToppings: false,
     });
-    toast.success(t("product.toast.added"), { description: d.name });
+    if (added) {
+      toast.success(t("product.toast.added"), { description: d.name });
+    }
     window.setTimeout(() => setBusy(false), 450);
   }
 

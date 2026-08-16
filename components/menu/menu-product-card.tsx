@@ -52,7 +52,7 @@ export function MenuProductCard({ product, onCustomize, onOpen }: Props) {
       return;
     }
     setBusy(true);
-    addLine({
+    const added = addLine({
       productId: product.id,
       name: dp.name,
       image: product.image,
@@ -61,7 +61,9 @@ export function MenuProductCard({ product, onCustomize, onOpen }: Props) {
       giftWrap: false,
       extraToppings: false,
     });
-    toast.success(t("product.toast.added"), { description: dp.name });
+    if (added) {
+      toast.success(t("product.toast.added"), { description: dp.name });
+    }
     window.setTimeout(() => setBusy(false), 350);
   }
 

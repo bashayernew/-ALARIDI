@@ -81,7 +81,7 @@ type CartState = {
   lines: CartLine[];
   open: boolean;
   setOpen: (v: boolean) => void;
-  addLine: (line: Omit<CartLine, "quantity"> & { quantity?: number }) => void;
+  addLine: (line: Omit<CartLine, "quantity"> & { quantity?: number }) => boolean;
   setQuantity: (key: string, qty: number) => void;
   removeLine: (key: string) => void;
   clear: () => void;
@@ -140,7 +140,7 @@ export const useCartStore = create<CartState>()(
               ? "بطاقات الهدايا تُشترى بشكل منفصل — أكمل طلب المنتجات أولاً ثم اشترِ البطاقة."
               : "Gift cards are checked out separately — complete your product order first, then buy the gift card."
           );
-          return;
+          return false;
         }
         if (!addingGiftCard && hasGiftCard) {
           toast.error(
@@ -148,7 +148,7 @@ export const useCartStore = create<CartState>()(
               ? "سلتك تحتوي على بطاقة هدية — أكمل شراء البطاقة أولاً ثم اطلب المنتجات."
               : "Your cart has a gift card — checkout the gift card first, then order products."
           );
-          return;
+          return false;
         }
         const key = lineKey(next);
         const lines = get().lines.map(normalizeLine);
@@ -157,9 +157,10 @@ export const useCartStore = create<CartState>()(
           const copy = [...lines];
           copy[idx] = { ...copy[idx], quantity: copy[idx].quantity + qty };
           set({ lines: copy, open: true });
-          return;
+          return true;
         }
         set({ lines: [...lines, next], open: true });
+        return true;
       },
       setQuantity: (key, qty) => {
         if (qty < 1) {

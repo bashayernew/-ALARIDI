@@ -310,3 +310,16 @@
     animation: none;
   }
 }
+/* iOS Safari gives date inputs an intrinsic width that overflows their
+   container on phones — force them to behave like normal full-width fields. */
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 2.5rem;
+}

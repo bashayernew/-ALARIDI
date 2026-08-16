@@ -117,7 +117,7 @@ export function BuyGiftCardForm({
     }
 
     setPending(true);
-    addLine({
+    const added = addLine({
       kind: "gift_card",
       productId: selected.id,
       giftCardProductId: selected.id,
@@ -138,6 +138,7 @@ export function BuyGiftCardForm({
         deliveryTimeSlot: "",
       },
     });
+    if (!added) return;
     toast.success(t("giftCard.buy.addedToCart"), {
       description: t("giftCard.buy.addedToCartDesc", {
         title: selected.title,
@@ -276,6 +277,7 @@ export function BuyGiftCardForm({
                   <div className="space-y-1.5">
                     <Label htmlFor="gc-name">
                       {t("giftCard.buy.recipientName")}
+                      <span className="ms-1 text-destructive">*</span>
                     </Label>
                     <Input
                       id="gc-name"
@@ -304,6 +306,7 @@ export function BuyGiftCardForm({
                     <div className="space-y-1.5">
                       <Label htmlFor="gc-phone">
                         {t("giftCard.buy.recipientPhone")}
+                        <span className="ms-1 text-destructive">*</span>
                       </Label>
                       <Input
                         id="gc-phone"
@@ -329,6 +332,7 @@ export function BuyGiftCardForm({
                   <div className="space-y-1.5">
                     <Label htmlFor="gc-date">
                       {t("giftCard.buy.deliveryDate")}
+                      <span className="ms-1 text-destructive">*</span>
                     </Label>
                     <Input
                       id="gc-date"
@@ -349,7 +353,9 @@ export function BuyGiftCardForm({
                   type="button"
                   disabled={pending}
                   className="w-full gap-2 rounded-xl py-6"
-                  onClick={() => void addToCart()}
+                  onClick={() => {
+                    if (addToCart()) router.push("/checkout");
+                  }}
                 >
                   {pending ? (
                     <>
@@ -359,25 +365,10 @@ export function BuyGiftCardForm({
                   ) : (
                     <>
                       <ShoppingBag className="size-4" />
-                      {t("giftCard.buy.addToCart", { amount: formatKwd(amount) })}
+                      {t("giftCard.buy.checkoutNow")} — {formatKwd(amount)}
                     </>
                   )}
                 </Button>
-
-                {!compact ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full gap-2 rounded-xl"
-                    onClick={() => {
-                      if (addToCart()) router.push("/checkout");
-                    }}
-                    disabled={pending}
-                  >
-                    <Gift className="size-4" />
-                    {t("giftCard.buy.checkoutNow")}
-                  </Button>
-                ) : null}
               </div>
             </div>
           ) : null}

@@ -2,7 +2,10 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { fetchSiteContentMap } from "@/lib/site-content";
-import { mergeFeatureFlagsFromContent } from "@/lib/site-content-types";
+import {
+  basketFeeFromContent,
+  mergeFeatureFlagsFromContent,
+} from "@/lib/site-content-types";
 import { getLocale } from "@/lib/i18n-server";
 import { translate } from "@/lib/dictionary";
 import {
@@ -26,8 +29,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function GiftsPage() {
-  const featureFlags = mergeFeatureFlagsFromContent(await fetchSiteContentMap());
+  const contentMap = await fetchSiteContentMap();
+  const featureFlags = mergeFeatureFlagsFromContent(contentMap);
   if (!featureFlags.giftBaskets && !featureFlags.giftCards) notFound();
+  const basketFeeKwd = basketFeeFromContent(contentMap);
 
   const locale = await getLocale();
 
@@ -56,6 +61,7 @@ export default async function GiftsPage() {
     <Suspense fallback={null}>
       <GiftsPageInner
         showBuilder={featureFlags.giftBaskets}
+        basketFeeKwd={basketFeeKwd}
         occasions={occasions}
         giftBaskets={giftBaskets}
         giftCardProducts={giftCardProducts}

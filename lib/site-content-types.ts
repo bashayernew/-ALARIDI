@@ -47,3 +47,13 @@ export function mergeFeatureFlagsFromContent(
   });
   return out;
 }
+
+/**
+ * Flat per-basket fee for the custom gift basket (basket + dedication card +
+ * wrap). Editable from Admin -> Content via the key `pricing.basketFee`.
+ */
+export function basketFeeFromContent(map: SiteContentOverrideMap): number {
+  const raw = (map["pricing.basketFee"]?.valueEn ?? "").trim();
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 0 && raw !== "" ? n : 1;
+}

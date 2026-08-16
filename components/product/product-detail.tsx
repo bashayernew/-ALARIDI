@@ -88,7 +88,7 @@ export function ProductDetail({
       toast.error(t("product.stock.outOfStock"));
       return;
     }
-    addLine({
+    const added = addLine({
       productId: product.id,
       name,
       image: product.image,
@@ -110,7 +110,9 @@ export function ProductDetail({
         .filter(Boolean)
         .join(" | "),
     });
-    toast.success(t("product.toast.added"), { description: name });
+    if (added) {
+      toast.success(t("product.toast.added"), { description: name });
+    }
   }
 
   async function handleWishlist() {
