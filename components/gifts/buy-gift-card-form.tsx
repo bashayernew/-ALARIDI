@@ -250,24 +250,6 @@ export function BuyGiftCardForm({
                       </Button>
                     ))}
                   </div>
-                  {selected.allowCustomAmount ? (
-                    <div className="space-y-1.5">
-                      <Label htmlFor="gc-custom">
-                        {t("giftCard.buy.customAmount")}
-                      </Label>
-                      <Input
-                        id="gc-custom"
-                        type="number"
-                        step="0.001"
-                        min={selected.minCustomAmount ?? 1}
-                        max={selected.maxCustomAmount ?? 500}
-                        value={customAmount}
-                        onChange={(e) => setCustomAmount(e.target.value)}
-                        placeholder={t("giftCard.buy.customAmount.placeholder")}
-                        className="border-primary/20 bg-card/40"
-                      />
-                    </div>
-                  ) : null}
                 </div>
 
                 <div className="space-y-4">

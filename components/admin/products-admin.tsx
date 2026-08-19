@@ -131,6 +131,8 @@ export type AdminProduct = {
   id: string;
   name: string;
   nameAr: string;
+  description: string;
+  descriptionAr: string;
   image: string;
   category: string;
   price: number;
@@ -153,6 +155,8 @@ function EditProductDialog({
   const [open, setOpen] = React.useState(false);
   const [name, setName] = React.useState(product.name);
   const [nameAr, setNameAr] = React.useState(product.nameAr);
+  const [description, setDescription] = React.useState(product.description);
+  const [descriptionAr, setDescriptionAr] = React.useState(product.descriptionAr);
   const [category, setCategory] = React.useState<string>(product.category);
   const [price, setPrice] = React.useState(product.price.toFixed(3));
   const [imageUrl, setImageUrl] = React.useState(product.image);
@@ -164,6 +168,8 @@ function EditProductDialog({
     if (!open) return;
     setName(product.name);
     setNameAr(product.nameAr);
+    setDescription(product.description);
+    setDescriptionAr(product.descriptionAr);
     setCategory(product.category);
     setPrice(product.price.toFixed(3));
     setImageUrl(product.image);
@@ -194,6 +200,8 @@ function EditProductDialog({
       await updateProduct(product.id, {
         name: name.trim(),
         nameAr: nameAr.trim(),
+        description: description.trim(),
+        descriptionAr: descriptionAr.trim(),
         category,
         price: Math.round(parsedPrice * 1000) / 1000,
         image: image || product.image,
@@ -272,6 +280,29 @@ function EditProductDialog({
                 id={`edit-namear-${product.id}`}
                 value={nameAr}
                 onChange={(e) => setNameAr(e.target.value)}
+                dir="rtl"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor={`edit-desc-${product.id}`}>
+                {t("admin.products.label.description")}
+              </Label>
+              <Textarea
+                id={`edit-desc-${product.id}`}
+                rows={2}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor={`edit-descar-${product.id}`}>
+                {t("admin.products.label.descriptionAr")}
+              </Label>
+              <Textarea
+                id={`edit-descar-${product.id}`}
+                rows={2}
+                value={descriptionAr}
+                onChange={(e) => setDescriptionAr(e.target.value)}
                 dir="rtl"
               />
             </div>
@@ -540,6 +571,26 @@ export function ProductsAdmin({ products, categories, dbOffline }: Props) {
   const [isNew, setIsNew] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
   const [showForm, setShowForm] = React.useState(false);
+
+  // Table filters: free-text name (EN/AR) + category.
+  const [filterName, setFilterName] = React.useState("");
+  const [filterCategory, setFilterCategory] = React.useState("ALL");
+  const visibleProducts = React.useMemo(() => {
+    const q = filterName.trim().toLowerCase();
+    return products.filter((p) => {
+      if (filterCategory !== "ALL" && p.category !== filterCategory) {
+        return false;
+      }
+      if (
+        q &&
+        !p.name.toLowerCase().includes(q) &&
+        !p.nameAr.toLowerCase().includes(q)
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [products, filterName, filterCategory]);
 
   async function onCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -834,6 +885,26 @@ export function ProductsAdmin({ products, categories, dbOffline }: Props) {
         </div>
       </form>
       )}
+      <div className="mb-4 grid gap-3 sm:grid-cols-[1fr_240px]">
+        <Input
+          value={filterName}
+          onChange={(e) => setFilterName(e.target.value)}
+          placeholder={t("admin.products.filter.name")}
+        />
+        <select
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+          className="h-9 w-full rounded-lg border border-border/60 bg-card px-2 text-sm"
+        >
+          <option value="ALL">{t("admin.products.filter.allCategories")}</option>
+          {categories.map((c) => (
+            <option key={c.key} value={c.key}>
+              {locale === "ar" && c.nameAr.trim() ? c.nameAr : c.nameEn}
+            </option>
+          ))}
+        </select>
+      </div>
+
 
       <div className="mt-12 overflow-x-auto rounded-2xl border border-border/60 bg-card/40">
         <table className="w-full min-w-[720px] text-start text-sm">
@@ -848,7 +919,7 @@ export function ProductsAdmin({ products, categories, dbOffline }: Props) {
             </tr>
           </thead>
           <tbody>
-            {products.map((p) => (
+            {visibleProducts.map((p) => (
               <tr key={p.id} className="border-b border-border/40">
                 <td className="px-4 py-3">
                   <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-muted">

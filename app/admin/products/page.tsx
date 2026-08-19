@@ -33,6 +33,8 @@ export default async function AdminProductsPage() {
     id: p.id,
     name: p.name,
     nameAr: p.nameAr,
+    description: p.description,
+    descriptionAr: p.descriptionAr,
     image: p.image,
     category: p.category,
     price: Number(p.price),

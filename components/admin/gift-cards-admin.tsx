@@ -249,15 +249,6 @@ function CatalogRow({
             />
             {t("admin.giftCards.catalog.enabled")}
           </label>
-          <label className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Checkbox
-              checked={draft.allowCustomAmount}
-              onCheckedChange={(v) =>
-                setDraft((d) => ({ ...d, allowCustomAmount: Boolean(v) }))
-              }
-            />
-            {t("admin.giftCards.catalog.allowCustom")}
-          </label>
         </div>
         <div className="flex gap-2">
           <Button type="button" variant="outline" disabled={busy} onClick={remove}>
@@ -284,7 +275,7 @@ export function GiftCardsAdmin({ catalog, rows }: Props) {
   const [descriptionAr, setDescriptionAr] = React.useState("");
   const [price, setPrice] = React.useState("25");
   const [presetAmounts, setPresetAmounts] = React.useState("10,25,50");
-  const [allowCustomAmount, setAllowCustomAmount] = React.useState(true);
+  const [allowCustomAmount] = React.useState(false);
   const [sortOrder, setSortOrder] = React.useState("0");
   const [imageUrl, setImageUrl] = React.useState("");
   const [file, setFile] = React.useState<File | null>(null);
