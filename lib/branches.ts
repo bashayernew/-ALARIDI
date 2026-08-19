@@ -30,8 +30,8 @@ export const BRANCH_SEED: BranchSeed[] = [
   },
   {
     slug: "egaila-date-mall",
-    name: "Egaila — Date Mall",
-    nameAr: "العقيلة - مجمع تمر",
+    name: "Egaila — The Gate Mall",
+    nameAr: "العقيلة - ذا جيت مول",
     area: "Egaila",
   },
 ];

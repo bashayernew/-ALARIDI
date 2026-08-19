@@ -34,7 +34,7 @@ export default async function AboutPage() {
         </div>
         <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-muted">
           <Image
-            src="https://images.unsplash.com/photo-1605196560547-b2f7281b7355?auto=format&fit=crop&w=1200&q=80"
+            src="/salridiaboutimage.jpg"
             alt="Al Aridi Sweets"
             fill
             className="object-cover"

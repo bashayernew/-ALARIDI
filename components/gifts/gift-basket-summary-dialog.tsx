@@ -16,6 +16,7 @@ import { useI18n } from "@/components/i18n/i18n-provider";
 import { useSocialUrls } from "@/components/site-extras-provider";
 import { DEFAULT_SOCIAL_URLS } from "@/lib/site-content-types";
 import { formatKwd } from "@/lib/format";
+import { pickupBranchLabel } from "@/lib/gift-delivery";
 import {
   buildGiftBasketWhatsAppUrl,
   formatGiftBasketOrderSummaryDelivery,
@@ -97,11 +98,69 @@ export function GiftBasketSummaryDialog({
                 <p className="text-xs font-semibold uppercase tracking-wider text-primary">
                   {t("gifts.basketSummary.receiver")}
                 </p>
-                <p className="mt-2 font-medium">{summary.delivery.receiverName}</p>
-                <p className="text-muted-foreground">{summary.delivery.receiverPhone}</p>
-                <p className="mt-3 text-xs leading-relaxed text-primary/90">
-                  {formatGiftBasketOrderSummaryDelivery(summary.delivery, locale)}
-                </p>
+                <dl className="mt-2 space-y-1.5">
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-muted-foreground">
+                      {t("gifts.delivery.receiverName")}
+                    </dt>
+                    <dd className="text-end font-medium">
+                      {summary.delivery.receiverName}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-muted-foreground">
+                      {t("gifts.delivery.receiverPhone")}
+                    </dt>
+                    <dd className="text-end font-medium tabular-nums">
+                      {summary.delivery.receiverPhone}
+                    </dd>
+                  </div>
+                  {summary.delivery.fulfillmentType === "DELIVERY" ? (
+                    <div className="flex justify-between gap-3">
+                      <dt className="shrink-0 text-muted-foreground">
+                        {t("gifts.delivery.receiverAddress")}
+                      </dt>
+                      <dd className="text-end font-medium">
+                        {summary.delivery.receiverAddress ?? ""}
+                      </dd>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-muted-foreground">
+                        {t("gifts.delivery.pickupBranch")}
+                      </dt>
+                      <dd className="text-end font-medium">
+                        {pickupBranchLabel(
+                          summary.delivery.pickupBranch ?? "",
+                          locale
+                        )}
+                      </dd>
+                    </div>
+                  )}
+                  {summary.delivery.deliveryDate ? (
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-muted-foreground">
+                        {t("gifts.delivery.date")}
+                      </dt>
+                      <dd className="text-end font-medium tabular-nums">
+                        {summary.delivery.deliveryDate}
+                        {summary.delivery.deliveryTimeSlot
+                          ? ` · ${summary.delivery.deliveryTimeSlot}`
+                          : ""}
+                      </dd>
+                    </div>
+                  ) : null}
+                  {summary.delivery.deliveryNotes?.trim() ? (
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-muted-foreground">
+                        {t("gifts.delivery.notes")}
+                      </dt>
+                      <dd className="text-end">
+                        {summary.delivery.deliveryNotes.trim()}
+                      </dd>
+                    </div>
+                  ) : null}
+                </dl>
                 {summary.cardMessage?.trim() ? (
                   <p className="mt-3 text-xs text-muted-foreground">
                     <span className="font-medium text-foreground">

@@ -25,6 +25,16 @@ const STATUS_ORDER: OrderStatus[] = [
   OrderStatus.CANCELLED,
 ];
 
+/** Cash on delivery is paid at the end — so PAID comes after DELIVERED. */
+const STATUS_ORDER_COD: OrderStatus[] = [
+  OrderStatus.PENDING,
+  OrderStatus.PREPARING,
+  OrderStatus.OUT_FOR_DELIVERY,
+  OrderStatus.DELIVERED,
+  OrderStatus.PAID,
+  OrderStatus.CANCELLED,
+];
+
 type Props = {
   locale: Locale;
   order: {
@@ -53,7 +63,10 @@ export function OrderRow({ locale, order }: Props) {
   // admin keeps full manual control over every order status (Pending → Paid →
   // Preparing → Out for delivery → Delivered, or Cancelled). Once a gateway is
   // wired up, gateway orders can again be auto-marked Paid.
-  const statusOptions = STATUS_ORDER;
+  const statusOptions =
+    order.paymentMethod === PaymentMethod.CASH_ON_DELIVERY
+      ? STATUS_ORDER_COD
+      : STATUS_ORDER;
 
   async function onChange(v: string | null) {
     if (!v) return;
