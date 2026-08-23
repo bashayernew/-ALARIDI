@@ -9,15 +9,18 @@ import {
 import { verifyPassword } from "@/lib/admin-password";
 import { getAdminSession, ADMIN_COOKIE } from "@/lib/admin-session";
 
-async function setSessionCookie(value: string) {
+async function setSessionCookie(value: string, role: string) {
   const jar = await cookies();
-  jar.set(ADMIN_COOKIE, value, {
+  const opts = {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "lax" as const,
     secure: process.env.NODE_ENV === "production",
     path: "/admin",
     maxAge: 60 * 60 * 12,
-  });
+  };
+  jar.set(ADMIN_COOKIE, value, opts);
+  // Role cookie lets the middleware restrict limited roles (e.g. BRANCH_SALES).
+  jar.set("al_aridi_admin_role", role, opts);
 }
 
 export async function adminLogin(
@@ -31,7 +34,7 @@ export async function adminLogin(
     normalized === expectedAdminEmail().toLowerCase() &&
     password === expectedAdminPassword()
   ) {
-    await setSessionCookie("1");
+    await setSessionCookie("1", "SUPER_ADMIN");
     return true;
   }
 
@@ -41,7 +44,7 @@ export async function adminLogin(
       where: { email: normalized },
     });
     if (user && user.active && verifyPassword(password, user.passwordHash)) {
-      await setSessionCookie(`u:${user.id}`);
+      await setSessionCookie(`u:${user.id}`, user.role);
       return true;
     }
   } catch {
@@ -54,6 +57,7 @@ export async function adminLogin(
 export async function adminLogout(): Promise<void> {
   const jar = await cookies();
   jar.delete(ADMIN_COOKIE);
+  jar.delete("al_aridi_admin_role");
 }
 
 export async function isAdminSession(): Promise<boolean> {

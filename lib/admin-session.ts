@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { expectedAdminEmail } from "@/lib/admin-config";
 
-export type AdminRoleValue = "SUPER_ADMIN" | "BRANCH_ADMIN";
+export type AdminRoleValue = "SUPER_ADMIN" | "BRANCH_ADMIN" | "BRANCH_SALES";
 
 export type AdminSession = {
   /** null for the config/bootstrap super-admin (no DB row). */

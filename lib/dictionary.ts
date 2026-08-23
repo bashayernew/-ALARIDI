@@ -692,6 +692,9 @@ export const EN_DICT = {
   "admin.nav.content": "Site copy",
   "admin.nav.users": "Registered users",
 
+  "admin.export.excel": "Export to Excel",
+  "admin.orders.filter.from": "From date",
+  "admin.orders.filter.to": "To date",
   "admin.orders.search": "Search orders…",
   "admin.orders.filter.all": "All statuses",
   "admin.orders.th.address": "Address",
@@ -2208,6 +2211,9 @@ export const AR_DICT: Record<TranslationKey, string> = {
   "admin.nav.content": "نصوص الموقع",
   "admin.nav.users": "المستخدمون المسجّلون",
 
+  "admin.export.excel": "تصدير إلى إكسل",
+  "admin.orders.filter.from": "من تاريخ",
+  "admin.orders.filter.to": "إلى تاريخ",
   "admin.orders.search": "بحث في الطلبات…",
   "admin.orders.filter.all": "كل الحالات",
   "admin.orders.th.address": "العنوان",

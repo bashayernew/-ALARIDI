@@ -69,12 +69,19 @@ export function AdminChrome({
   }
 
   const isSuper = session?.role === "SUPER_ADMIN";
+  const isSales = session?.role === "BRANCH_SALES";
 
-  const navItems: { href: string; label: string }[] = [
-    { href: "/admin/availability", label: t("admin.nav.availability") },
-    { href: "/admin/delivery-areas", label: t("admin.nav.deliveryAreas") },
-    ...BASE_LINKS.map((l) => ({ href: l.href, label: t(l.labelKey) })),
-  ];
+  // Branch-sales staff only manage orders + per-branch menu availability.
+  const navItems: { href: string; label: string }[] = isSales
+    ? [
+        { href: "/admin", label: t("admin.nav.orders") },
+        { href: "/admin/availability", label: t("admin.nav.availability") },
+      ]
+    : [
+        { href: "/admin/availability", label: t("admin.nav.availability") },
+        { href: "/admin/delivery-areas", label: t("admin.nav.deliveryAreas") },
+        ...BASE_LINKS.map((l) => ({ href: l.href, label: t(l.labelKey) })),
+      ];
   if (isSuper) {
     navItems.push({ href: "/admin/accounts", label: "Accounts" });
     navItems.push({ href: "/admin/features", label: "Store features" });

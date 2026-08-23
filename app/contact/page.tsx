@@ -40,9 +40,6 @@ const LOCATIONS: { nameEn: string; nameAr: string; mapsUrl: string }[] = [
     mapsUrl: "https://maps.app.goo.gl/fDpjDtfHvETNdYfj9",
   },
 ];
-const MAP_EMBED_URL =
-  process.env.NEXT_PUBLIC_MAP_EMBED_URL ||
-  "https://www.google.com/maps?q=Kuwait+City&output=embed";
 
 export default async function ContactPage() {
   const locale = await getLocale();
@@ -149,15 +146,6 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-3xl border border-border/60">
-        <iframe
-          title="Al Aridi Sweets location"
-          src={MAP_EMBED_URL}
-          loading="lazy"
-          className="h-[360px] w-full"
-          referrerPolicy="no-referrer-when-downgrade"
-        />
-      </section>
     </div>
   );
 }

@@ -185,6 +185,50 @@ export function LoyaltyAdmin({ settings: initial, tierCounts, dbOffline }: Props
           })}
         </p>
 
+        {(() => {
+          const pointsPerKwdValue =
+            settings.redemptionValueKwd > 0
+              ? settings.redemptionPoints / settings.redemptionValueKwd
+              : 0;
+          const ptsPerKd = (pct: number) =>
+            Math.floor((pct / 100) * pointsPerKwdValue * 100) / 100;
+          return (
+            <div className="mt-4 space-y-1.5 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3 text-xs text-muted-foreground">
+              <p className="font-semibold uppercase tracking-wider text-primary">
+                How it works with these numbers
+              </p>
+              <p>
+                Money spent → points earned: every 1 KWD spent earns{" "}
+                <span className="font-medium text-foreground">
+                  Silver {ptsPerKd(settings.silverEarnPercent)} pts · Gold{" "}
+                  {ptsPerKd(settings.goldEarnPercent)} pts · Platinum{" "}
+                  {ptsPerKd(settings.platinumEarnPercent)} pts
+                </span>
+              </p>
+              <p>
+                Points redeemed → cashback:{" "}
+                <span className="font-medium text-foreground">
+                  {settings.redemptionPoints} pts ={" "}
+                  {formatKwd(settings.redemptionValueKwd)}
+                </span>{" "}
+                off at checkout (1 pt = {formatKwd(
+                  settings.redemptionPoints > 0
+                    ? settings.redemptionValueKwd / settings.redemptionPoints
+                    : 0
+                )}).
+              </p>
+              <p>
+                Example: a 10 KWD order earns a Silver customer{" "}
+                <span className="font-medium text-foreground">
+                  {Math.floor((settings.silverEarnPercent / 100) * 10 * pointsPerKwdValue)}{" "}
+                  pts
+                </span>
+                .
+              </p>
+            </div>
+          );
+        })()}
+
         <Button
           type="button"
           className="mt-4"

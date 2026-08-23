@@ -18,7 +18,7 @@ import { KUWAIT_GOVERNORATES } from "@/lib/kuwait-areas";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type Role = "SUPER_ADMIN" | "BRANCH_ADMIN";
+type Role = "SUPER_ADMIN" | "BRANCH_ADMIN" | "BRANCH_SALES";
 
 type Row = {
   id: string;
@@ -92,7 +92,7 @@ export function AccountsAdmin({ rows, branches, areaAssignments, currentEmail }:
       name,
       password,
       role,
-      branchId: role === "BRANCH_ADMIN" ? branchId || null : null,
+      branchId: role === "SUPER_ADMIN" ? null : branchId || null,
     });
     if (!res.ok) {
       setBusy(false);
@@ -192,10 +192,13 @@ export function AccountsAdmin({ rows, branches, areaAssignments, currentEmail }:
             className="h-9 w-full rounded-lg border border-border/60 bg-muted/20 px-2 text-sm"
           >
             <option value="BRANCH_ADMIN">Branch admin</option>
+            <option value="BRANCH_SALES">
+              Branch sales (orders &amp; menu availability only)
+            </option>
             <option value="SUPER_ADMIN">Super admin (all branches)</option>
           </select>
         </div>
-        {role === "BRANCH_ADMIN" ? (
+        {role !== "SUPER_ADMIN" ? (
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="acc-branch">Branch</Label>
             <select
@@ -210,6 +213,7 @@ export function AccountsAdmin({ rows, branches, areaAssignments, currentEmail }:
                 </option>
               ))}
             </select>
+            {role === "BRANCH_ADMIN" ? (
             <div className="space-y-2 pt-2">
               <Label>Delivery areas this account manages</Label>
               <p className="text-xs text-muted-foreground">
@@ -283,6 +287,7 @@ export function AccountsAdmin({ rows, branches, areaAssignments, currentEmail }:
                 })}
               </div>
             </div>
+            ) : null}
           </div>
         ) : null}
         <div className="sm:col-span-2">
@@ -313,7 +318,11 @@ export function AccountsAdmin({ rows, branches, areaAssignments, currentEmail }:
                   ) : null}
                 </td>
                 <td className="px-4 py-3 text-foreground/80">
-                  {u.role === "SUPER_ADMIN" ? "Super admin" : "Branch admin"}
+                  {u.role === "SUPER_ADMIN"
+                    ? "Super admin"
+                    : u.role === "BRANCH_SALES"
+                      ? "Branch sales"
+                      : "Branch admin"}
                 </td>
                 <td className="px-4 py-3 text-foreground/80">
                   {u.role === "SUPER_ADMIN" ? "All" : u.branchName ?? "—"}

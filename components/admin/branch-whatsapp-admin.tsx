@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useI18n } from "@/components/i18n/i18n-provider";
 import {
+  updateBranchHours,
   updateBranchWhatsapp,
   type BranchWhatsappRow,
 } from "@/actions/branch-whatsapp-admin";
@@ -17,22 +18,27 @@ function BranchRow({ row }: { row: BranchWhatsappRow }) {
   const { t } = useI18n();
   const router = useRouter();
   const [num, setNum] = React.useState(row.whatsappNumber);
+  const [openTime, setOpenTime] = React.useState(row.openTime);
+  const [closeTime, setCloseTime] = React.useState(row.closeTime);
   const [busy, setBusy] = React.useState(false);
 
   React.useEffect(() => {
     setNum(row.whatsappNumber);
+    setOpenTime(row.openTime);
+    setCloseTime(row.closeTime);
   }, [row]);
 
   async function save() {
     setBusy(true);
     try {
       const res = await updateBranchWhatsapp(row.id, num);
-      if (res.ok) {
+      const hoursRes = await updateBranchHours(row.id, openTime, closeTime);
+      if (res.ok && hoursRes.ok) {
         setNum(res.number);
         toast.success(t("admin.branchWhatsapp.saved"));
         router.refresh();
       } else {
-        toast.error(res.error);
+        toast.error((!res.ok && res.error) || (!hoursRes.ok && hoursRes.error) || "Error");
       }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error");
@@ -57,6 +63,24 @@ function BranchRow({ row }: { row: BranchWhatsappRow }) {
           inputMode="numeric"
           dir="ltr"
           className="w-56"
+        />
+      </div>
+      <div className="space-y-1">
+        <Label className="text-xs">Opens</Label>
+        <Input
+          type="time"
+          value={openTime}
+          onChange={(e) => setOpenTime(e.target.value)}
+          className="w-32"
+        />
+      </div>
+      <div className="space-y-1">
+        <Label className="text-xs">Closes</Label>
+        <Input
+          type="time"
+          value={closeTime}
+          onChange={(e) => setCloseTime(e.target.value)}
+          className="w-32"
         />
       </div>
       <Button type="button" disabled={busy} onClick={save}>

@@ -248,6 +248,7 @@ model OrderItem {
 enum AdminRole {
   SUPER_ADMIN
   BRANCH_ADMIN
+  BRANCH_SALES
 }
 
 model Branch {
@@ -261,6 +262,9 @@ model Branch {
   // Per-branch WhatsApp number (digits only, e.g. 9655xxxxxxx). When set, the
   // storefront routes WhatsApp links for this branch's customers here.
   whatsappNumber String @default("")
+  // Opening hours shown to staff/customers, e.g. "09:00" - "22:00".
+  openTime  String @default("")
+  closeTime String @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

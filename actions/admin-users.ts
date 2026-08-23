@@ -10,7 +10,7 @@ export async function createAdminUser(input: {
   email: string;
   name: string;
   password: string;
-  role: "SUPER_ADMIN" | "BRANCH_ADMIN";
+  role: "SUPER_ADMIN" | "BRANCH_ADMIN" | "BRANCH_SALES";
   branchId: string | null;
 }): Promise<Result> {
   await requireSuperAdmin();
@@ -20,8 +20,8 @@ export async function createAdminUser(input: {
   if (!input.password || input.password.length < 6) {
     return { ok: false, error: "Password must be at least 6 characters." };
   }
-  const branchId = input.role === "BRANCH_ADMIN" ? input.branchId : null;
-  if (input.role === "BRANCH_ADMIN" && !branchId) {
+  const branchId = input.role === "SUPER_ADMIN" ? null : input.branchId;
+  if (input.role !== "SUPER_ADMIN" && !branchId) {
     return { ok: false, error: "Choose a branch for a branch admin." };
   }
 

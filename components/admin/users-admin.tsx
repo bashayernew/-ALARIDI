@@ -4,6 +4,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/components/i18n/i18n-provider";
 import { formatKwd } from "@/lib/format";
+import { ExportCsvButton } from "@/components/admin/export-csv-button";
 
 export type AdminCustomerRow = {
   id: string;
@@ -38,13 +39,39 @@ export function UsersAdmin({ rows }: { rows: AdminCustomerRow[] }) {
   return (
     <div className="space-y-6">
       <p className="text-sm text-muted-foreground">{t("admin.users.note")}</p>
-      <input
-        type="search"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder={t("admin.users.searchPlaceholder")}
-        className="h-10 w-full max-w-sm rounded-lg border border-border bg-card/40 px-3 text-sm text-foreground"
-      />
+      <div className="flex flex-wrap items-center gap-3">
+        <input
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t("admin.users.searchPlaceholder")}
+          className="h-10 w-full max-w-sm rounded-lg border border-border bg-card/40 px-3 text-sm text-foreground"
+        />
+        <ExportCsvButton
+          filename="customers.csv"
+          label={t("admin.export.excel")}
+          headers={[
+            { key: "fullName", label: "Full name" },
+            { key: "email", label: "Email" },
+            { key: "phone", label: "Phone" },
+            { key: "tier", label: "Tier" },
+            { key: "points", label: "Points" },
+            { key: "lifetimePoints", label: "Lifetime points" },
+            { key: "orders", label: "Orders" },
+            { key: "joined", label: "Joined" },
+          ]}
+          rows={filtered.map((r) => ({
+            fullName: r.fullName,
+            email: r.email,
+            phone: r.phone,
+            tier: r.tier,
+            points: r.loyaltyBalance,
+            lifetimePoints: r.lifetimePoints,
+            orders: r.ordersCount,
+            joined: r.createdAtIso.slice(0, 10),
+          }))}
+        />
+      </div>
       <div className="overflow-x-auto rounded-2xl border border-border bg-card/40">
         <table className="w-full min-w-[820px] text-start text-sm">
           <thead className="border-b border-border text-xs uppercase tracking-wider text-muted-foreground">

@@ -12,6 +12,7 @@ import { OrderStatus } from "@prisma/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatGiftDeliverySummary } from "@/lib/gift-delivery";
+import { ExportCsvButton } from "@/components/admin/export-csv-button";
 
 export const dynamic = "force-dynamic";
 
@@ -37,7 +38,7 @@ const orderStatusLabel: Record<OrderStatus, TranslationKey> = {
 export default async function AdminDashboardPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ q?: string; status?: string }>;
+  searchParams?: Promise<{ q?: string; status?: string; from?: string; to?: string }>;
 }) {
   if (!(await isAdminSession())) redirect("/admin/login");
 
@@ -46,6 +47,8 @@ export default async function AdminDashboardPage({
   const sp = (await searchParams) ?? {};
   const qRaw = (sp.q ?? "").trim().toLowerCase();
   const statusFilter = isOrderStatus(sp.status) ? sp.status : null;
+  const fromDate = sp.from ? new Date(`${sp.from}T00:00:00`) : null;
+  const toDate = sp.to ? new Date(`${sp.to}T23:59:59.999`) : null;
 
   const session = await getAdminSession();
   const branches = await listBranches();
@@ -66,6 +69,14 @@ export default async function AdminDashboardPage({
             ? { branchId: activeBranchId }
             : {}),
           ...(statusFilter ? { status: statusFilter } : {}),
+          ...(fromDate || toDate
+            ? {
+                createdAt: {
+                  ...(fromDate ? { gte: fromDate } : {}),
+                  ...(toDate ? { lte: toDate } : {}),
+                },
+              }
+            : {}),
         },
         orderBy: { createdAt: "desc" },
         take: 120,
@@ -105,6 +116,27 @@ export default async function AdminDashboardPage({
       return blob.includes(qRaw);
     });
   }
+
+  const exportRows = filtered.map((o) => ({
+    id: o.id,
+    date: o.createdAt.toISOString().slice(0, 16).replace("T", " "),
+    customer: o.customerName,
+    phone: o.phone,
+    address: o.address,
+    fulfillment: o.fulfillmentType,
+    status: o.status,
+    payment: o.paymentMethod ?? "",
+    items: [
+      ...o.items.map((i) => `${i.quantity}x ${i.product?.name ?? ""}`),
+      ...o.giftCardItems.map(
+        (i) => `${i.quantity}x ${i.giftCardProduct?.titleEn ?? "Gift card"}`
+      ),
+      ...o.giftBasketItems.map(
+        (i) => `${i.quantity}x ${i.giftBasket?.nameEn ?? "Gift basket"}`
+      ),
+    ].join(" | "),
+    total: Number(o.total).toFixed(3),
+  }));
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-10 sm:px-6">
@@ -161,12 +193,53 @@ export default async function AdminDashboardPage({
             ))}
           </select>
         </div>
+        <div className="space-y-1">
+          <label className="text-xs text-muted-foreground" htmlFor="from">
+            {t("admin.orders.filter.from")}
+          </label>
+          <Input
+            id="from"
+            name="from"
+            type="date"
+            defaultValue={sp.from ?? ""}
+            className="w-[160px] border-border bg-card text-foreground"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs text-muted-foreground" htmlFor="to">
+            {t("admin.orders.filter.to")}
+          </label>
+          <Input
+            id="to"
+            name="to"
+            type="date"
+            defaultValue={sp.to ?? ""}
+            className="w-[160px] border-border bg-card text-foreground"
+          />
+        </div>
         <Button
           type="submit"
           className="bg-primary text-primary-foreground hover:bg-primary/90"
         >
           {t("admin.orders.apply")}
         </Button>
+        <ExportCsvButton
+          filename="orders.csv"
+          label={t("admin.export.excel")}
+          headers={[
+            { key: "id", label: "Order ID" },
+            { key: "date", label: "Date" },
+            { key: "customer", label: "Customer" },
+            { key: "phone", label: "Phone" },
+            { key: "address", label: "Address" },
+            { key: "fulfillment", label: "Fulfillment" },
+            { key: "status", label: "Status" },
+            { key: "payment", label: "Payment" },
+            { key: "items", label: "Items" },
+            { key: "total", label: "Total (KWD)" },
+          ]}
+          rows={exportRows}
+        />
       </form>
 
       <div className="mt-8 space-y-3">

@@ -9,6 +9,8 @@ export type BranchWhatsappRow = {
   id: string;
   name: string;
   whatsappNumber: string;
+  openTime: string;
+  closeTime: string;
 };
 
 /**
@@ -25,7 +27,7 @@ export async function getEditableBranchesWhatsapp(): Promise<BranchWhatsappRow[]
   const rows = await prisma.branch.findMany({
     where,
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-    select: { id: true, name: true, whatsappNumber: true },
+    select: { id: true, name: true, whatsappNumber: true, openTime: true, closeTime: true },
   });
   return rows;
 }
@@ -53,4 +55,28 @@ export async function updateBranchWhatsapp(
   revalidatePath("/gifts");
   revalidatePath("/admin/branch-whatsapp");
   return { ok: true, number };
+}
+
+/** Set the branch's daily opening hours (empty strings clear them). */
+export async function updateBranchHours(
+  branchId: string,
+  openTime: string,
+  closeTime: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const session = await getAdminSession();
+  if (!session) return { ok: false, error: "Unauthorized" };
+  if (session.role === "BRANCH_SALES") {
+    return { ok: false, error: "Not allowed" };
+  }
+  if (session.role === "BRANCH_ADMIN" && session.branchId !== branchId) {
+    return { ok: false, error: "Not your branch" };
+  }
+  const clean = (v: string) => v.trim().slice(0, 5);
+  await prisma.branch.update({
+    where: { id: branchId },
+    data: { openTime: clean(openTime), closeTime: clean(closeTime) },
+  });
+  revalidatePath("/admin/branch-whatsapp");
+  revalidatePath("/", "layout");
+  return { ok: true };
 }

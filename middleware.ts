@@ -18,6 +18,16 @@ export function middleware(request: NextRequest) {
     const login = new URL("/admin/login", request.url);
     return NextResponse.redirect(login);
   }
+
+  // Branch-sales staff only get Orders and menu availability.
+  const role = request.cookies.get("al_aridi_admin_role")?.value;
+  if (role === "BRANCH_SALES") {
+    const allowed =
+      pathname === "/admin" || pathname.startsWith("/admin/availability");
+    if (!allowed) {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
+  }
   return NextResponse.next();
 }
 
