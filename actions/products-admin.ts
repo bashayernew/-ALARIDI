@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
-import { type Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { isAdminSession } from "@/actions/admin-auth";
 import { saveUploadedImage } from "@/lib/upload-image";
@@ -34,6 +34,7 @@ export type ProductForm = {
   sellByWeight?: boolean;
   price500g?: number | null;
   price1kg?: number | null;
+  weightOptions?: { label: string; price: number }[] | null;
   image: string;
   images?: string[];
   category: string;
@@ -92,6 +93,9 @@ export async function createProduct(data: ProductForm) {
       sellByWeight: data.sellByWeight ?? true,
       price500g: data.price500g ?? null,
       price1kg: data.price1kg ?? null,
+      ...(data.weightOptions && data.weightOptions.length > 0
+        ? { weightOptions: data.weightOptions }
+        : {}),
       image: data.image,
       images: data.images ?? [],
       category: data.category,
@@ -123,6 +127,12 @@ export async function updateProduct(
   if (data.sellByWeight !== undefined) patch.sellByWeight = data.sellByWeight;
   if (data.price500g !== undefined) patch.price500g = data.price500g;
   if (data.price1kg !== undefined) patch.price1kg = data.price1kg;
+  if (data.weightOptions !== undefined) {
+    patch.weightOptions =
+      data.weightOptions && data.weightOptions.length > 0
+        ? data.weightOptions
+        : Prisma.DbNull;
+  }
   if (data.oldPrice !== undefined) patch.oldPrice = data.oldPrice;
   if (data.image !== undefined) patch.image = data.image;
   if (data.category !== undefined) patch.category = data.category;

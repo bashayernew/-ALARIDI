@@ -154,6 +154,9 @@ model Product {
   sellByWeight    Boolean         @default(true)
   price500g       Decimal?        @db.Decimal(10, 3)
   price1kg        Decimal?        @db.Decimal(10, 3)
+  // Fully custom weight list: [{ "label": "250 g", "price": 1.75 }, ...]
+  // When set it replaces the standard 250g/500g/1kg options entirely.
+  weightOptions   Json?
   image           String
   images          String[]        @default([])
   category        String

@@ -139,11 +139,116 @@ export type AdminProduct = {
   sellByWeight: boolean;
   price500g: number | null;
   price1kg: number | null;
+  weightOptions: { label: string; price: number }[] | null;
   isBestSeller: boolean;
   isPromo: boolean;
   isAvailable: boolean;
   isNew: boolean;
 };
+
+type SizeRow = { label: string; price: string };
+
+function defaultSizeRows(p?: AdminProduct): SizeRow[] {
+  if (p?.weightOptions && p.weightOptions.length > 0) {
+    return p.weightOptions.map((o) => ({
+      label: o.label,
+      price: o.price.toFixed(3),
+    }));
+  }
+  if (p) {
+    return [
+      { label: "250 g", price: p.price.toFixed(3) },
+      { label: "500 g", price: (p.price500g ?? p.price * 2).toFixed(3) },
+      { label: "1 kg", price: (p.price1kg ?? p.price * 4).toFixed(3) },
+    ];
+  }
+  return [
+    { label: "250 g", price: "" },
+    { label: "500 g", price: "" },
+    { label: "1 kg", price: "" },
+  ];
+}
+
+function rowsToWeightOptions(
+  rows: SizeRow[]
+): { label: string; price: number }[] | null {
+  const out = rows
+    .filter((r) => r.label.trim() && Number.isFinite(Number(r.price)) && r.price.trim() !== "")
+    .map((r) => ({
+      label: r.label.trim(),
+      price: Math.round(Number(r.price) * 1000) / 1000,
+    }));
+  return out.length > 0 ? out : null;
+}
+
+/** Editable list of weight/price rows shown when "Sold by weight" is on. */
+function SizeRowsEditor({
+  rows,
+  onChange,
+  idPrefix,
+}: {
+  rows: SizeRow[];
+  onChange: (rows: SizeRow[]) => void;
+  idPrefix: string;
+}) {
+  const { t } = useI18n();
+  return (
+    <div className="space-y-2">
+      <div className="grid grid-cols-[1fr_1fr_auto] gap-2 text-xs text-muted-foreground">
+        <span>{t("admin.products.weights.weight")}</span>
+        <span>{t("admin.products.weights.price")}</span>
+        <span />
+      </div>
+      {rows.map((r, i) => (
+        <div key={i} className="grid grid-cols-[1fr_1fr_auto] items-center gap-2">
+          <Input
+            id={`${idPrefix}-w-${i}`}
+            value={r.label}
+            onChange={(e) =>
+              onChange(rows.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))
+            }
+            placeholder="250 g"
+          />
+          <Input
+            id={`${idPrefix}-p-${i}`}
+            type="number"
+            step="0.001"
+            min="0"
+            value={r.price}
+            onChange={(e) =>
+              onChange(rows.map((x, j) => (j === i ? { ...x, price: e.target.value } : x)))
+            }
+            placeholder="0.000"
+            className="tabular-nums"
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="size-8 text-muted-foreground hover:text-destructive"
+            onClick={() => onChange(rows.filter((_, j) => j !== i))}
+            aria-label="Remove"
+          >
+            <Trash2 className="size-4" />
+          </Button>
+        </div>
+      ))}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="rounded-lg"
+        onClick={() => onChange([...rows, { label: "", price: "" }])}
+      >
+        <Plus className="size-4" />
+        {t("admin.products.weights.add")}
+      </Button>
+      <p className="text-[11px] leading-snug text-muted-foreground">
+        {t("admin.products.weightHint")}
+      </p>
+    </div>
+  );
+}
 
 /** Edit an existing product: image, name, category, price (and flags). */
 function EditProductDialog({
@@ -163,11 +268,8 @@ function EditProductDialog({
   const [category, setCategory] = React.useState<string>(product.category);
   const [price, setPrice] = React.useState(product.price.toFixed(3));
   const [sellByWeight, setSellByWeight] = React.useState(product.sellByWeight);
-  const [price500g, setPrice500g] = React.useState(
-    product.price500g != null ? product.price500g.toFixed(3) : ""
-  );
-  const [price1kg, setPrice1kg] = React.useState(
-    product.price1kg != null ? product.price1kg.toFixed(3) : ""
+  const [sizeRows, setSizeRows] = React.useState<SizeRow[]>(
+    defaultSizeRows(product)
   );
   const [imageUrl, setImageUrl] = React.useState(product.image);
   const [file, setFile] = React.useState<File | null>(null);
@@ -183,8 +285,7 @@ function EditProductDialog({
     setCategory(product.category);
     setPrice(product.price.toFixed(3));
     setSellByWeight(product.sellByWeight);
-    setPrice500g(product.price500g != null ? product.price500g.toFixed(3) : "");
-    setPrice1kg(product.price1kg != null ? product.price1kg.toFixed(3) : "");
+    setSizeRows(defaultSizeRows(product));
     setImageUrl(product.image);
     setFile(null);
   }, [open, product]);
@@ -218,14 +319,7 @@ function EditProductDialog({
         category,
         price: Math.round(parsedPrice * 1000) / 1000,
         sellByWeight,
-        price500g:
-          price500g.trim() && Number.isFinite(Number(price500g))
-            ? Math.round(Number(price500g) * 1000) / 1000
-            : null,
-        price1kg:
-          price1kg.trim() && Number.isFinite(Number(price1kg))
-            ? Math.round(Number(price1kg) * 1000) / 1000
-            : null,
+        weightOptions: sellByWeight ? rowsToWeightOptions(sizeRows) : null,
         image: image || product.image,
       });
       toast.success(t("admin.products.toast.updated"));
@@ -376,41 +470,11 @@ function EditProductDialog({
                   {t("admin.products.label.sellByWeight")}
                 </label>
                 {sellByWeight ? (
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <Label htmlFor={`edit-p500-${product.id}`} className="text-xs">
-                        {t("admin.products.label.price500")}
-                      </Label>
-                      <Input
-                        id={`edit-p500-${product.id}`}
-                        type="number"
-                        step="0.001"
-                        min="0"
-                        value={price500g}
-                        onChange={(e) => setPrice500g(e.target.value)}
-                        placeholder={(Number(price || 0) * 2).toFixed(3)}
-                        className="tabular-nums"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor={`edit-p1kg-${product.id}`} className="text-xs">
-                        {t("admin.products.label.price1kg")}
-                      </Label>
-                      <Input
-                        id={`edit-p1kg-${product.id}`}
-                        type="number"
-                        step="0.001"
-                        min="0"
-                        value={price1kg}
-                        onChange={(e) => setPrice1kg(e.target.value)}
-                        placeholder={(Number(price || 0) * 4).toFixed(3)}
-                        className="tabular-nums"
-                      />
-                    </div>
-                    <p className="col-span-2 text-[11px] leading-snug text-muted-foreground">
-                      {t("admin.products.weightHint")}
-                    </p>
-                  </div>
+                  <SizeRowsEditor
+                    rows={sizeRows}
+                    onChange={setSizeRows}
+                    idPrefix={`edit-${product.id}`}
+                  />
                 ) : null}
               </div>
             </div>
@@ -631,8 +695,7 @@ export function ProductsAdmin({ products, categories, dbOffline }: Props) {
   const [price, setPrice] = React.useState("");
   const [oldPrice, setOldPrice] = React.useState("");
   const [sellByWeight, setSellByWeight] = React.useState(true);
-  const [price500g, setPrice500g] = React.useState("");
-  const [price1kg, setPrice1kg] = React.useState("");
+  const [sizeRows, setSizeRows] = React.useState<SizeRow[]>(defaultSizeRows());
   const [imageUrl, setImageUrl] = React.useState("");
   const [file, setFile] = React.useState<File | null>(null);
   const [category, setCategory] = React.useState<string>(
@@ -689,14 +752,7 @@ export function ProductsAdmin({ products, categories, dbOffline }: Props) {
         price: Number(price),
         oldPrice: oldPrice.trim() ? Number(oldPrice) : null,
         sellByWeight,
-        price500g:
-          price500g.trim() && Number.isFinite(Number(price500g))
-            ? Math.round(Number(price500g) * 1000) / 1000
-            : null,
-        price1kg:
-          price1kg.trim() && Number.isFinite(Number(price1kg))
-            ? Math.round(Number(price1kg) * 1000) / 1000
-            : null,
+        weightOptions: sellByWeight ? rowsToWeightOptions(sizeRows) : null,
         image,
         category,
         isBestSeller,
@@ -714,8 +770,7 @@ export function ProductsAdmin({ products, categories, dbOffline }: Props) {
       setPrice("");
       setOldPrice("");
       setSellByWeight(true);
-      setPrice500g("");
-      setPrice1kg("");
+      setSizeRows(defaultSizeRows());
       setImageUrl("");
       setFile(null);
       setIsBestSeller(false);
@@ -890,41 +945,7 @@ export function ProductsAdmin({ products, categories, dbOffline }: Props) {
             {t("admin.products.label.sellByWeight")}
           </label>
           {sellByWeight ? (
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label htmlFor="new-p500" className="text-xs">
-                  {t("admin.products.label.price500")}
-                </Label>
-                <Input
-                  id="new-p500"
-                  type="number"
-                  step="0.001"
-                  min="0"
-                  value={price500g}
-                  onChange={(e) => setPrice500g(e.target.value)}
-                  placeholder={(Number(price || 0) * 2).toFixed(3)}
-                  className="tabular-nums"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="new-p1kg" className="text-xs">
-                  {t("admin.products.label.price1kg")}
-                </Label>
-                <Input
-                  id="new-p1kg"
-                  type="number"
-                  step="0.001"
-                  min="0"
-                  value={price1kg}
-                  onChange={(e) => setPrice1kg(e.target.value)}
-                  placeholder={(Number(price || 0) * 4).toFixed(3)}
-                  className="tabular-nums"
-                />
-              </div>
-              <p className="col-span-2 text-[11px] leading-snug text-muted-foreground">
-                {t("admin.products.weightHint")}
-              </p>
-            </div>
+            <SizeRowsEditor rows={sizeRows} onChange={setSizeRows} idPrefix="new" />
           ) : null}
         </div>
         <div className="space-y-2">

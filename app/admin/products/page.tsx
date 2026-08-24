@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { isAdminSession } from "@/actions/admin-auth";
 import { prisma } from "@/lib/prisma";
+import { parseWeightOptions } from "@/types";
 import { dbQueryWithFlag } from "@/lib/db-safe";
 import { ProductsAdmin } from "@/components/admin/products-admin";
 import { getAllCategoriesAdmin } from "@/lib/category-data";
@@ -41,6 +42,7 @@ export default async function AdminProductsPage() {
     sellByWeight: p.sellByWeight,
     price500g: p.price500g != null ? Number(p.price500g) : null,
     price1kg: p.price1kg != null ? Number(p.price1kg) : null,
+    weightOptions: parseWeightOptions(p.weightOptions),
     isBestSeller: p.isBestSeller,
     isPromo: p.isPromo,
     isAvailable: p.isAvailable,

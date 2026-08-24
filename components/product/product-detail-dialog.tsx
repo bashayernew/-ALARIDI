@@ -20,10 +20,8 @@ import type { ProductDTO } from "@/types";
 import { formatKwd } from "@/lib/format";
 import { useCartStore } from "@/store/cart-store";
 import {
-  WEIGHT_SIZES,
   hasWeightSizes,
-  weightSizeMultiplier,
-  weightSizePrice,
+  productSizeOptions,
 } from "@/lib/product-sizes";
 import {
   EXTRA_TOPPINGS_FEE_KWD,
@@ -67,12 +65,15 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
   const ox = (en: string, ar: string) => (locale === "ar" ? ar : en);
 
   const weightSized = hasWeightSizes(product);
-  const sizeMultiplier = weightSized ? weightSizeMultiplier(size) : 1;
-  const unitPrice = weightSized
-    ? weightSizePrice(product, size)
-    : product.price;
+  const sizeOptions = weightSized ? productSizeOptions(product, locale) : [];
+  const selectedSize =
+    sizeOptions.find((o) => o.key === size) ?? sizeOptions[0] ?? null;
+  const unitPrice =
+    weightSized && selectedSize ? selectedSize.price : product.price;
   const unitOldPrice =
-    product.oldPrice != null ? product.oldPrice * sizeMultiplier : null;
+    product.oldPrice != null && (!weightSized || selectedSize?.multiplier != null)
+      ? product.oldPrice * (selectedSize?.multiplier ?? 1)
+      : null;
   const extrasPerUnit =
     (giftWrap ? GIFT_WRAP_FEE_KWD : 0) +
     (extraToppings ? EXTRA_TOPPINGS_FEE_KWD : 0);
@@ -94,12 +95,8 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
       extraToppings,
       note: [
         note.trim(),
-        weightSized
-          ? `${ox("Size", "الحجم")}: ${
-              WEIGHT_SIZES.find((w) => w.key === size)?.[
-                locale === "ar" ? "labelAr" : "labelEn"
-              ] ?? size
-            }`
+        weightSized && selectedSize
+          ? `${ox("Size", "الحجم")}: ${selectedSize.label}`
           : "",
       ]
         .filter(Boolean)
@@ -159,23 +156,21 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
             {weightSized ? (
               <div className="space-y-1.5">
                 <Label>{t("product.size")}</Label>
-                <div className="flex gap-2">
-                  {WEIGHT_SIZES.map((w) => (
+                <div className="flex flex-wrap gap-2">
+                  {sizeOptions.map((w) => (
                     <button
                       key={w.key}
                       type="button"
                       onClick={() => setSize(w.key)}
                       className={
-                        size === w.key
-                          ? "flex-1 rounded-lg border border-primary bg-primary/10 px-2 py-2 text-sm font-semibold text-primary"
-                          : "flex-1 rounded-lg border border-border/60 bg-muted/20 px-2 py-2 text-sm text-muted-foreground hover:border-primary/40"
+                        selectedSize?.key === w.key
+                          ? "min-w-[30%] flex-1 rounded-lg border border-primary bg-primary/10 px-2 py-2 text-sm font-semibold text-primary"
+                          : "min-w-[30%] flex-1 rounded-lg border border-border/60 bg-muted/20 px-2 py-2 text-sm text-muted-foreground hover:border-primary/40"
                       }
                     >
-                      <span className="block">
-                        {locale === "ar" ? w.labelAr : w.labelEn}
-                      </span>
+                      <span className="block">{w.label}</span>
                       <span className="block text-xs tabular-nums opacity-80">
-                        {formatKwd(weightSizePrice(product, w.key))}
+                        {formatKwd(w.price)}
                       </span>
                     </button>
                   ))}

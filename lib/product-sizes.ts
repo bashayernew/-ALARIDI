@@ -54,3 +54,40 @@ export function weightSizePrice(
   if (key === "1kg" && p.price1kg != null) return p.price1kg;
   return p.price * weightSizeMultiplier(key);
 }
+
+/** One selectable size option shown on the product page. */
+export type ProductSizeOption = {
+  key: string;
+  label: string;
+  price: number;
+  /** Present only for the standard auto sizes (x1/x2/x4). */
+  multiplier?: number;
+};
+
+/**
+ * The size options for a product: the admin's custom weight list when set,
+ * otherwise the standard 250 g / 500 g / 1 kg (with custom or auto prices).
+ */
+export function productSizeOptions(
+  p: {
+    price: number;
+    price500g?: number | null;
+    price1kg?: number | null;
+    weightOptions?: { label: string; price: number }[] | null;
+  },
+  locale: string
+): ProductSizeOption[] {
+  if (p.weightOptions && p.weightOptions.length > 0) {
+    return p.weightOptions.map((o, i) => ({
+      key: `w${i}`,
+      label: o.label,
+      price: o.price,
+    }));
+  }
+  return WEIGHT_SIZES.map((w) => ({
+    key: w.key,
+    label: locale === "ar" ? w.labelAr : w.labelEn,
+    price: weightSizePrice(p, w.key),
+    multiplier: w.multiplier,
+  }));
+}
