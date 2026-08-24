@@ -25,7 +25,10 @@ export function hasWeightSizes(p: {
   category?: string | null;
   slug?: string | null;
   name?: string | null;
+  sellByWeight?: boolean;
 }): boolean {
+  // Admin-controlled flag wins when present (database products).
+  if (typeof p.sellByWeight === "boolean") return p.sellByWeight;
   if ((p.category ?? "") === "LEBANESE_MOONE") return false;
   const probe = `${p.slug ?? ""} ${p.name ?? ""}`.toLowerCase();
   if (
@@ -37,4 +40,17 @@ export function hasWeightSizes(p: {
     return false;
   }
   return true;
+}
+
+/**
+ * Price for a given size: the admin's custom 500g/1kg price when set,
+ * otherwise the automatic multiple of the base (250 g) price.
+ */
+export function weightSizePrice(
+  p: { price: number; price500g?: number | null; price1kg?: number | null },
+  key: string
+): number {
+  if (key === "500g" && p.price500g != null) return p.price500g;
+  if (key === "1kg" && p.price1kg != null) return p.price1kg;
+  return p.price * weightSizeMultiplier(key);
 }

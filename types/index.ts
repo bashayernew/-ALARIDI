@@ -14,6 +14,9 @@ export type ProductDTO = {
   allergens: string[];
   price: number;
   oldPrice: number | null;
+  sellByWeight?: boolean;
+  price500g?: number | null;
+  price1kg?: number | null;
   image: string;
   images: string[];
   category: string;
@@ -37,6 +40,9 @@ export function productToDTO(p: Product): ProductDTO {
     allergens: p.allergens,
     price: Number(p.price),
     oldPrice: p.oldPrice != null ? Number(p.oldPrice) : null,
+    sellByWeight: p.sellByWeight,
+    price500g: p.price500g != null ? Number(p.price500g) : null,
+    price1kg: p.price1kg != null ? Number(p.price1kg) : null,
     image: p.image,
     images: p.images.length > 0 ? p.images : [p.image],
     category: p.category,

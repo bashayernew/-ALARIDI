@@ -31,6 +31,9 @@ export type ProductForm = {
   allergens?: string[];
   price: number;
   oldPrice: number | null;
+  sellByWeight?: boolean;
+  price500g?: number | null;
+  price1kg?: number | null;
   image: string;
   images?: string[];
   category: string;
@@ -86,6 +89,9 @@ export async function createProduct(data: ProductForm) {
       allergens: data.allergens ?? [],
       price: data.price,
       oldPrice: data.oldPrice,
+      sellByWeight: data.sellByWeight ?? true,
+      price500g: data.price500g ?? null,
+      price1kg: data.price1kg ?? null,
       image: data.image,
       images: data.images ?? [],
       category: data.category,
@@ -114,6 +120,9 @@ export async function updateProduct(
   if (data.description !== undefined) patch.description = data.description;
   if (data.descriptionAr !== undefined) patch.descriptionAr = data.descriptionAr;
   if (data.price !== undefined) patch.price = data.price;
+  if (data.sellByWeight !== undefined) patch.sellByWeight = data.sellByWeight;
+  if (data.price500g !== undefined) patch.price500g = data.price500g;
+  if (data.price1kg !== undefined) patch.price1kg = data.price1kg;
   if (data.oldPrice !== undefined) patch.oldPrice = data.oldPrice;
   if (data.image !== undefined) patch.image = data.image;
   if (data.category !== undefined) patch.category = data.category;

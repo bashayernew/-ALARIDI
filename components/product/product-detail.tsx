@@ -19,6 +19,7 @@ import {
   WEIGHT_SIZES,
   hasWeightSizes,
   weightSizeMultiplier,
+  weightSizePrice,
 } from "@/lib/product-sizes";
 import {
   EXTRA_TOPPINGS_FEE_KWD,
@@ -70,7 +71,9 @@ export function ProductDetail({
   const ox = (en: string, ar: string) => (locale === "ar" ? ar : en);
 
   const sizeMultiplier = weightSized ? weightSizeMultiplier(size) : 1;
-  const unitPrice = product.price * sizeMultiplier;
+  const unitPrice = weightSized
+    ? weightSizePrice(product, size)
+    : product.price;
   const unitOldPrice =
     product.oldPrice != null ? product.oldPrice * sizeMultiplier : null;
   const extrasPerUnit =
@@ -242,7 +245,7 @@ export function ProductDetail({
                       {locale === "ar" ? w.labelAr : w.labelEn}
                     </span>
                     <span className="block text-xs tabular-nums opacity-80">
-                      {formatKwd(product.price * w.multiplier)}
+                      {formatKwd(weightSizePrice(product, w.key))}
                     </span>
                   </button>
                 ))}

@@ -149,6 +149,11 @@ model Product {
   allergens       String[]        @default([])
   price           Decimal         @db.Decimal(10, 3)
   oldPrice        Decimal?        @db.Decimal(10, 3)
+  // Weight selling: when true storefront shows 250g/500g/1kg sizes.
+  // price500g / price1kg override the automatic x2 / x4 when set.
+  sellByWeight    Boolean         @default(true)
+  price500g       Decimal?        @db.Decimal(10, 3)
+  price1kg        Decimal?        @db.Decimal(10, 3)
   image           String
   images          String[]        @default([])
   category        String

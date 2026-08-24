@@ -136,6 +136,9 @@ export type AdminProduct = {
   image: string;
   category: string;
   price: number;
+  sellByWeight: boolean;
+  price500g: number | null;
+  price1kg: number | null;
   isBestSeller: boolean;
   isPromo: boolean;
   isAvailable: boolean;
@@ -159,6 +162,13 @@ function EditProductDialog({
   const [descriptionAr, setDescriptionAr] = React.useState(product.descriptionAr);
   const [category, setCategory] = React.useState<string>(product.category);
   const [price, setPrice] = React.useState(product.price.toFixed(3));
+  const [sellByWeight, setSellByWeight] = React.useState(product.sellByWeight);
+  const [price500g, setPrice500g] = React.useState(
+    product.price500g != null ? product.price500g.toFixed(3) : ""
+  );
+  const [price1kg, setPrice1kg] = React.useState(
+    product.price1kg != null ? product.price1kg.toFixed(3) : ""
+  );
   const [imageUrl, setImageUrl] = React.useState(product.image);
   const [file, setFile] = React.useState<File | null>(null);
   const [busy, setBusy] = React.useState(false);
@@ -172,6 +182,9 @@ function EditProductDialog({
     setDescriptionAr(product.descriptionAr);
     setCategory(product.category);
     setPrice(product.price.toFixed(3));
+    setSellByWeight(product.sellByWeight);
+    setPrice500g(product.price500g != null ? product.price500g.toFixed(3) : "");
+    setPrice1kg(product.price1kg != null ? product.price1kg.toFixed(3) : "");
     setImageUrl(product.image);
     setFile(null);
   }, [open, product]);
@@ -204,6 +217,15 @@ function EditProductDialog({
         descriptionAr: descriptionAr.trim(),
         category,
         price: Math.round(parsedPrice * 1000) / 1000,
+        sellByWeight,
+        price500g:
+          price500g.trim() && Number.isFinite(Number(price500g))
+            ? Math.round(Number(price500g) * 1000) / 1000
+            : null,
+        price1kg:
+          price1kg.trim() && Number.isFinite(Number(price1kg))
+            ? Math.round(Number(price1kg) * 1000) / 1000
+            : null,
         image: image || product.image,
       });
       toast.success(t("admin.products.toast.updated"));
@@ -341,6 +363,55 @@ function EditProductDialog({
                   className="tabular-nums"
                   required
                 />
+                <p className="text-[11px] leading-snug text-muted-foreground">
+                  {t("admin.products.priceHint")}
+                </p>
+              </div>
+              <div className="space-y-3 rounded-xl border border-border/60 bg-card/40 p-3">
+                <label className="flex items-center gap-2 text-sm">
+                  <Checkbox
+                    checked={sellByWeight}
+                    onCheckedChange={(v) => setSellByWeight(v === true)}
+                  />
+                  {t("admin.products.label.sellByWeight")}
+                </label>
+                {sellByWeight ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label htmlFor={`edit-p500-${product.id}`} className="text-xs">
+                        {t("admin.products.label.price500")}
+                      </Label>
+                      <Input
+                        id={`edit-p500-${product.id}`}
+                        type="number"
+                        step="0.001"
+                        min="0"
+                        value={price500g}
+                        onChange={(e) => setPrice500g(e.target.value)}
+                        placeholder={(Number(price || 0) * 2).toFixed(3)}
+                        className="tabular-nums"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor={`edit-p1kg-${product.id}`} className="text-xs">
+                        {t("admin.products.label.price1kg")}
+                      </Label>
+                      <Input
+                        id={`edit-p1kg-${product.id}`}
+                        type="number"
+                        step="0.001"
+                        min="0"
+                        value={price1kg}
+                        onChange={(e) => setPrice1kg(e.target.value)}
+                        placeholder={(Number(price || 0) * 4).toFixed(3)}
+                        className="tabular-nums"
+                      />
+                    </div>
+                    <p className="col-span-2 text-[11px] leading-snug text-muted-foreground">
+                      {t("admin.products.weightHint")}
+                    </p>
+                  </div>
+                ) : null}
               </div>
             </div>
             <DialogFooter>

@@ -632,6 +632,13 @@ export const EN_DICT = {
   "admin.products.filter.name": "Search by name…",
   "admin.products.filter.allCategories": "All categories",
   "admin.products.label.description": "Description",
+  "admin.products.priceHint":
+    "This is the 250 g price. 500 g and 1 kg default to x2 / x4 unless you set custom prices below.",
+  "admin.products.label.sellByWeight": "Sold by weight (250 g / 500 g / 1 kg)",
+  "admin.products.label.price500": "500 g price (KWD)",
+  "admin.products.label.price1kg": "1 kg price (KWD)",
+  "admin.products.weightHint":
+    "Leave empty to use the automatic price (x2 / x4 of the 250 g price).",
   "admin.products.label.price": "Price (KWD)",
   "admin.products.label.oldPrice": "Old price (optional)",
   "admin.products.label.imageUrl": "Image URL",
@@ -1030,7 +1037,7 @@ export const EN_DICT = {
     "Al Aridi Sweets has built its reputation in Kuwait on classic Lebanese desserts crafted with patience, quality ingredients, and a little obsession.",
   "about.story.title": "How we started",
   "about.story.body1":
-    "What began as a small family kitchen in Beirut grew into a daily ritual for our customers across Kuwait. Each tray is hand-finished by bakers we trained ourselves.",
+    "What began as a small family kitchen in Lebanon grew into a daily ritual for our customers across Kuwait. Each tray is hand-finished by bakers we trained ourselves.",
   "about.story.body2":
     "We refuse shortcuts — semolina is roasted that morning, kashta is poured warm, and pistachios are inspected before they reach the kunafa.",
   "about.mission.title": "Our mission",
@@ -1048,11 +1055,11 @@ export const EN_DICT = {
   "about.pillar.tradition.label": "Tradition",
   "about.pillar.tradition.title": "Recipes that travel",
   "about.pillar.tradition.body":
-    "Family recipes refined for over two generations in Beirut, now made in Kuwait.",
+    "Family recipes refined for over two generations in Lebanon, now made in Kuwait.",
   "about.pillar.service.label": "Service",
   "about.pillar.service.title": "Looked after, end-to-end",
   "about.pillar.service.body":
-    "Delivery in under 30 minutes across most areas, with same-day scheduling for larger trays.",
+    "Fast delivery across most areas, with same-day scheduling for larger trays.",
 
   // Contact
   "contact.kicker": "Get in touch",
@@ -2152,6 +2159,11 @@ export const AR_DICT: Record<TranslationKey, string> = {
   "admin.products.filter.name": "ابحث بالاسم…",
   "admin.products.filter.allCategories": "كل الفئات",
   "admin.products.label.description": "الوصف",
+  "admin.products.priceHint": "هذا سعر ٢٥٠ غم. يُحسب سعر ٥٠٠ غم و١ كغ تلقائياً (×2 / ×4) إلا إذا حددت أسعاراً مخصصة أدناه.",
+  "admin.products.label.sellByWeight": "يُباع بالوزن (٢٥٠ غم / ٥٠٠ غم / ١ كغ)",
+  "admin.products.label.price500": "سعر ٥٠٠ غم (د.ك)",
+  "admin.products.label.price1kg": "سعر ١ كغ (د.ك)",
+  "admin.products.weightHint": "اتركه فارغاً لاستخدام السعر التلقائي (×2 / ×4 من سعر ٢٥٠ غم).",
   "admin.products.label.price": "السعر (د.ك)",
   "admin.products.label.oldPrice": "السعر القديم (اختياري)",
   "admin.products.label.imageUrl": "رابط الصورة",
@@ -2540,7 +2552,7 @@ export const AR_DICT: Record<TranslationKey, string> = {
     "بنت Al Aridi سمعتها في الكويت على الحلويات اللبنانية الكلاسيكية المصنوعة بالصبر والمكوّنات الفاخرة.",
   "about.story.title": "كيف بدأنا",
   "about.story.body1":
-    "بدأت رحلتنا في مطبخ عائلي صغير في بيروت، وأصبحت طقساً يومياً لزبائننا في الكويت.",
+    "بدأت رحلتنا في مطبخ عائلي صغير في لبنان، وأصبحت طقساً يومياً لزبائننا في الكويت.",
   "about.story.body2":
     "نرفض الاختصارات — السميد يُحمَّص في الصباح، القشطة تُسكب دافئة، والفستق يُفحص قبل أن يصل الكنافة.",
   "about.mission.title": "رسالتنا",
@@ -2558,11 +2570,11 @@ export const AR_DICT: Record<TranslationKey, string> = {
   "about.pillar.tradition.label": "التقاليد",
   "about.pillar.tradition.title": "وصفات تسافر معنا",
   "about.pillar.tradition.body":
-    "وصفات عائلية صُقلت لأكثر من جيلين في بيروت، وتُحضَّر الآن في الكويت.",
+    "وصفات عائلية صُقلت لأكثر من جيلين في لبنان، وتُحضَّر الآن في الكويت.",
   "about.pillar.service.label": "الخدمة",
   "about.pillar.service.title": "نعتني بك من البداية للنهاية",
   "about.pillar.service.body":
-    "توصيل في أقل من ٣٠ دقيقة في معظم المناطق، مع جدولة لليوم نفسه للصواني الكبيرة.",
+    "توصيل سريع في معظم المناطق، مع جدولة لليوم نفسه للصواني الكبيرة.",
 
   "contact.kicker": "تواصل معنا",
   "contact.title": "تواصل معنا",
