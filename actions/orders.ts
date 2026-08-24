@@ -523,6 +523,21 @@ export async function createOrder(
     pickupBranchId:
       fulfillmentType === "PICKUP" ? pickupBranchId : null,
   });
+
+  // Closed/busy branches don't accept new orders.
+  if (checkoutBranchId) {
+    const branchState = await prisma.branch.findUnique({
+      where: { id: checkoutBranchId },
+      select: { storeStatus: true, name: true },
+    });
+    if (branchState && branchState.storeStatus !== "OPEN") {
+      throw new Error(
+        branchState.storeStatus === "BUSY"
+          ? "This branch is currently busy and not accepting new orders. Please try again shortly."
+          : "This branch is currently closed. Please try again during opening hours."
+      );
+    }
+  }
   if (hasPhysicalProducts && !checkoutBranchId) {
     return {
       ok: false,

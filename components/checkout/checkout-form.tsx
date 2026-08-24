@@ -68,6 +68,7 @@ type CheckoutFormProps = {
   storefrontAreaLabel: string | null;
   selectedGovernorateKey: string | null;
   selectedAreaKey: string | null;
+  branchStoreStatus?: string;
   deliveryAvailable: boolean;
   branchDeliveryFeeKwd: number | null;
   pickupBranches: PickupBranchOption[];
@@ -79,6 +80,7 @@ export function CheckoutForm({
   storefrontAreaLabel,
   selectedGovernorateKey,
   selectedAreaKey,
+  branchStoreStatus = "OPEN",
   deliveryAvailable,
   branchDeliveryFeeKwd,
   pickupBranches,
@@ -582,6 +584,14 @@ export function CheckoutForm({
         {giftCardsOnly ? (
           <p className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
             {t("checkout.giftCardOnly")}
+          </p>
+        ) : null}
+
+        {!giftCardsOnly && branchStoreStatus !== "OPEN" ? (
+          <p className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-300">
+            {branchStoreStatus === "BUSY"
+              ? t("checkout.branch.busy")
+              : t("checkout.branch.closed")}
           </p>
         ) : null}
 

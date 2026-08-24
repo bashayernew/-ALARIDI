@@ -1,5 +1,6 @@
 import { CheckoutForm } from "@/components/checkout/checkout-form";
 import { getLocale } from "@/lib/i18n-server";
+import { prisma } from "@/lib/prisma";
 import { translate } from "@/lib/dictionary";
 import {
   getPickupBranches,
@@ -29,6 +30,18 @@ export default async function CheckoutPage() {
     : null;
   const deliveryAvailable = Boolean(branch);
   const branchDeliveryFeeKwd = branch?.deliveryFeeKwd ?? null;
+  let branchStoreStatus = "OPEN";
+  if (branch?.branchId) {
+    try {
+      const row = await prisma.branch.findUnique({
+        where: { id: branch.branchId },
+        select: { storeStatus: true },
+      });
+      branchStoreStatus = row?.storeStatus ?? "OPEN";
+    } catch {
+      // DB offline — assume open
+    }
+  }
 
   // Default the pickup branch to the one serving the customer's selected
   // location. Order of preference:
@@ -66,6 +79,7 @@ export default async function CheckoutPage() {
         selectedAreaKey={selectedArea?.areaKey ?? null}
         deliveryAvailable={deliveryAvailable}
         branchDeliveryFeeKwd={branchDeliveryFeeKwd}
+        branchStoreStatus={branchStoreStatus}
         pickupBranches={pickupBranches}
         initialPickupBranchId={defaultPickupBranchId}
       />

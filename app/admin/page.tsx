@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatGiftDeliverySummary } from "@/lib/gift-delivery";
 import { ExportCsvButton } from "@/components/admin/export-csv-button";
+import { BranchStatusControl } from "@/components/admin/branch-status-control";
 
 export const dynamic = "force-dynamic";
 
@@ -116,6 +117,20 @@ export default async function AdminDashboardPage({
       return blob.includes(qRaw);
     });
   }
+
+  // Super admin: branch open/busy/closed switches.
+  const isSuperAdmin = session?.role === "SUPER_ADMIN";
+  const branchStatusRows = isSuperAdmin
+    ? (
+        await dbQueryWithFlag([], () =>
+          prisma.branch.findMany({
+            where: { active: true },
+            orderBy: { sortOrder: "asc" },
+            select: { id: true, name: true, storeStatus: true },
+          })
+        )
+      ).data
+    : [];
 
   const exportRows = filtered.map((o) => ({
     id: o.id,
@@ -241,6 +256,8 @@ export default async function AdminDashboardPage({
           rows={exportRows}
         />
       </form>
+
+      {isSuperAdmin ? <BranchStatusControl branches={branchStatusRows} /> : null}
 
       <div className="mt-8 space-y-3">
         {filtered.length === 0 ? (

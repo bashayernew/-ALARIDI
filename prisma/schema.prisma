@@ -265,6 +265,8 @@ model Branch {
   // Opening hours shown to staff/customers, e.g. "09:00" - "22:00".
   openTime  String @default("")
   closeTime String @default("")
+  // OPEN | BUSY | CLOSED — set by the super admin from the Orders page.
+  storeStatus String @default("OPEN")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

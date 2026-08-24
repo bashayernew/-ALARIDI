@@ -246,6 +246,10 @@ export const EN_DICT = {
   "checkout.fulfillment": "Fulfillment",
   "checkout.fulfillment.delivery": "Delivery",
   "checkout.fulfillment.sameDay": "Same-day delivery",
+  "checkout.branch.busy":
+    "This branch is currently busy and not accepting new orders. Please try again shortly.",
+  "checkout.branch.closed":
+    "This branch is currently closed. Please try again during opening hours.",
   "checkout.giftCardOnly":
     "Gift cards are sent by email after purchase — no delivery details needed.",
   "checkout.fulfillment.scheduled": "Scheduled delivery",
@@ -1775,6 +1779,8 @@ export const AR_DICT: Record<TranslationKey, string> = {
   "checkout.fulfillment": "طريقة الاستلام",
   "checkout.fulfillment.delivery": "توصيل",
   "checkout.fulfillment.sameDay": "توصيل اليوم",
+  "checkout.branch.busy": "هذا الفرع مشغول حالياً ولا يستقبل طلبات جديدة. حاول مرة أخرى بعد قليل.",
+  "checkout.branch.closed": "هذا الفرع مغلق حالياً. حاول مرة أخرى خلال ساعات العمل.",
   "checkout.giftCardOnly": "تُرسل بطاقات الهدايا بالبريد الإلكتروني بعد الشراء — لا حاجة لتفاصيل التوصيل.",
   "checkout.fulfillment.scheduled": "توصيل مجدول",
   "checkout.fulfillment.pickup": "استلام من الفرع",
