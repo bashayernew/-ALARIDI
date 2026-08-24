@@ -630,6 +630,9 @@ export function ProductsAdmin({ products, categories, dbOffline }: Props) {
   const [descriptionAr, setDescriptionAr] = React.useState("");
   const [price, setPrice] = React.useState("");
   const [oldPrice, setOldPrice] = React.useState("");
+  const [sellByWeight, setSellByWeight] = React.useState(true);
+  const [price500g, setPrice500g] = React.useState("");
+  const [price1kg, setPrice1kg] = React.useState("");
   const [imageUrl, setImageUrl] = React.useState("");
   const [file, setFile] = React.useState<File | null>(null);
   const [category, setCategory] = React.useState<string>(
@@ -685,6 +688,15 @@ export function ProductsAdmin({ products, categories, dbOffline }: Props) {
         descriptionAr: descriptionAr.trim(),
         price: Number(price),
         oldPrice: oldPrice.trim() ? Number(oldPrice) : null,
+        sellByWeight,
+        price500g:
+          price500g.trim() && Number.isFinite(Number(price500g))
+            ? Math.round(Number(price500g) * 1000) / 1000
+            : null,
+        price1kg:
+          price1kg.trim() && Number.isFinite(Number(price1kg))
+            ? Math.round(Number(price1kg) * 1000) / 1000
+            : null,
         image,
         category,
         isBestSeller,
@@ -701,6 +713,9 @@ export function ProductsAdmin({ products, categories, dbOffline }: Props) {
       setDescriptionAr("");
       setPrice("");
       setOldPrice("");
+      setSellByWeight(true);
+      setPrice500g("");
+      setPrice1kg("");
       setImageUrl("");
       setFile(null);
       setIsBestSeller(false);
@@ -862,6 +877,55 @@ export function ProductsAdmin({ products, categories, dbOffline }: Props) {
             onChange={(e) => setPrice(e.target.value)}
             required
           />
+          <p className="text-[11px] leading-snug text-muted-foreground">
+            {t("admin.products.priceHint")}
+          </p>
+        </div>
+        <div className="space-y-3 rounded-xl border border-border/60 bg-card/40 p-3 sm:col-span-2">
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox
+              checked={sellByWeight}
+              onCheckedChange={(v) => setSellByWeight(v === true)}
+            />
+            {t("admin.products.label.sellByWeight")}
+          </label>
+          {sellByWeight ? (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="new-p500" className="text-xs">
+                  {t("admin.products.label.price500")}
+                </Label>
+                <Input
+                  id="new-p500"
+                  type="number"
+                  step="0.001"
+                  min="0"
+                  value={price500g}
+                  onChange={(e) => setPrice500g(e.target.value)}
+                  placeholder={(Number(price || 0) * 2).toFixed(3)}
+                  className="tabular-nums"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="new-p1kg" className="text-xs">
+                  {t("admin.products.label.price1kg")}
+                </Label>
+                <Input
+                  id="new-p1kg"
+                  type="number"
+                  step="0.001"
+                  min="0"
+                  value={price1kg}
+                  onChange={(e) => setPrice1kg(e.target.value)}
+                  placeholder={(Number(price || 0) * 4).toFixed(3)}
+                  className="tabular-nums"
+                />
+              </div>
+              <p className="col-span-2 text-[11px] leading-snug text-muted-foreground">
+                {t("admin.products.weightHint")}
+              </p>
+            </div>
+          ) : null}
         </div>
         <div className="space-y-2">
           <Label htmlFor="old">{t("admin.products.label.oldPrice")}</Label>
