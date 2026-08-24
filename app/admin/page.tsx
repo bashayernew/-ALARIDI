@@ -150,6 +150,9 @@ export default async function AdminDashboardPage({
         (i) => `${i.quantity}x ${i.giftBasket?.nameEn ?? "Gift basket"}`
       ),
     ].join(" | "),
+    subtotal: Number(o.subtotal).toFixed(3),
+    deliveryFee: Number(o.deliveryFee).toFixed(3),
+    discount: Number(o.discountAmount).toFixed(3),
     total: Number(o.total).toFixed(3),
   }));
 
@@ -251,6 +254,9 @@ export default async function AdminDashboardPage({
             { key: "status", label: "Status" },
             { key: "payment", label: "Payment" },
             { key: "items", label: "Items" },
+            { key: "subtotal", label: "Subtotal (KWD)" },
+            { key: "deliveryFee", label: "Delivery fee (KWD)" },
+            { key: "discount", label: "Discount (KWD)" },
             { key: "total", label: "Total (KWD)" },
           ]}
           rows={exportRows}
