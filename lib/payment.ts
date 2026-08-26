@@ -35,7 +35,35 @@ const PAYMENT_PROVIDER = process.env.PAYMENT_PROVIDER ?? "none";
 export async function initiatePayment(
   input: PaymentInitInput
 ): Promise<PaymentInitResult> {
+  // Cash on delivery never goes through the gateway.
+  if (input.method === "CASH_ON_DELIVERY") {
+    return { success: true, message: "Cash on delivery" };
+  }
   switch (PAYMENT_PROVIDER) {
+    case "hesabe": {
+      const { createHesabeCheckout } = await import("@/lib/hesabe");
+      try {
+        const redirectUrl = await createHesabeCheckout({
+          orderId: input.orderId,
+          amountKwd: input.amountKwd,
+          customerName: input.customerName,
+          customerEmail: input.customerEmail,
+        });
+        return {
+          success: true,
+          redirectUrl,
+          message: "Redirecting to Hesabe payment page",
+        };
+      } catch (e) {
+        console.error("Hesabe checkout error:", e);
+        // Order stays PENDING; customer sees confirmation with unpaid note.
+        return {
+          success: false,
+          message:
+            e instanceof Error ? e.message : "Payment gateway unavailable",
+        };
+      }
+    }
     // --- Add your provider here ---
     // case "myfatoorah":
     //   return initiateMyFatoorah(input);

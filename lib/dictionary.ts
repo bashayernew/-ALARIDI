@@ -322,6 +322,8 @@ export const EN_DICT = {
   "checkout.confirm.orderIdLabel": "Order reference:",
   "checkout.confirm.offlineNote":
     "Demo mode: database was offline — this reference may exist only in your browser.",
+  "checkout.confirm.paymentSuccess": "Payment received — your order is confirmed and paid.",
+  "checkout.confirm.paymentFailed": "Payment was not completed. Your order is saved but unpaid — you can contact us or try ordering again.",
   "checkout.confirm.backMenu": "Continue shopping",
   "checkout.confirm.viewAccount": "My account",
   "checkout.confirm.trackOrder": "Track your order",
@@ -1862,6 +1864,8 @@ export const AR_DICT: Record<TranslationKey, string> = {
   "checkout.confirm.orderIdLabel": "مرجع الطلب:",
   "checkout.confirm.offlineNote":
     "وضع تجريبي: قاعدة البيانات غير متصلة — قد يظهر المرجع في المتصفح فقط.",
+  "checkout.confirm.paymentSuccess": "تم استلام الدفع — طلبك مؤكد ومدفوع.",
+  "checkout.confirm.paymentFailed": "لم تكتمل عملية الدفع. تم حفظ طلبك لكنه غير مدفوع — يمكنك التواصل معنا أو المحاولة مرة أخرى.",
   "checkout.confirm.backMenu": "متابعة التسوق",
   "checkout.confirm.viewAccount": "حسابي",
   "checkout.confirm.trackOrder": "تتبّع طلبك",

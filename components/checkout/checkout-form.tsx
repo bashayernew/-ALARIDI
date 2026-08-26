@@ -516,6 +516,11 @@ export function CheckoutForm({
     }
 
     clear();
+    if (res.paymentRedirectUrl) {
+      // Online payment: hand the customer to the gateway's secure page.
+      window.location.href = res.paymentRedirectUrl;
+      return;
+    }
     toast.success(t("checkout.toast.orderOk"), {
       description: t("checkout.toast.orderDesc"),
     });

@@ -16,6 +16,7 @@ export function CheckoutConfirmationClient() {
   const orderId = searchParams.get("orderId");
   const isGuest = searchParams.get("guest") === "1";
   const offline = searchParams.get("offline") === "1";
+  const payment = searchParams.get("payment"); // "success" | "failed" | null
 
   if (!orderId) {
     return (
@@ -46,6 +47,16 @@ export function CheckoutConfirmationClient() {
         {offline && (
           <p className="mt-4 text-xs text-primary/90">
             {t("checkout.confirm.offlineNote")}
+          </p>
+        )}
+        {payment === "success" && (
+          <p className="mt-4 rounded-xl bg-emerald-500/15 px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-300">
+            {t("checkout.confirm.paymentSuccess")}
+          </p>
+        )}
+        {payment === "failed" && (
+          <p className="mt-4 rounded-xl bg-destructive/15 px-4 py-2 text-sm font-medium text-destructive">
+            {t("checkout.confirm.paymentFailed")}
           </p>
         )}
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
