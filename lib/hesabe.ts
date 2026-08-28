@@ -44,20 +44,26 @@ function keys() {
   return { merchantCode, accessCode, secretKey, ivKey };
 }
 
-/** AES-256-CBC, hex output — matches Hesabe's HesabeCrypt library. */
+/**
+ * AES-256-CBC, hex output — matches Hesabe's HesabeCrypt library exactly:
+ * the plaintext is padded PKCS5-style to a 32-byte block boundary and the
+ * cipher runs with padding disabled.
+ */
 export function hesabeEncrypt(
   plain: string,
   secretKey: string,
   ivKey: string
 ): string {
+  const data = Buffer.from(plain, "utf8");
+  const padLen = 32 - (data.length % 32);
+  const padded = Buffer.concat([data, Buffer.alloc(padLen, padLen)]);
   const cipher = crypto.createCipheriv(
     "aes-256-cbc",
     Buffer.from(secretKey, "utf8"),
     Buffer.from(ivKey, "utf8")
   );
-  return Buffer.concat([cipher.update(plain, "utf8"), cipher.final()]).toString(
-    "hex"
-  );
+  cipher.setAutoPadding(false);
+  return Buffer.concat([cipher.update(padded), cipher.final()]).toString("hex");
 }
 
 export function hesabeDecrypt(
@@ -71,10 +77,18 @@ export function hesabeDecrypt(
     Buffer.from(secretKey, "utf8"),
     Buffer.from(ivKey, "utf8")
   );
-  return Buffer.concat([
+  decipher.setAutoPadding(false);
+  const out = Buffer.concat([
     decipher.update(Buffer.from(encrypted.trim(), encoding)),
     decipher.final(),
-  ]).toString("utf8");
+  ]);
+  // Strip Hesabe's PKCS5-style padding (block size 32): the last byte holds
+  // the pad length. Fall back to the raw text when it doesn't look padded.
+  const padLen = out[out.length - 1] ?? 0;
+  if (padLen > 0 && padLen <= 32 && padLen <= out.length) {
+    return out.subarray(0, out.length - padLen).toString("utf8");
+  }
+  return out.toString("utf8");
 }
 
 /** Try every known Hesabe response shape; returns null when none fits. */
@@ -157,6 +171,12 @@ export async function createHesabeCheckout(
   // The body may be plain JSON, or an encrypted hex/base64 string.
   const parsed = tryParseHesabeBody(raw, secretKey, ivKey);
   if (parsed == null) {
+    // A long pure-hex body is the payment token itself — Hesabe's payment
+    // page decrypts it server-side; we just pass it along.
+    const trimmed = raw.trim();
+    if (res.ok && /^[0-9a-fA-F]+$/.test(trimmed) && trimmed.length >= 64) {
+      return `${base}/payment?data=${trimmed}`;
+    }
     // Log a snippet of what Hesabe actually sent so we can diagnose.
     console.error(
       "Hesabe raw response (first 400 chars):",
