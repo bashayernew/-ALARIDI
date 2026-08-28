@@ -61,9 +61,10 @@ export function hesabeEncrypt(
 }
 
 export function hesabeDecrypt(
-  encryptedHex: string,
+  encrypted: string,
   secretKey: string,
-  ivKey: string
+  ivKey: string,
+  encoding: "hex" | "base64" = "hex"
 ): string {
   const decipher = crypto.createDecipheriv(
     "aes-256-cbc",
@@ -71,9 +72,39 @@ export function hesabeDecrypt(
     Buffer.from(ivKey, "utf8")
   );
   return Buffer.concat([
-    decipher.update(Buffer.from(encryptedHex.trim(), "hex")),
+    decipher.update(Buffer.from(encrypted.trim(), encoding)),
     decipher.final(),
   ]).toString("utf8");
+}
+
+/** Try every known Hesabe response shape; returns null when none fits. */
+function tryParseHesabeBody(
+  raw: string,
+  secretKey: string,
+  ivKey: string
+): unknown | null {
+  const trimmed = raw.trim();
+  const attempts: (() => unknown)[] = [
+    () => {
+      const v = JSON.parse(trimmed);
+      // A JSON-quoted encrypted string ("abc123...") needs decrypting too.
+      if (typeof v === "string") {
+        return JSON.parse(hesabeDecrypt(v, secretKey, ivKey, "hex"));
+      }
+      return v;
+    },
+    () => JSON.parse(hesabeDecrypt(trimmed, secretKey, ivKey, "hex")),
+    () => JSON.parse(hesabeDecrypt(trimmed, secretKey, ivKey, "base64")),
+  ];
+  for (const attempt of attempts) {
+    try {
+      const v = attempt();
+      if (v && typeof v === "object") return v;
+    } catch {
+      // try next shape
+    }
+  }
+  return null;
 }
 
 export type HesabeCheckoutInput = {
@@ -123,16 +154,19 @@ export async function createHesabeCheckout(
 
   const raw = await res.text();
 
-  // The body may be plain JSON or an encrypted hex string.
-  let parsed: unknown = null;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    try {
-      parsed = JSON.parse(hesabeDecrypt(raw, secretKey, ivKey));
-    } catch {
-      throw new Error(`Hesabe checkout: unreadable response (HTTP ${res.status})`);
-    }
+  // The body may be plain JSON, or an encrypted hex/base64 string.
+  const parsed = tryParseHesabeBody(raw, secretKey, ivKey);
+  if (parsed == null) {
+    // Log a snippet of what Hesabe actually sent so we can diagnose.
+    console.error(
+      "Hesabe raw response (first 400 chars):",
+      JSON.stringify(raw.slice(0, 400)),
+      "| HTTP",
+      res.status,
+      "| content-type:",
+      res.headers.get("content-type")
+    );
+    throw new Error(`Hesabe checkout: unreadable response (HTTP ${res.status})`);
   }
 
   const obj = parsed as {
@@ -161,7 +195,13 @@ export type HesabePaymentResult = {
 /** Decrypts and interprets the ?data= payload Hesabe sends to our callback. */
 export function parseHesabeCallback(encryptedData: string): HesabePaymentResult {
   const { secretKey, ivKey } = keys();
-  const json = JSON.parse(hesabeDecrypt(encryptedData, secretKey, ivKey)) as {
+  let decrypted: string;
+  try {
+    decrypted = hesabeDecrypt(encryptedData, secretKey, ivKey, "hex");
+  } catch {
+    decrypted = hesabeDecrypt(encryptedData, secretKey, ivKey, "base64");
+  }
+  const json = JSON.parse(decrypted) as {
     status?: boolean;
     response?: {
       data?: {
